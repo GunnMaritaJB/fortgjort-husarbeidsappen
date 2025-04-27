@@ -49,3 +49,6 @@ app-example
 
 # Emulator system files (optional, good practice)
 *.iml
+
+# Test results
+test_logs/
