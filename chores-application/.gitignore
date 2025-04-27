@@ -36,3 +36,16 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Android build artifacts
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/.idea/
+/android/local.properties
+
+# APK files
+*.apk
+
+# Emulator system files (optional, good practice)
+*.iml
