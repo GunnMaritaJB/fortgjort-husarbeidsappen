@@ -1,0 +1,6 @@
+appId: com.anonymous.choresapplication
+clearState: true
+
+flow:
+  - launchApp
+  - assertVisible: "Welcome!"
