@@ -1,0 +1,10 @@
+appId: com.anonymous.choresapplication
+name: First Flow
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - launchApp
+onFlowComplete:
+  - stopApp
+---
+- assertVisible: "Welcome!!!"
