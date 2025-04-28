@@ -8,3 +8,5 @@ onFlowComplete:
   - stopApp
 ---
 - assertVisible: "Welcome!!!"
+- tapOn:
+    point: "75%,94%"
