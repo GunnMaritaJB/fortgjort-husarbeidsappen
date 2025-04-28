@@ -1,3 +1,7 @@
+param(
+    [string[]]$SelectedFolders
+)
+
 # Define paths
 $testsFolder = ".\tests"
 $logFolder = ".\test_logs"
@@ -28,6 +32,19 @@ if ($flowFiles.Count -eq 0) {
 
 # Group the flow files by their parent folder
 $groupedFlows = $flowFiles | Group-Object { $_.DirectoryName }
+
+# If folders were selected, filter groups
+if ($SelectedFolders) {
+    $groupedFlows = $groupedFlows | Where-Object {
+        $folderName = Split-Path $_.Name -Leaf
+        $SelectedFolders -contains $folderName
+    }
+
+    if ($groupedFlows.Count -eq 0) {
+        Write-Host "No matching folders found for: $SelectedFolders" -ForegroundColor Red
+        exit 1
+    }
+}
 
 # Add metadata for the report
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -140,16 +157,18 @@ foreach ($group in $groupedFlows) {
     $folderCounter++
 }
 
-# Create a general summary file
-$summaryFile = Join-Path -Path $logFolder -ChildPath "test-summary.md"
-if (Test-Path $summaryFile) {
-    Remove-Item $summaryFile -Force
-}
+# Only create a general summary if no specific folders were selected
+if (-not $SelectedFolders) {
+    # Create a general summary file
+    $summaryFile = Join-Path -Path $logFolder -ChildPath "test-summary.md"
+    if (Test-Path $summaryFile) {
+        Remove-Item $summaryFile -Force
+    }
 
-$overallPassRate = if ($totalAllTests -gt 0) { [math]::Round(($totalAllPassed / $totalAllTests) * 100, 1) } else { 0 }
+    $overallPassRate = if ($totalAllTests -gt 0) { [math]::Round(($totalAllPassed / $totalAllTests) * 100, 1) } else { 0 }
 
-# Summary header
-$summaryHeader = @"
+    # Summary header
+    $summaryHeader = @"
 # Test Execution Summary
 
 - **Date:** $timestamp
@@ -162,15 +181,15 @@ $summaryHeader = @"
 ## Folders
 "@
 
-Add-Content -Path $summaryFile -Value $summaryHeader
+    Add-Content -Path $summaryFile -Value $summaryHeader
 
-# Write the numbered folder list
-foreach ($summary in $folderSummaries) {
-    Add-Content -Path $summaryFile -Value "$($summary.FolderNumber): $($summary.FolderName)"
-}
+    # Write the numbered folder list
+    foreach ($summary in $folderSummaries) {
+        Add-Content -Path $summaryFile -Value "$($summary.FolderNumber): $($summary.FolderName)"
+    }
 
-# Then table header
-$tableHeader = @"
+    # Then table header
+    $tableHeader = @"
 
 ## Test Results by Folder
 
@@ -178,53 +197,56 @@ $tableHeader = @"
 |:-:|------------:|-------:|-------:|----------:|
 "@
 
-Add-Content -Path $summaryFile -Value $tableHeader
+    Add-Content -Path $summaryFile -Value $tableHeader
 
-# Calculate dynamic padding
-$padTotalTests = ($folderSummaries | Measure-Object -Property TotalTests -Maximum).Maximum.ToString().Length + 6
-$padPassedTests = ($folderSummaries | Measure-Object -Property PassedTests -Maximum).Maximum.ToString().Length + 6
-$padFailedTests = ($folderSummaries | Measure-Object -Property FailedTests -Maximum).Maximum.ToString().Length + 6
-$padPassRate = 10
+    # Calculate dynamic padding
+    $padTotalTests = ($folderSummaries | Measure-Object -Property TotalTests -Maximum).Maximum.ToString().Length + 6
+    $padPassedTests = ($folderSummaries | Measure-Object -Property PassedTests -Maximum).Maximum.ToString().Length + 6
+    $padFailedTests = ($folderSummaries | Measure-Object -Property FailedTests -Maximum).Maximum.ToString().Length + 6
+    $padPassRate = 10
 
-# Write each folder's test row nicely aligned
-foreach ($summary in $folderSummaries) {
-    $row = "| {0,-2} | {1,$padTotalTests} | {2,$padPassedTests} | {3,$padFailedTests} | {4,$padPassRate} |" -f `
-        $summary.FolderNumber, `
-        $summary.TotalTests, `
-        $summary.PassedTests, `
-        $summary.FailedTests, `
-        ("$($summary.PassRate)%")
-    Add-Content -Path $summaryFile -Value $row
-}
+    # Write each folder's test row nicely aligned
+    foreach ($summary in $folderSummaries) {
+        $row = "| {0,-2} | {1,$padTotalTests} | {2,$padPassedTests} | {3,$padFailedTests} | {4,$padPassRate} |" -f `
+            $summary.FolderNumber, `
+            $summary.TotalTests, `
+            $summary.PassedTests, `
+            $summary.FailedTests, `
+            ("$($summary.PassRate)%")
+        Add-Content -Path $summaryFile -Value $row
+    }
 
-# Add ASCII chart section
-$chartSection = @"
+    # Add ASCII chart section
+    $chartSection = @"
 
 ## Visual Summary
 
 ### Test Results
 "@
 
-Add-Content -Path $summaryFile -Value $chartSection
-Add-Content -Path $summaryFile -Value '```'
+    Add-Content -Path $summaryFile -Value $chartSection
+    Add-Content -Path $summaryFile -Value '```'
 
-$chartWidth = 50
-if ($totalAllTests -gt 0) {
-    $passedWidth = [Math]::Round(($totalAllPassed / $totalAllTests) * $chartWidth)
-    $failedWidth = $chartWidth - $passedWidth
+    $chartWidth = 50
+    if ($totalAllTests -gt 0) {
+        $passedWidth = [Math]::Round(($totalAllPassed / $totalAllTests) * $chartWidth)
+        $failedWidth = $chartWidth - $passedWidth
 
-    $passedBar = "[PASS] " + ("#" * $passedWidth) + " $totalAllPassed ($overallPassRate%)"
-    $failedBar = "[FAIL] " + ("#" * $failedWidth) + " $totalAllFailed ($([math]::Round(100 - $overallPassRate, 1))%)"
+        $passedBar = "[PASS] " + ("#" * $passedWidth) + " $totalAllPassed ($overallPassRate%)"
+        $failedBar = "[FAIL] " + ("#" * $failedWidth) + " $totalAllFailed ($([math]::Round(100 - $overallPassRate, 1))%)"
 
-    Add-Content -Path $summaryFile -Value $passedBar
-    Add-Content -Path $summaryFile -Value $failedBar
-} else {
-    Add-Content -Path $summaryFile -Value "No tests were executed."
+        Add-Content -Path $summaryFile -Value $passedBar
+        Add-Content -Path $summaryFile -Value $failedBar
+    } else {
+        Add-Content -Path $summaryFile -Value "No tests were executed."
+    }
+
+    Add-Content -Path $summaryFile -Value '```'
 }
-
-Add-Content -Path $summaryFile -Value '```'
 
 # Final output
 Write-Host ""
 Write-Host "All tests finished! Markdown reports saved in: $logFolder" -ForegroundColor Green
-Write-Host "General summary available at: $summaryFile" -ForegroundColor Green
+if (-not $SelectedFolders) {
+    Write-Host "General summary available at: $summaryFile" -ForegroundColor Green
+}
