@@ -40,11 +40,7 @@ yarn-error.*
 app-example
 
 # Android build artifacts
-/android/.gradle/
-/android/build/
-/android/app/build/
-/android/.idea/
-/android/local.properties
+/android/
 
 # APK files
 *.apk
