@@ -16,7 +16,7 @@ onFlowStart:
   - inputText: "Testing123."
   - tapOn: "Logg inn"
   - tapOn:
-    id: "dummyChild_1"
+      id: "dummyChild_1"
 
 onFlowComplete:
   - stopApp
@@ -45,12 +45,8 @@ onFlowComplete:
     label: "Choose to complete the task"
 
 # Check that the task is rendered as completed
-- setVariable:
-    name: "scrollCount"
-    value: 0
-- setVariable:
-    name: "scrollLimit"
-    value: 7
+- evalScript: ${counter = 0}
+- evalScript: ${counterLimit = 7}
 
 # Scroll down trying to find the completed task
 - repeat:
@@ -58,13 +54,9 @@ onFlowComplete:
       notVisible:
         text: "${NAME_OF_TASK}"
     commands:
-      - scroll:
-          direction: DOWN
-          timeout: 100
-      - setVariable:
-          name: "scrollCount"
-          value: "${scrollCount} + 1"
-      - assertTrue: "${scrollCount} < ${scrollLimit}"
+      - evalScript: "${counter < counterLimit}"
+      - scroll
+      - evalScript: ${counter = counter + 1}
 
 - assertVisible:
     text: "${NAME_OF_TASK}"

@@ -59,12 +59,8 @@ onFlowComplete:
     label: "Cancel the task"
 
 # Check that the task is created and assigned to child 1
-- setVariable:
-    name: "scrollCount"
-    value: 0
-- setVariable:
-    name: "scrollLimit"
-    value: 7
+- evalScript: ${counter = 0}
+- evalScript: ${counterLimit = 7}
 
 # Scroll down trying to find the completed task (that should not exist)
 - repeat:
@@ -72,13 +68,9 @@ onFlowComplete:
       notVisible:
         text: "${TASK_NAME}"
     commands:
-      - scroll:
-          direction: DOWN
-          timeout: 100
-      - setVariable:
-          name: "scrollCount"
-          value: "${scrollCount} + 1"
-      - assertTrue: "${scrollCount} < ${scrollLimit}"
+      - evalScript: "${counter < counterLimit}"
+      - scroll
+      - evalScript: ${counter = counter + 1}
 
 - assertNotVisible:
     text: "${TASK_NAME}"

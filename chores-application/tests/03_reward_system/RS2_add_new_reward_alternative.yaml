@@ -61,12 +61,8 @@ onFlowComplete:
 
 - assertVisible: "BELØNNINGER"
 
-- setVariable:
-    name: "scrollCount"
-    value: 0
-- setVariable:
-    name: "scrollLimit"
-    value: 7
+- evalScript: ${counter = 0}
+- evalScript: ${counterLimit = 7}
 
 # Scroll down trying to find the added reward
 - repeat:
@@ -74,13 +70,9 @@ onFlowComplete:
       notVisible:
         text: "${REWARD_NAME}"
     commands:
-      - scroll:
-          direction: DOWN
-          timeout: 100
-      - setVariable:
-          name: "scrollCount"
-          value: "${scrollCount} + 1"
-      - assertTrue: "${scrollCount} < ${scrollLimit}"
+      - evalScript: "${counter < counterLimit}"
+      - scroll
+      - evalScript: ${counter = counter + 1}
 
 - assertNotVisible:
     text: "${REWARD_NAME}"
