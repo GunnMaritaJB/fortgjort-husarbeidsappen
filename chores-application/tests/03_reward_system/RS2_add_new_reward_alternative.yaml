@@ -1,0 +1,86 @@
+appId: com.anonymous.choresapplication
+name: RS2 Add New Reward Alternative
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+
+env:
+  PARENT_NAME: "Parent"
+  CHILD_NAME_1: "Child 1"
+  CHILD_NAME_2: "Child 2"
+  REWARD_NAME: "${REWARD_NAME}"
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "vionoreply@gmail.com"
+  - tapOn:
+      id: "password_input"
+  - inputText: "Testing123."
+  - tapOn: "Logg inn"
+  - tapOn:
+      id: "dummyUser"
+  - inputText: "1234"
+  - tapOn: "OK"
+
+onFlowComplete:
+  - stopApp
+---
+# Test if we are on the right screen
+- assertVisible: "${PARENT_NAME}"
+
+# Press the reward option on the menu bar
+- tapOn:
+    id: "rewardMenuButton"
+
+# Check that we are on the right screen
+- assertVisible: "BELØNNINGER"
+
+# Press to add a new reward
+- tapOn:
+    id: "addRewardButton"
+
+# Test that the add reward screen is visible
+- assertVisible: "Legg til belønning"
+
+# Input details
+- tapOn:
+    text: "Navn"
+- inputText: "${REWARD_NAME}"
+- tapOn:
+    text: "Poeng"
+- inputText: "50"
+- tapOn:
+    text: "${CHILD_NAME_1}"
+- tapOn:
+    text: "${CHILD_NAME_2}"
+
+# Cancel adding a reward
+- tapOn:
+    text: "Avbryt"
+
+- assertVisible: "BELØNNINGER"
+
+- setVariable:
+    name: "scrollCount"
+    value: 0
+- setVariable:
+    name: "scrollLimit"
+    value: 7
+
+# Scroll down trying to find the added reward
+- repeat:
+    while:
+      notVisible:
+        text: "${REWARD_NAME}"
+    commands:
+      - scroll:
+          direction: DOWN
+          timeout: 100
+      - setVariable:
+          name: "scrollCount"
+          value: "${scrollCount} + 1"
+      - assertTrue: "${scrollCount} < ${scrollLimit}"
+
+- assertNotVisible:
+    text: "${REWARD_NAME}"

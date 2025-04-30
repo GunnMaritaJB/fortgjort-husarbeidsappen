@@ -1,0 +1,35 @@
+appId: com.anonymous.choresapplication
+name: AL2 Create household
+
+clearState: true
+
+# Environment variables
+env:
+  PARENT_NAME: "[Enter_name_here]"
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "test@testens.no"
+  - tapOn:
+      id: "Password1."
+  - inputText: "Testing123."
+
+onFlowComplete:
+  - stopApp
+---
+- assertVisible: "Legg til husstand"
+- tapOn: "Husstandsnavn"
+- inputText: "Test House"
+- tapOn: "Husstands pin"
+- inputText: "1234"
+- tapOn: "Fullfør"
+- assertVisible: "Test House"
+- assertVisible:
+    id: "dummyUser"
+- tapOn:
+    id: "dummyUser"
+- inputText: "1234"
+- tapOn: "OK"
+- assertVisible: "${PARENT_NAME}"

@@ -1,0 +1,22 @@
+appId: com.anonymous.choresapplication
+name: AL2 Create household Alternative
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "test@testens.no"
+  - tapOn:
+      id: "Password1."
+  - inputText: "Testing123."
+
+onFlowComplete:
+  - stopApp
+---
+- assertVisible: "Legg til husstand"
+- tapOn: "Husstandsnavn"
+- inputText: "Test House"
+- tapOn: "Husstands pin"
+- inputText: "1234"
+- tapOn: "Avbryt"
+- assertVisible: "Legg til husstand"

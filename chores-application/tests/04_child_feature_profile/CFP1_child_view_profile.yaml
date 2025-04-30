@@ -1,0 +1,24 @@
+appId: com.anonymous.choresapplication
+name: CFP1 View Child Profile
+
+clearState: true
+
+env:
+  CHILD_NAME: "Test Child"
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "vionoreply@gmail.com"
+  - tapOn:
+      id: "password_input"
+  - inputText: "Testing123."
+  - tapOn: "Logg inn"
+
+onFlowComplete:
+  - stopApp
+---
+- tapOn:
+    id: "dummyChild_1"
+- assertVisible: "Hei ${CHILD_NAME}!"

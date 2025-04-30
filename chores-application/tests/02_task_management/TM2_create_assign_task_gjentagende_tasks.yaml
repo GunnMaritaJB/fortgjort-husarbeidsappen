@@ -1,0 +1,132 @@
+appId: com.anonymous.choresapplication
+name: TM2 Add New Reward (Recurring date)
+
+clearState: true
+
+env:
+  TASK_NAME: "Test Task"
+  TASK_POINTS: "50"
+  CHILD_1_NAME: "[dummyChild_1_name]"
+  CHILD_2_NAME: "[dummyChild_2_name]"
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "vionoreply@gmail.com"
+  - tapOn:
+      id: "password_input"
+  - inputText: "Testing123."
+  - tapOn: "Logg inn"
+  - tapOn:
+      id: "dummyUser"
+  - inputText: "1234"
+  - tapOn: "OK"
+
+onFlowComplete:
+  - stopApp
+---
+# Press the task option on the menu bar
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Press the add task button
+- tapOn:
+    id: "addTaskButton"
+    label: "Press add task button"
+
+# Check that we are on the add task screen
+- assertVisible: "NY OPPGAVE"
+- assertVisible: "Navn på oppgave"
+
+# Input the main fields for the task
+- tapOn:
+    text: "Navn på oppgave"
+    label: "Choose to write the name of the task"
+- inputText: "${TASK_NAME}"
+- tapOn:
+    text: "Poengsum"
+    label: "Choose to write the points of the task"
+- inputText: "${TASK_POINTS}"
+- tapOn:
+    id: "fotoBevisCheck"
+    rightOf:
+      text: "Fotobevis"
+    label: "Choose to take a photo as proof"
+
+# Go to assigning to child
+- tapOn:
+    text: "Tildel til barn"
+    label: "Go to assign to child"
+- assertVisible: "${CHILD_1_NAME}"
+
+# Assign task to child 1
+- tapOn:
+    text: "${CHILD_1_NAME}"
+    label: "Assign task to child 1"
+
+# Go to "Tidspunkt"
+- tapOn:
+    text: "Tidspunkt"
+    label: "Go to Tidspunkt"
+- assertVisible: "En gang"
+- assertVisible: "Gjentagende"
+
+# Choose one time date
+- tapOn:
+    text: "Gjentagende"
+    label: "Choose recurring date option"
+- assertVisible: "Dager oppgaven skal gjøres på"
+- assertVisible: "Hvor mange ganger skal oppgaven gjentas?"
+- tapOn:
+    id: "mandagButton"
+- tapOn:
+    id: "tirsdagButton"
+- tapOn: "Hvor mange ganger skal oppgaven gjentas?"
+- inputText: "2"
+
+# Go to skjul/vis
+- tapOn:
+    text: "Skjul/Vis"
+    label: "Go to Skjul/Vis"
+- assertVisible: "Vis"
+- assertVisible: "Skjul"
+- tapOn:
+    text: "Vis"
+    label: "Choose to show the task"
+
+# Save the task
+- tapOn:
+    text: "Lagre"
+    label: "Save the task"
+
+# Check that the task is added
+- setVariable:
+    name: "scrollCount"
+    value: 0
+- setVariable:
+    name: "scrollLimit"
+    value: 7
+
+# Scroll down trying to find the added task
+- repeat:
+    while:
+      notVisible:
+        text: "${TASK_NAME}"
+    commands:
+      - scroll:
+          direction: DOWN
+          timeout: 100
+      - setVariable:
+          name: "scrollCount"
+          value: "${scrollCount} + 1"
+      - assertTrue: "${scrollCount} < ${scrollLimit}"
+
+# Check that the task is created and assigned to child 1
+- assertVisible: "${TASK_NAME}"
+- assertVisible: "${CHILD_1_NAME}"
+- assertVisible:
+    id: "recurringIcon"
+    rightOf:
+      text: "${TASK_NAME}"

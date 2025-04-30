@@ -1,0 +1,83 @@
+appId: com.anonymous.choresapplication
+name: TM3 Edit time on task (recurring)
+
+clearState: true
+
+env:
+  TASK_NAME: "[Task_name]"
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "vionoreply@gmail.com"
+  - tapOn:
+      id: "password_input"
+  - inputText: "Testing123."
+  - tapOn: "Logg inn"
+  - tapOn:
+      id: "dummyUser"
+  - inputText: "1234"
+  - tapOn: "OK"
+
+onFlowComplete:
+  - stopApp
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Click on the task to edit
+- assertVisible: "${TASK_NAME}"
+- tapOn:
+    text: "${TASK_NAME}"
+    label: "Click on the task to edit"
+- assertVisible: "${TASK_NAME}"
+
+# Click time section
+- tapOn:
+    text: "Tidspunkt"
+    label: "Click time section"
+- assertVisible: "Gjentagende"
+- tapOn:
+    text: "Gjentagende"
+    label: "Click on recurring"
+
+# Choose new date
+- tapOn:
+    id: "tirsdagButton"
+    label: "Choose new day to repeat on"
+
+# Save editted task
+- tapOn:
+    text: "Lagre"
+    label: "Save edited task"
+
+# Check that the task is added
+- setVariable:
+    name: "scrollCount"
+    value: 0
+- setVariable:
+    name: "scrollLimit"
+    value: 7
+
+# Scroll down trying to find the added task
+- repeat:
+    while:
+      notVisible:
+        text: "${TASK_NAME}"
+    commands:
+      - scroll:
+          direction: DOWN
+          timeout: 100
+      - setVariable:
+          name: "scrollCount"
+          value: "${scrollCount} + 1"
+      - assertTrue: "${scrollCount} < ${scrollLimit}"
+
+- assertVisible: "${TASK_NAME}"
+- assertVisible:
+    id: "recurringIcon"
+    rightOf:
+      text: "${TASK_NAME}"

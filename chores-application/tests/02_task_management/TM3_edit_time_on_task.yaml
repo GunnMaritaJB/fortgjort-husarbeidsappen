@@ -1,0 +1,80 @@
+appId: com.anonymous.choresapplication
+name: TM3 Edit time on task
+
+clearState: true
+
+env:
+  TASK_NAME: "Test task"
+
+onFlowStart:
+  - launchApp
+  - tapOn:
+      id: "emailInput"
+  - inputText: "vionoreply@gmail.com"
+  - tapOn:
+      id: "password_input"
+  - inputText: "Testing123."
+  - tapOn: "Logg inn"
+  - tapOn:
+      id: "dummyUser"
+  - inputText: "1234"
+  - tapOn: "OK"
+
+onFlowComplete:
+  - stopApp
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Click on the task to edit
+- assertVisible: "${TASK_NAME}"
+- tapOn:
+    text: "${TASK_NAME}"
+    label: "Click on the task to edit"
+- assertVisible: "${TASK_NAME}"
+
+# Click time section
+- tapOn:
+    text: "Tidspunkt"
+    label: "Click time section"
+- assertVisible: "En gang"
+
+# Choose new date
+- tapOn:
+    text: "13"
+    label: "Choose new date"
+
+# Save editted task
+- tapOn:
+    text: "Lagre"
+    label: "Save edited task"
+
+# Check that the task is added
+- setVariable:
+    name: "scrollCount"
+    value: 0
+- setVariable:
+    name: "scrollLimit"
+    value: 7
+
+# Scroll down trying to find the added task
+- repeat:
+    while:
+      notVisible:
+        text: "${TASK_NAME}"
+    commands:
+      - scroll:
+          direction: DOWN
+          timeout: 100
+      - setVariable:
+          name: "scrollCount"
+          value: "${scrollCount} + 1"
+      - assertTrue: "${scrollCount} < ${scrollLimit}"
+
+- assertVisible: "${TASK_NAME}"
+- assertVisible:
+    text: "13/"
+    below:
+      text: "${TASK_NAME}"
