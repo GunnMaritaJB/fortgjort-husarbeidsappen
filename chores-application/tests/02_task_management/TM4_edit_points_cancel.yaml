@@ -1,5 +1,5 @@
 appId: com.anonymous.choresapplication
-name: TM4 Edit points on task
+name: TM4 Edit points on task (cancel operation)
 
 clearState: true
 
@@ -46,13 +46,15 @@ onFlowComplete:
     label: "Choose point input field"
 
 # Write new points
+- copyTextFrom:
+    id: "poengSumInput"
 - eraseText
 - inputText: ${NEWPOINTS}
 
 # Save editted task
 - tapOn:
-    text: "Lagre"
-    label: "Save edited task"
+    text: "Avbryt"
+    label: "Cancel edit task"
 
 # Check that the task is added
 - runFlow:
@@ -62,6 +64,6 @@ onFlowComplete:
 
 - assertVisible: ${TASK_NAME}
 - assertVisible:
-    text: ${NEWPOINTS}
+    text: ${maestro.copiedText}
     rightOf:
       text: ${TASK_NAME}

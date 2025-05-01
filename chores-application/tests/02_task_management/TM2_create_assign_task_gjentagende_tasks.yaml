@@ -10,21 +10,12 @@ env:
   CHILD_2_NAME: "[dummyChild_2_name]"
 
 onFlowStart:
-  - launchApp
-  - tapOn:
-      id: "emailInput"
-  - inputText: "vionoreply@gmail.com"
-  - tapOn:
-      id: "password_input"
-  - inputText: "Testing123."
-  - tapOn: "Logg inn"
-  - tapOn:
-      id: "dummyUser"
-  - inputText: "1234"
-  - tapOn: "OK"
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
-  - stopApp
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
 # Press the task option on the menu bar
 - tapOn:
@@ -44,11 +35,11 @@ onFlowComplete:
 - tapOn:
     text: "Navn på oppgave"
     label: "Choose to write the name of the task"
-- inputText: "${TASK_NAME}"
+- inputText: ${TASK_NAME}
 - tapOn:
     text: "Poengsum"
     label: "Choose to write the points of the task"
-- inputText: "${TASK_POINTS}"
+- inputText: ${TASK_POINTS}
 - tapOn:
     id: "fotoBevisCheck"
     rightOf:
@@ -59,11 +50,11 @@ onFlowComplete:
 - tapOn:
     text: "Tildel til barn"
     label: "Go to assign to child"
-- assertVisible: "${CHILD_1_NAME}"
+- assertVisible: ${CHILD_1_NAME}
 
 # Assign task to child 1
 - tapOn:
-    text: "${CHILD_1_NAME}"
+    text: ${CHILD_1_NAME}
     label: "Assign task to child 1"
 
 # Go to "Tidspunkt"
@@ -102,23 +93,15 @@ onFlowComplete:
     label: "Save the task"
 
 # Check that the task is added
-- evalScript: ${counter = 0}
-- evalScript: ${counterLimit = 7}
-
-# Scroll down trying to find the added task
-- repeat:
-    while:
-      notVisible:
-        text: "${TASK_NAME}"
-    commands:
-      - evalScript: "${counter < counterLimit}"
-      - scroll
-      - evalScript: ${counter = counter + 1}
+- runFlow:
+    file: "../stubs/scroll_to_find_text.yaml"
+    env:
+      TEXT_TO_FIND: ${TASK_NAME}
+- assertVisible: ${TASK_NAME}
 
 # Check that the task is created and assigned to child 1
-- assertVisible: "${TASK_NAME}"
-- assertVisible: "${CHILD_1_NAME}"
+- assertVisible: ${CHILD_1_NAME}
 - assertVisible:
     id: "recurringIcon"
     rightOf:
-      text: "${TASK_NAME}"
+      text: ${TASK_NAME}

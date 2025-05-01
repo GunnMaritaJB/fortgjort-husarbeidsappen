@@ -2,22 +2,14 @@ appId: com.anonymous.choresapplication
 name: TM1 View all tasks
 
 clearState: true
+
 onFlowStart:
-  - launchApp
-  - tapOn:
-      id: "emailInput"
-  - inputText: "vionoreply@gmail.com"
-  - tapOn:
-      id: "password_input"
-  - inputText: "Testing123."
-  - tapOn: "Logg inn"
-  - tapOn:
-      id: "dummyUser"
-  - inputText: "1234"
-  - tapOn: "OK"
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
-  - stopApp
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
 # Press the task option on the menu bar
 - tapOn:

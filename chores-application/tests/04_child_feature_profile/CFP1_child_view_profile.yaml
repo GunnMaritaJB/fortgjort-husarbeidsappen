@@ -7,17 +7,12 @@ env:
   CHILD_NAME: "Test Child"
 
 onFlowStart:
-  - launchApp
-  - tapOn:
-      id: "emailInput"
-  - inputText: "vionoreply@gmail.com"
-  - tapOn:
-      id: "password_input"
-  - inputText: "Testing123."
-  - tapOn: "Logg inn"
+  - runFlow:
+      file: "../stubs/login_vio_for_child.yaml"
 
 onFlowComplete:
-  - stopApp
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
     id: "dummyChild_1"

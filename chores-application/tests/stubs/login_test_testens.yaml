@@ -1,0 +1,9 @@
+appId: com.anonymous.choresapplication
+---
+- launchApp
+- tapOn:
+    id: "emailInput"
+- inputText: "test@testens.no"
+- tapOn:
+    id: "Password1."
+- inputText: "Testing123."

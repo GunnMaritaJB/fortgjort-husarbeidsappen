@@ -1,0 +1,44 @@
+appId: com.anonymous.choresapplication
+name: TM14 Filter tasks by status
+
+clearState: true
+
+# Environment variables
+env:
+  TASK_NAME: "[Enter_name_here]"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Choose to filter by status
+- tapOn:
+    id: "filterStatusButton"
+    label: "Tap on filter status button"
+
+- assertVisible: "Velg status"
+
+# Select status to filter by
+- tapOn:
+    text: "Bekreftet"
+    label: "Select status to filter by"
+- tapOn:
+    text: "Fullført"
+    label: "Select status to filter by"
+- tapOn:
+    id: "confirmButton"
+    label: "Confirm status selection"
+
+# Test filter
+- assertVisible: "Bekreftet"
+- assertVisible: "Fullført"
+- assertNotVisible: "Ikke fullført"

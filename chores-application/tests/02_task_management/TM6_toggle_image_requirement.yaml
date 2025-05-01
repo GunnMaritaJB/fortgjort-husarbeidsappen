@@ -1,11 +1,10 @@
 appId: com.anonymous.choresapplication
-name: TM4 Edit points on task
+name: TM6 Toggle image requirement on task
 
 clearState: true
 
 # Environment variables
 env:
-  NEWPOINTS: "1000"
   TASK_NAME: "[Enter_name_here]"
 
 onFlowStart:
@@ -38,30 +37,21 @@ onFlowComplete:
 - tapOn:
     text: "Hoveddetaljer"
     label: "Click on main section"
-- assertVisible: "Poengsum"
+- assertVisible: "Fotobevis"
 
-# Choose point input field
+# Click on image requirement toggle
 - tapOn:
-    id: "poengSumInput"
-    label: "Choose point input field"
-
-# Write new points
-- eraseText
-- inputText: ${NEWPOINTS}
+    id: "imageRequirementCheckbox"
+    label: "Click on image requirement toggle"
 
 # Save editted task
 - tapOn:
     text: "Lagre"
     label: "Save edited task"
 
-# Check that the task is added
+# Check that the task is editted
 - runFlow:
     file: "../stubs/scroll_to_find_text.yaml"
     env:
       TEXT_TO_FIND: ${TASK_NAME}
-
 - assertVisible: ${TASK_NAME}
-- assertVisible:
-    text: ${NEWPOINTS}
-    rightOf:
-      text: ${TASK_NAME}

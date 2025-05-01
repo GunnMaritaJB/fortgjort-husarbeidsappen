@@ -1,0 +1,43 @@
+appId: com.anonymous.choresapplication
+name: TM14 Filter tasks by visibility
+
+clearState: true
+
+# Environment variables
+env:
+  TASK_NAME: "[Enter_name_here]"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Ensure that some tasks are hidden
+- assertVisible: "Skjult"
+
+# Choose to filter by status
+- tapOn:
+    id: "filterVisibilityButton"
+    label: "Tap on filter visibility button"
+
+- assertVisible: "Velg synlighet"
+
+# Select status to filter by
+- tapOn:
+    text: "Synlig"
+    label: "Select visibility to filter by"
+
+- tapOn:
+    id: "confirmButton"
+    label: "Confirm status selection"
+
+# Test filter
+- assertNotVisible: "Skjult"

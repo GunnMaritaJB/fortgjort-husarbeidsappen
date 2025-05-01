@@ -1,0 +1,41 @@
+appId: com.anonymous.choresapplication
+name: TM15 Search for a specific task
+
+clearState: true
+
+# Environment variables
+env:
+  TASK_NAME: "[Enter_name_here]"
+  TASK_NAME_2: "[Enter_another_name_here]"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Interact with the search bar
+- tapOn:
+    text: "Søk task"
+    label: "Tap on search bar"
+
+- eraseText
+
+- inputText: ${TASK_NAME}
+
+# Check that the search is working
+- assertVisible:
+    text: ${TASK_NAME}
+    below:
+      id: "filterChildButton"
+- assertNotVisible:
+    text: ${TASK_NAME_2}
+    below:
+      id: "filterChildButton"

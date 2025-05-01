@@ -1,0 +1,42 @@
+appId: com.anonymous.choresapplication
+name: TM14 Filter tasks by child
+
+clearState: true
+
+# Environment variables
+env:
+  TASK_NAME: "[Enter_name_here]"
+  DAY_CHOICE: "16"
+  WRONG_DAY_CHOICE: "17"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Choose to filter by date
+- tapOn:
+    id: "filterDateButton"
+    label: "Tap on filter date button"
+
+- assertVisible: "Velg frist"
+
+# Select date to filter by
+- tapOn:
+    text: ${DAY}
+    label: "Select date to filter by"
+- tapOn:
+    id: "confirmButton"
+    label: "Confirm date selection"
+
+# Test filter
+- assertVisible: ${DAY}
+- assertNotVisible: ${WRONG_DAY_CHOICE}

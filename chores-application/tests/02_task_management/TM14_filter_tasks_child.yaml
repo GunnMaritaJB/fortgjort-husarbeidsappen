@@ -1,0 +1,42 @@
+appId: com.anonymous.choresapplication
+name: TM14 Filter tasks by child
+
+clearState: true
+
+# Environment variables
+env:
+  TASK_NAME: "[Enter_name_here]"
+  CHILD_NAME_1: "[Enter_child_name_here]"
+  CHILD_NAME_2: "[Enter_child_name_here]"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+# Go to tasks screen
+- tapOn:
+    id: "taskMenuButton"
+    label: "Go to task screen"
+
+# Choose to filter by child
+- tapOn:
+    id: "filterChildButton"
+    label: "Tap on filter child button"
+
+- assertVisible: "Velg barna"
+
+# Select child to filter by
+- tapOn:
+    text: ${CHILD_NAME_1}
+    label: "Select child to filter by"
+- tapOn:
+    id: "confirmButton"
+    label: "Confirm child selection"
+
+# Test filter
+- assertVisible: ${CHILD_NAME_1}
+- assertNotVisible: ${CHILD_NAME_2}

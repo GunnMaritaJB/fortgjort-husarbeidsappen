@@ -23,7 +23,8 @@ if (-Not (Test-Path $logFolder)) {
 }
 
 # Find all .yaml and .yml files in tests/ and subfolders
-$flowFiles = Get-ChildItem -Path $testsFolder -Recurse -Include *.yaml, *.yml
+$flowFiles = Get-ChildItem -Path $testsFolder -Recurse -Include *.yaml, *.yml | Where-Object { $_.FullName -notmatch "[\\/](stubs|dummy_flows)[\\/]" }
+
 
 if ($flowFiles.Count -eq 0) {
     Write-Host "No test files found in $testsFolder" -ForegroundColor Yellow

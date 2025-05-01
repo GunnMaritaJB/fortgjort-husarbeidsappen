@@ -1,0 +1,12 @@
+appId: com.anonymous.choresapplication
+---
+- evalScript: ${counter = 0}
+- evalScript: ${counterLimit = 7}
+- repeat:
+    while:
+      notVisible:
+        text: ${TEXT_TO_FIND}
+    commands:
+      - evalScript: ${counter < counterLimit}
+      - scroll
+      - evalScript: ${counter = counter + 1}

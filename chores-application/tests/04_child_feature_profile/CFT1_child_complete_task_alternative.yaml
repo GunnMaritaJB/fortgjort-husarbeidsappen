@@ -7,20 +7,17 @@ env:
   NAME_OF_TASK: "Test oppgave"
 
 onFlowStart:
-  - launchApp
-  - tapOn:
-      id: "emailInput"
-  - inputText: "vionoreply@gmail.com"
-  - tapOn:
-      id: "password_input"
-  - inputText: "Testing123."
-  - tapOn: "Logg inn"
-  - tapOn:
-      id: "dummyChild_1"
+  - runFlow:
+      file: "../stubs/login_vio_for_child.yaml"
 
 onFlowComplete:
-  - stopApp
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
+# Choose child profile
+- tapOn:
+    id: "dummyChild_1"
+
 # Press the child menu button
 - tapOn:
     id: "menuButtonChild"
@@ -31,11 +28,11 @@ onFlowComplete:
 - tapOn:
     text: "Oppgaver"
     label: "Choose to go to tasks"
-- assertVisible: "${NAME_OF_TASK}"
+- assertVisible: ${NAME_OF_TASK}
 
 # Child chooses specific task
 - tapOn:
-    text: "${NAME_OF_TASK}"
+    text: ${NAME_OF_TASK}
     label: "Choose to go to the task"
 - assertVisible: "IKKE FERDIG"
 
@@ -44,19 +41,12 @@ onFlowComplete:
     text: "IKKE FERDIG"
     label: "Choose to complete the task"
 
-# Check that the task is rendered as completed
-- evalScript: ${counter = 0}
-- evalScript: ${counterLimit = 7}
+# Find the task
+- runFlow:
+    file: "../stubs/scroll_to_find_text.yaml"
+    env:
+      TEXT_TO_FIND: ${NAME_OF_TASK}
 
-# Scroll down trying to find the completed task
-- repeat:
-    while:
-      notVisible:
-        text: "${NAME_OF_TASK}"
-    commands:
-      - evalScript: "${counter < counterLimit}"
-      - scroll
-      - evalScript: ${counter = counter + 1}
-
+# Confirm task is visible
 - assertVisible:
-    text: "${NAME_OF_TASK}"
+    text: ${NAME_OF_TASK}

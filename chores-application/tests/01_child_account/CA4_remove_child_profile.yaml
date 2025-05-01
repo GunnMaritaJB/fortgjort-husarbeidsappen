@@ -8,27 +8,18 @@ env:
   PARENT_NAME: "[Parent_name]"
 
 onFlowStart:
-  - launchApp
-  - tapOn:
-      id: "emailInput"
-  - inputText: "vionoreply@gmail.com"
-  - tapOn:
-      id: "password_input"
-  - inputText: "Testing123."
-  - tapOn: "Logg inn"
-  - tapOn:
-      id: "dummyUser"
-  - inputText: "1234"
-  - tapOn: "OK"
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
-  - stopApp
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
 # Choose child to delete
-- tapOn: "${CHILD_NAME}"
+- tapOn: ${CHILD_NAME}
 
 # Check if we are on the child screen
-- assertVisible: "${CHILD_NAME}"
+- assertVisible: ${CHILD_NAME}
 - assertVisible: "Opptjente poeng"
 - assertVisible: "Slett profil"
 
@@ -39,5 +30,5 @@ onFlowComplete:
 
 # Delete child profile
 - tapOn: "Slett"
-- assertVisible: "${PARENT_NAME}"
-- assertNotVisible: "${CHILD_NAME}"
+- assertVisible: ${PARENT_NAME}
+- assertNotVisible: ${CHILD_NAME}
