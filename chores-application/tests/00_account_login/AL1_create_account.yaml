@@ -1,0 +1,45 @@
+appId: com.anonymous.choresapplication
+name: Create Child Account
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - launchApp
+
+onFlowComplete:
+  - stopApp
+---
+
+- tapOn:
+    id: "logInUserName"
+
+- tapOn:
+    id: "registerBtn"
+
+- tapOn:
+    id: "nameInput"
+
+- inputText: "User1"
+
+- tapOn:
+    id: "registerEmail"
+
+- inputText: "user1@test.com"
+
+- tapOn:
+    id: "password_input"
+
+- inputText: "Testing123."
+
+- tapOn:
+    id: "repeat_password_input"
+
+- inputText: "Testing123."
+
+- tapOn: "Fullfør"
+
+- assertVisible: "Gjennomfør verifiseringen som er sendt til din epost for å få tilgang til appen"
+
+
+
+
+

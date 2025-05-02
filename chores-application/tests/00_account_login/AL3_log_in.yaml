@@ -1,0 +1,31 @@
+appId: com.anonymous.choresapplication
+name: Log in
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - launchApp
+
+onFlowComplete:
+  - stopApp
+---
+
+- tapOn:
+    id: "logInUserName"
+
+- tapOn:
+    id: "emailInput"
+
+- inputText: "vionoreply@gmail.com"
+
+- tapOn:
+    id: "password_input"
+
+- inputText: "Testing123."
+
+- tapOn: "Logg inn"
+
+- assertVisible: "Test House"
+
+
+
+

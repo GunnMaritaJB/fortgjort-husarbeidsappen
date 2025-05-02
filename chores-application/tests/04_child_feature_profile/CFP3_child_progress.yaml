@@ -1,0 +1,22 @@
+appId: com.anonymous.choresapplication
+name: Child See Progress Chart
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_for_child.yaml"
+
+onFlowComplete:
+  -runFlow:
+    file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "dummyChild_1"
+
+- assertVisible:
+    id: "progressChart"
+
+
+
+
+

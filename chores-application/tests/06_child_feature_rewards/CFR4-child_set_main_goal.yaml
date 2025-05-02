@@ -1,0 +1,35 @@
+appId: com.anonymous.choresapplication
+name: Child Set Main Goal
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_for_child.yaml"
+
+onFlowComplete:
+  -runFlow:
+    file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "dummyChild_1"
+
+- tapOn:
+    id: "childMenuBtn"
+
+- tapOn:
+    text: "Sett deg ett mål"
+
+- tapOn:
+    id: "reward1"
+
+- tapOn:
+    text: "Sett mål"
+
+- assertVisible:
+    id: "progressChart"
+
+
+
+
+
+

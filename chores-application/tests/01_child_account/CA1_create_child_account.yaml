@@ -1,0 +1,39 @@
+appId: com.anonymous.choresapplication
+name: Create Child Account
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  -runFlow:
+    file: "../stubs/stop_app.yaml"
+---
+# add_child_btn er inne på parent profile
+- tapOn:
+    id: "addChildBtn"
+
+- tapOn:
+    text: "Barnets navn"
+
+- inputText:
+    text: "Child1"
+
+- tapOn:
+    text: "Avatar"
+
+- tapOn:
+    id: "avatar1"
+
+- tapOn:
+    text: "Fullfør"
+
+- assertVisible: "Child1"
+- assertVisible:
+    image: "avatar1.png"
+
+
+
+
+

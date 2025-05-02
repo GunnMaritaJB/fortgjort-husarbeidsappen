@@ -1,0 +1,37 @@
+appId: com.anonymous.choresapplication
+name: Adjust points
+# description: A simple flow to test the app's launch and welcome screen.
+clearState: true
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  -runFlow:
+    file: "../stubs/stop_app.yaml"
+---
+# add_child_btn er inne på parent profile
+- tapOn:
+    id: ""
+
+- tapOn:
+    id: "dummyChild_1"
+
+- tapOn:
+    text: "Rediger profil"
+
+- tapOn:
+    text: "Rediger poengsum"
+
+- inputText:
+    text: "123"
+
+- tapOn:
+    text: "Fullfør"
+
+- assertVisible: "Opptjente poeng: 123"
+
+
+
+
+
