@@ -1,0 +1,34 @@
+appId: com.anonymous.choresapplication
+name: Edit who the reward is available for
+#DENNE MÅ TENKES LITT PÅ OBS, FORDI VANSKELIG Å TESTE OM CHILD ER MARKED ELLLER IKKE?
+#Reward is active for Child 1 "by default"
+clearState: true
+env:
+  NAME_OF_REWARD: "Test belønning"
+  NAME_OF_CHILD: "Child 1"
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "rewardIcon"
+- tapOn:
+    text: "${NAME_OF_REWARD}"
+- tapOn:
+    text: "${NAME_OF_CHILD}"
+- tapOn:
+    text: "Lagre"
+- tapOn:
+    text: "${NAME_OF_REWARD}"
+
+#Så må man legge til hvordan man kan sjekke om Child 1 ikke lenger er markert.
+
+
+
+
+
+

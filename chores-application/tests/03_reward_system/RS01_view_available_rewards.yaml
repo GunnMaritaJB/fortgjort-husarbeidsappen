@@ -1,0 +1,22 @@
+appId: com.anonymous.choresapplication
+name: View available rewards
+
+clearState: true
+env:
+  NAME_OF_REWARD: "Test belønning"
+onFlowStart:
+ - runFlow:
+     file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "rewardIcon"
+- assertVisible: "Belønninger"
+- assertVisible: "Søk etter belønning"
+- runFlow:
+    file: "../stubs/scroll_to_find_text.yaml"
+- assertVisible: "${NAME_OF_REWARD}"
+

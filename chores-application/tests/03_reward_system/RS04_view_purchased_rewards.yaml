@@ -1,0 +1,24 @@
+appId: com.anonymous.choresapplication
+name: View purchased rewards
+
+clearState: true
+env:
+  NAME_OF_CHILD: "Child 1"
+  NAME_OF_REWARD: "Test belønning"
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "myProfileIcon"
+- tapOn:
+    text: "${NAME_OF_CHILD}"
+- tapOn:
+    text: "Vis belønninger"
+- assertVisible: "Opptjente poeng:"
+- assertVisible: "${NAME_OF_REWARD}"
+

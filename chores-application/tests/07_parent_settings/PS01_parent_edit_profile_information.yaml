@@ -1,0 +1,42 @@
+appId: com.anonymous.choresapplication
+name: Parent edit profile information
+
+#DET MÅ VÆRE EN AVATAR MAN KAN ENDRE TIL SOM HETER "manAvatar"
+
+clearState: true
+env:
+  ID_OF_SETTINGS_ICON: "settingsIcon"
+  ID_OF_HOME_ICON: "homeIcon"
+  ID_OF_CURRENT_NAME: "currentName"
+  ID_OF_MAN_AVATAR: "manAvatar"
+
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "${ID_OF_SETTINGS_ICON}"
+- tapOn:
+    text: "Endre profilinformasjon"
+- tapOn:
+    id: "${ID_OF_CURRENT_NAME}"
+
+#Delete existing points
+- eraseText
+- inputText: "Lydia Nalen"
+- tapOn:
+    id: "${ID_OF_MAN_AVATAR}"
+- tapOn:
+    text: "Lagre"
+- tapOn:
+    id: "${ID_OF_HOME_ICON}"
+- assertVisible: "Lydia Nalen"
+- assertVisible: "${ID_OF_MAN_AVATAR}"
+
+
+

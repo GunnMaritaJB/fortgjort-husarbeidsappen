@@ -1,0 +1,47 @@
+appId: com.anonymous.choresapplication
+name: Parent checking notification
+
+#NÅR DENNE TESTEN KJØRES KAN DET KUN VÆRE 1 AV HVER TYPE NOTIFICATION TILGJENGELIG
+#(1 Utført oppgve + 1 Kjøpt Belønning)
+
+#DET MÅ OGSÅ VÆRE EN REWARD TILKNYYET BARNET SOM NOTIFICATION ANNGÅR SOM HTER
+# "Reward Test"
+
+clearState: true
+env:
+  ID_OF_NOTIFICATION_ICON: "notificationIcon"
+  NAME_OF_NOTIFICATION: "Utført oppgve"
+  NAME_OF_NOTIFICATION_1: "Kjøpt belønning"
+  NAME_OF_REWARD: "Reward Test"
+
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "${ID_OF_NOTIFICATION_ICON}"
+- tapOn:
+    text: "${NAME_OF_NOTIFICATION}"
+
+- assertVisible: "Godkjenn"
+- assertVisible: "Avslå"
+- assertVisible: "Fullført"
+
+- tapOn:
+    id: "${ID_OF_NOTIFICATION_ICON}"
+- tapOn:
+    text: "${NAME_OF_NOTIFICATION_1}"
+- assertVisible: "Opptjente poeng"
+- assertVisible: "${NAME_OF_REWARD}"
+
+
+
+
+
+
+

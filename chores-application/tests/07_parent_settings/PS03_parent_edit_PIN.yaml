@@ -1,0 +1,52 @@
+appId: com.anonymous.choresapplication
+name: Parent edit password
+
+
+clearState: true
+env:
+  ID_OF_SETTINGS_ICON: "settingsIcon"
+  ID_OF_HOME_ICON: "homeIcon"
+  ID_OF_CURRENT_PASSWORD: "currentPassword"
+  ID_OF_NEW_PIN: "newPin1"
+  ID_OF_NEW_PIN_2: "newPin2"
+
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "${ID_OF_SETTINGS_ICON}"
+- tapOn:
+    text: "Endre min husholdnings-PIN"
+#Entering old PIN
+- inputText: "1234"
+- tapOn:
+    text: "OK"
+#Entering new PIN
+- inputText: "4321"
+- tapOn:
+    text: "OK"
+#Repeating new PIN
+- inputText: "4321"
+- tapOn:
+    text: "OK"
+- tapOn:
+    text: "OK"
+#Logger ut
+- tapOn:
+    id: "${ID_OF_HOME_ICON}"
+- tapOn:
+    text: "Logg ut"
+
+#Checks if you are now on homepage/parent site
+- assertVisible: "Velg barneprofil"
+- assertVisible: "Logg ut"
+
+
+
+

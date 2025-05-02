@@ -1,0 +1,30 @@
+appId: com.anonymous.choresapplication
+name: Delete reward
+clearState: true
+env:
+  NAME_OF_REWARD: "Test belønning"
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "rewardIcon"
+- tapOn:
+    text: "${NAME_OF_REWARD}"
+- tapOn:
+    text: "Slett"
+- tapOn:
+    text: "Slett"
+- assertNotVisible: "${NAME_OF_REWARD}"
+
+
+
+
+
+
+
+

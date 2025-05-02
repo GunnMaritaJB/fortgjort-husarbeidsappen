@@ -1,0 +1,48 @@
+appId: com.anonymous.choresapplication
+name: Edit picture and name of reward
+
+#FØR TESTEN KJØRES MÅ BILDET SOM SKAL ENDRES HA ID: currentImage
+#OG REWARDEN SOM SKAL ENDRES MÅ HETE: Test belønning
+#PILEN TIL HØYRE MÅ HA ID "rightArrow"
+#TEXTFELTET HVOR NAVNET SKRIVES MÅ HA ID "currentName"
+
+
+clearState: true
+env:
+  NAME_OF_REWARD: "Test belønning"
+  ID_OF_REWARD_ICON: "rewardIcon"
+  ID_OF_CURRENT_NAME: "currentName"
+  ID_OF_RIGHT_ARROW: "rightArrow"
+  ID_OF_CURRENT_IMAGE: "currentImage"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "${ID_OF_REWARD_ICON}"
+- tapOn:
+    text: "${NAME_OF_REWARD}"
+- tapOn:
+    id: "${ID_OF_CURRENT_NAME}"
+
+#Delete existing points
+- eraseText
+- inputText: "Sjokolademelk"
+- tapOn:
+    id: "${ID_OF_RIGHT_ARROW}"
+- tapOn:
+    text: "Lagre"
+- assertVisible: "Sjokolademelk"
+- assertNotVisible: "${NAME_OF_REWARD}"
+- tapOn:
+    text: "Sjokolademelk"
+- assertNotVisible: "${NAME_OF_REWARD}"
+- assertNotVisible: "${ID_OF_CURRENT_IMAGE}"
+
+
+

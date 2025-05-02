@@ -1,0 +1,31 @@
+appId: com.anonymous.choresapplication
+name: Edit point cost for reward
+
+clearState: true
+env:
+  NAME_OF_REWARD: "Test belønning"
+  ID_OF_CURRENT_POINTS: "Current_points"
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "rewardIcon"
+- tapOn:
+    text: "${NAME_OF_REWARD}"
+- tapOn:
+    id: "${ID_OF_CURRENT_POINTS}"
+
+#Delete existing points
+- eraseText
+- inputText: "33"
+- tapOn:
+    text: "Lagre"
+- assertVisible: "33"
+
+
+

@@ -1,0 +1,31 @@
+appId: com.anonymous.choresapplication
+name: Log out from parent profile
+
+
+clearState: true
+env:
+  ID_OF_HOME_ICON: "homeIcon"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+#Log out from parentprofile
+- tapOn:
+    id: "${ID_OF_HOME_ICON}"
+- tapOn:
+    text: "Logg ut"
+#Log out from user
+- tapOn:
+    id: "dummyUser"
+
+#Checks
+- assertVisible: "PIN-kode"
+- assertVisible: "OK"
+
+
+

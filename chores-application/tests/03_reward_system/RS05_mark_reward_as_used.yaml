@@ -1,0 +1,33 @@
+appId: com.anonymous.choresapplication
+name: Mark reward as completed
+
+# Slide btn marking reward as unused as default
+clearState: true
+env:
+  NAME_OF_CHILD: "Child 1"
+  NAME_OF_REWARD: "Test belønning"
+  ID_OF_SLIDE_BTN: "rewardUsedSwitch"
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    id: "myProfileIcon"
+- tapOn:
+    text: "${NAME_OF_CHILD}"
+- tapOn:
+    text: "Vis belønninger"
+- tapOn:
+    text: "${NAME_OF_REWARD}"
+- tapOn:
+    id: "${ID_OF_SLIDE_BTN}"
+- assertVisible: "Brukt"
+
+
+
+
+
