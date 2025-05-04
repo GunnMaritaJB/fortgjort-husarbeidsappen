@@ -7,7 +7,10 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Velkommen til Chores!🧹</Text>
 
-      <TouchableOpacity style={styles.grayButton} onPress={() => router.push('/(auth)/login')}>
+      <TouchableOpacity 
+      style={styles.grayButton} 
+      onPress={() => router.push('/(auth)/login')}
+      testID="logInUserName">
         <Text style={styles.grayButtonText}>Logg inn med brukernavn og passord</Text>
       </TouchableOpacity>
 

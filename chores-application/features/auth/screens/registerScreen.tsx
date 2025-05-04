@@ -17,7 +17,7 @@ export default function RegisterScreen() {
 
   const handleRegister = () =>
     handleRegisterUser(email, password, repeatPassword, firstName, () => {
-      router.replace('/login'); //Placeholder for success action. Will be replaced with confirmation screen
+      router.replace('/confirm-email');
     });
 
   const onCancel = () => router.replace('/');

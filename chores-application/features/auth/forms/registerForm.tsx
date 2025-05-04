@@ -33,6 +33,7 @@ export default function RegisterForm({
         style={styles.input}
         onChangeText={setFirstName}
         value={firstName}
+        testID="nameInput"
       />
       <TextInput
         placeholder="Epost"
@@ -41,6 +42,7 @@ export default function RegisterForm({
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
+        testID="registerEmail"
       />
       <TextInput
         placeholder="Passord"
@@ -48,6 +50,7 @@ export default function RegisterForm({
         secureTextEntry
         onChangeText={setPassword}
         value={password}
+        testID="password_input"
       />
       <TextInput
         placeholder="Gjenta passord"
@@ -55,12 +58,17 @@ export default function RegisterForm({
         secureTextEntry
         onChangeText={setRepeatPassword}
         value={repeatPassword}
+        testID="repeat_password_input"
       />
 
     <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.grayButton} onPress={onSubmit}>
+        <TouchableOpacity 
+        style={styles.grayButton} 
+        onPress={onSubmit}
+        testID="registerBtn">
             <Text style={styles.buttonText}>Fullfør</Text>
         </TouchableOpacity>
+        
         <TouchableOpacity style={styles.grayButton} onPress={onCancel}>
             <Text style={styles.buttonText}>Avbryt</Text>
         </TouchableOpacity>

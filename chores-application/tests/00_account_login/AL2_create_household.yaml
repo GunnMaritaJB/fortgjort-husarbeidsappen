@@ -29,3 +29,4 @@ onFlowComplete:
 - inputText: "1234"
 - tapOn: "OK"
 - assertVisible: ${PARENT_NAME}
+  

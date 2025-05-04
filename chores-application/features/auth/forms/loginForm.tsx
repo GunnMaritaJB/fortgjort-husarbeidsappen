@@ -19,6 +19,7 @@ export default function LoginForm({ email, password, setEmail, setPassword, onLo
         onChangeText={setEmail}
         style={styles.input}
         autoCapitalize="none"
+        testID="emailInput"
       />
       <TextInput
         placeholder="Passord"
@@ -26,6 +27,7 @@ export default function LoginForm({ email, password, setEmail, setPassword, onLo
         onChangeText={setPassword}
         style={styles.input}
         secureTextEntry
+        testID="password_input"
       />
       <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
         <Text style={styles.loginButtonText}>Logg inn</Text>
@@ -36,7 +38,9 @@ export default function LoginForm({ email, password, setEmail, setPassword, onLo
         <TouchableOpacity onPress={() => Alert.alert('Kommer snart!')}>
           <Text style={styles.link}>Glemt passord</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/register')}>
+        <TouchableOpacity 
+        onPress={() => router.push('/register')}
+        testID="registerBtn">
           <Text style={styles.link}>Registrer deg</Text>
         </TouchableOpacity>
         </View>
