@@ -7,16 +7,16 @@ export default function LandingScreen() {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        //onPress={() => router.push('/create-household')}
+        onPress={() => router.push('/create_household')}
       >
-        <Text style={styles.buttonText}>Legg til husstand 🏡</Text>
+        <Text style={styles.buttonText}>Legg til husstand</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
         //onPress={() => router.push('/join-household')}
       >
-        <Text style={styles.buttonText}>Bli med i husstand 👨‍👩‍👧‍👦</Text>
+        <Text style={styles.buttonText}>Bli med i husstand</Text>
       </TouchableOpacity>
     </View>
   );

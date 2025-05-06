@@ -19,7 +19,7 @@ export default function LoginScreen() {
   
       if (householdId) {
         console.log('✅ Har husstand:', householdId);
-        router.replace('/(tabs)'); // placeholder for household home screen
+        router.replace('/(household)/home'); // placeholder for household home screen
       } else {
         router.replace('/(household)'); // placeholder for household setup screen
       }

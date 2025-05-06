@@ -16,17 +16,22 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - assertVisible: "Legg til husstand"
+- tapOn: "Legg til husstand"
 - tapOn: "Husstandsnavn"
 - inputText: "Test House"
-- tapOn: "Husstands pin"
-- inputText: "1234"
+#- tapOn: "Husstands pin"
+#- inputText: "1234"
 - tapOn: "Fullfør"
 - assertVisible: "Test House"
 - assertVisible:
-    id: "dummyUser"
+    id: "parentUser"
 - tapOn:
-    id: "dummyUser"
-- inputText: "1234"
-- tapOn: "OK"
-- assertVisible: ${PARENT_NAME}
-  
+    id: "parentUser"
+#- inputText: "1234"
+#- tapOn: "OK"
+- assertVisible:
+    id: "parentName"
+- tapOn:
+    text: "Logg ut"
+- assertVisible:
+    id: "parentUser"

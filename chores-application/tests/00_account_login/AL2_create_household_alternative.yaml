@@ -10,9 +10,10 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - assertVisible: "Legg til husstand"
+- tapOn: "Legg til husstand"
 - tapOn: "Husstandsnavn"
 - inputText: "Test House"
-- tapOn: "Husstands pin"
-- inputText: "1234"
+#- tapOn: "Husstands pin"
+#- inputText: "1234"
 - tapOn: "Avbryt"
 - assertVisible: "Legg til husstand"
