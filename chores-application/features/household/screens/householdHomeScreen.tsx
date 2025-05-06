@@ -68,7 +68,7 @@ export default function HouseholdHomeScreen() {
                 <TouchableOpacity
                     testID="parentUser"
                     style={styles.avatarContainer}
-                    onPress={() => router.push('/(parent)/parentProfile')}
+                    onPress={() => router.push('/(parent)/(tabs)/profile')}
                 >
                     <View style={styles.avatarCircle}>
                         <Text style={styles.avatarEmoji}>👩‍🦰</Text>
