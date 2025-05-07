@@ -23,6 +23,15 @@ export default function ParentLayout() {
                 }}
             />
             <Tabs.Screen
+                name="rewards"
+                options={{
+                    title: 'Belønninger',
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="gift" color={color} size={size} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="notifications"
                 options={{
                     title: 'Varsler',
@@ -40,6 +49,7 @@ export default function ParentLayout() {
                     ),
                 }}
             />
+
         </Tabs>
     );
 }
