@@ -1,9 +1,18 @@
 import { View, StyleSheet, TextInput } from "react-native";
 
-const SearchBar = () => {
+type SearchBarProps = {
+  query: string;
+  setQuery: (query: string) => void;
+};
+
+const SearchBar = ({ query, setQuery }: SearchBarProps) => {
   return (
     <View style={styles.container}>
-      <TextInput placeholder="Søk etter belønning" />
+      <TextInput
+        placeholder="Søk etter belønning"
+        value={query}
+        onChangeText={setQuery}
+      />
     </View>
   );
 };
