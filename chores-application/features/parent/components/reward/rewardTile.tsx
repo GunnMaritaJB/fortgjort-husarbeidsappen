@@ -17,8 +17,9 @@ const RewardTile = ({ title, points }: RewardTileProps) => {
 const styles = StyleSheet.create({
   tile: {
     backgroundColor: "#ddd",
-    padding: 16,
-    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 3,
     marginVertical: 8,
   },
   title: {
