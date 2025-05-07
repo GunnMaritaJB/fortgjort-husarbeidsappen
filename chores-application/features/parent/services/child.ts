@@ -1,7 +1,18 @@
 // features/parent/services/childService.ts
 import { getAuth } from 'firebase/auth';
 import { db } from '@/firebaseConfig';
-import {collection, addDoc, doc, getDoc, query, getDocs, where} from 'firebase/firestore';
+import {
+    collection,
+    addDoc,
+    doc,
+    getDoc,
+    query,
+    getDocs,
+    where,
+    updateDoc,
+    arrayRemove,
+    deleteDoc
+} from 'firebase/firestore';
 import {Child} from "@/features/child/models/Child";
 
 export const createChild = async (data: { firstName: string; dob: string; avatar: string; householdId: any }) => {
@@ -34,3 +45,9 @@ export const createChild = async (data: { firstName: string; dob: string; avatar
             ...doc.data(),
         })) as Child[];
     };
+
+export async function deleteChild(childId: string) {
+    // Slett barnet fra children
+    const childRef = doc(db, 'children', childId);
+    await deleteDoc(childRef);
+}
