@@ -1,5 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
-import { RewardList, SearchBar, AddButton } from "../../components/reward";
+import {
+  RewardList,
+  SearchBar,
+  AddButton,
+} from "../../../reward/components/parent";
 
 export default function RewardsScreen() {
   return (
