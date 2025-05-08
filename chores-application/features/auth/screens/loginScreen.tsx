@@ -3,6 +3,7 @@ import { View, Text, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { loginStyles as styles } from '../styles/loginStyles';
 import { getHouseholdIdForUser } from '@/features/auth/services/authService';
+import { auth } from '@/firebaseConfig';
 
 import BackButton from '../components/backButton';
 import LoginForm from '../forms/loginForm';
@@ -15,13 +16,20 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       const uid = await loginUser(email, password); 
+
+      await auth.currentUser?.reload(); // Reload user to ensure we have the latest data
+      if(!auth.currentUser?.emailVerified) {
+        router.replace('/(auth)/confirm-email'); // Redirect to email confirmation if not verified
+        return;
+      }
+
+      // Check if the user is part of a household
       const householdId = await getHouseholdIdForUser(uid); 
   
       if (householdId) {
-        console.log('✅ Har husstand:', householdId);
-        router.replace('/(household)/home'); // placeholder for household home screen
+        router.replace('/(household)/home'); 
       } else {
-        router.replace('/(household)'); // placeholder for household setup screen
+        router.replace('/(household)');
       }
   
     } catch (e: any) {

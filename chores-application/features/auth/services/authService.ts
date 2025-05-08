@@ -1,7 +1,8 @@
-import {createUserWithEmailAndPassword} from 'firebase/auth';
+import {createUserWithEmailAndPassword, sendEmailVerification, User} from 'firebase/auth';
 import {doc, setDoc, getDoc, getFirestore} from 'firebase/firestore';
 import {auth, db} from '@/firebaseConfig';
 import {Parent} from '@/features/parent/models/Parent';
+
 
 // Registrerer ny bruker og oppretter Parent-dokumentet i Firestore
 export async function registerUser(
@@ -34,4 +35,8 @@ export async function getHouseholdIdForUser(uid: string): Promise<string | null>
   const userDoc = await getDoc(userDocRef);
 
   return userDoc.exists() ? userDoc.data().householdId ?? null : null;
+}
+
+export async function sendVerificationEmail(user: User): Promise<void> {
+  await sendEmailVerification(user);
 }
