@@ -11,4 +11,5 @@ export interface Task {
     name: string;
     points: number;
     recurring: boolean;
+    repeatDays?: string[];
 }
