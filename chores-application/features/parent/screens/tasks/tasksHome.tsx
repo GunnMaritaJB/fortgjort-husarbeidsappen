@@ -1,16 +1,15 @@
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { format, endOfMonth } from 'date-fns';
-import { nb } from 'date-fns/locale';
-import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
-import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
+
+import { onSnapshot, collection, query, orderBy, where, getDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useEffect, useState } from 'react';
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc, where , updateDoc} from 'firebase/firestore';
 import { Task } from '@/features/task/models/Task';
-
+import { format, endOfMonth } from 'date-fns';
+import { nb } from 'date-fns/locale';
+import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
 
 export default function TasksHome() {
     const router = useRouter();
@@ -74,7 +73,6 @@ export default function TasksHome() {
         });
 
 
-
     return (
         <View style={styles.container}>
             <Text style={styles.header}>OPPGAVER</Text>
@@ -93,7 +91,6 @@ export default function TasksHome() {
 
             <View style={styles.filterRow}>
                 <Text style={styles.filter}>Barn</Text>
-
                 <TouchableOpacity
                     onPress={() => {
                         if (sortByDeadline === 'asc') setSortByDeadline('desc');
@@ -105,6 +102,7 @@ export default function TasksHome() {
                         Frist {sortByDeadline === 'asc' ? '▲' : sortByDeadline === 'desc' ? '▼' : ''}
                     </Text>
                 </TouchableOpacity>
+
                 <Text style={styles.filter}>Frist</Text>
                 <Text style={styles.filter}>Status</Text>
                 <Text style={styles.filter}>Synlig</Text>
@@ -139,7 +137,8 @@ export default function TasksHome() {
                     </View>
                 )}
             />
-           </View>
+        </View>
+
     );
 }
 
