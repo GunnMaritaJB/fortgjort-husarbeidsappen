@@ -1,36 +1,32 @@
-import { format } from 'date-fns';
-import { nb } from 'date-fns/locale';
+
 // parent/screens/tasks/createTask.tsx
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, Platform} from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import {
-    getDoc,
-    doc,
-    addDoc,
-    collection,
-    serverTimestamp,
-} from 'firebase/firestore';
+import { getDoc, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { getAuth } from 'firebase/auth';
+import { nb } from 'date-fns/locale';
+import { format } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
-
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
     const [recurring, setRecurring] = useState(false);
     const [repeatDays, setRepeatDays] = useState<string[]>([]);
+    const [open, setOpen] = useState(false);
+    const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
     const router = useRouter();
 
     const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
 
     const handleSave = async () => {
+
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
-
-
         const uid = getAuth().currentUser?.uid;
         if (!uid) return;
 
@@ -52,7 +48,6 @@ export default function CreateTaskScreen() {
         });
 
         router.replace('/tasks');
-
     };
 
     return (
@@ -140,7 +135,6 @@ export default function CreateTaskScreen() {
                     </View>
                 </>
             )}
-
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                     <Text style={styles.buttonText}>Lagre</Text>
