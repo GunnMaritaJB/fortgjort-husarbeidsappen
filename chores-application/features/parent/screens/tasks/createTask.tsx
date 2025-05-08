@@ -1,27 +1,48 @@
 // parent/screens/tasks/createTask.tsx
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import {
-    getDoc,
-    doc,
-    addDoc,
-    collection,
-    serverTimestamp,
-} from 'firebase/firestore';
+import { getDoc, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { getAuth } from 'firebase/auth';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { nb } from 'date-fns/locale';
+import { DatePickerModal, registerTranslation } from 'react-native-paper-dates';
+import { format } from 'date-fns';
+
+
+const norwegianTranslation = {
+    save: 'Lagre',
+    selectSingle: 'Velg dato',
+    selectMultiple: 'Velg datoer',
+    selectRange: 'Velg periode',
+    notAccordingToDateFormat: (input: string) => `Ugyldig dato: ${input}`,
+    mustBeHigherThan: (date: string) => `Må være etter ${date}`,
+    mustBeLowerThan: (date: string) => `Må være før ${date}`,
+    mustBeBetween: (start: string, end: string) => `Må være mellom ${start} og ${end}`,
+    dateIsDisabled: (date: string) => `Datoen ${date} er deaktivert`,
+    previous: 'Forrige',
+    next: 'Neste',
+    typeInDate: 'Skriv dato',
+    pickDateFromCalendar: 'Velg dato fra kalender',
+    close: 'Lukk',
+};
+
+// 👇 Cast til `any` kun ved bruk, ikke på hele objektet
+registerTranslation('no', norwegianTranslation as any);
+
+
+
+
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
-    const [date, setDate] = useState(new Date());
-    const [showPicker, setShowPicker] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
     const router = useRouter();
 
     const handleSave = async () => {
-        if (!taskName || !points) return;
+        if (!taskName || !points || !dateForCompletion) return;
 
         const uid = getAuth().currentUser?.uid;
         if (!uid) return;
@@ -39,10 +60,10 @@ export default function CreateTaskScreen() {
             completed: false,
             recurring: false,
             dateAssigned: serverTimestamp(),
-            dateForCompletion: date, // brukerens valgte dato
+            dateForCompletion,
         });
 
-        router.replace('/tasks'); // tilbake til oppgaveliste
+        router.replace('/tasks');
     };
 
     return (
@@ -65,21 +86,23 @@ export default function CreateTaskScreen() {
             />
 
             <Text style={styles.label}>Frist for oppgave</Text>
-            <TouchableOpacity style={styles.datePickerBtn} onPress={() => setShowPicker(true)}>
-                <Text>{date.toLocaleDateString('no-NO')}</Text>
+            <TouchableOpacity style={styles.datePickerBtn} onPress={() => setOpen(true)}>
+                <Text>
+                    {dateForCompletion ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb }) : ''}
+                </Text>
             </TouchableOpacity>
 
-            {showPicker && (
-                <DateTimePicker
-                    value={date}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={(event, selectedDate) => {
-                        setShowPicker(false);
-                        if (selectedDate) setDate(selectedDate);
-                    }}
-                />
-            )}
+            <DatePickerModal
+                locale="no"
+                mode="single"
+                visible={open}
+                onDismiss={() => setOpen(false)}
+                date={dateForCompletion}
+                onConfirm={({ date }) => {
+                    setOpen(false);
+                    setDateForCompletion(date);
+                }}
+            />
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
