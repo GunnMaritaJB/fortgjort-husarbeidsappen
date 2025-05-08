@@ -1,7 +1,7 @@
 // features/parent/screens/profile/childProfileScreen.tsx
 import { useEffect, useState } from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
-import {View, Text, Alert} from 'react-native';
+import {View, Text} from 'react-native';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { childProfileStyles as styles } from '@/features/parent/styles/childProfileStyles';
@@ -13,32 +13,11 @@ export default function ChildProfileScreen() {
     const { id, name, avatar } = useLocalSearchParams();
     const [points, setPoints] = useState<number | null>(null);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-
-    function handleDelete(childId: string) {
-        Alert.alert(
-            'Slett profil',
-            'Er du sikker på at du vil slette denne barneprofilen?',
-            [
-                { text: 'Avbryt', style: 'cancel' },
-                {
-                    text: 'Slett',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await deleteChild(childId);
-                            router.replace('/(parent)/(tabs)/profile');
-                        } catch (error) {
-                            Alert.alert('Feil', 'Kunne ikke slette barnet.');
-                        }
-                    },
-                },
-            ]
-        );
-    }
+    const [dob, setDob] = useState<Date | null>(null);
 
 
     useEffect(() => {
-        const fetchPoints = async () => {
+        const fetchChildData = async () => {
             if (!id || typeof id !== 'string') return;
 
             const childRef = doc(db, 'children', id);
@@ -47,15 +26,16 @@ export default function ChildProfileScreen() {
             if (childSnap.exists()) {
                 const data = childSnap.data();
                 setPoints(data.points ?? 0);
+                setDob(new Date(data.dob));
             }
         };
 
-        fetchPoints();
+        fetchChildData();
     }, [id]);
 
 
-    return (
 
+    return (
         <View style={styles.container}>
 
             <View style={{ alignItems: 'center', marginTop: 10 }}>
@@ -67,16 +47,38 @@ export default function ChildProfileScreen() {
                 <ChildProfileActions
                     onShowRewards={() => {}}
                     onShowTasks={() => {}}
-                    onEdit={() => {}}
+                    onEdit={() => {
+                        if (!dob) return;
+
+                        router.push({
+                            pathname: '/(parent)/edit-child',
+                            params: {
+                                id: id as string,
+                                firstName: name as string,
+                                avatar: avatar as string,
+                                dob: dob.toISOString(), // 👈 dette er nå riktig
+                                points: points?.toString() ?? '0',
+                            },
+                        });
+                    }}
+
+
                     onDelete={() => setShowConfirmModal(true)}
                 />
             </View>
             <ConfirmDeleteModal
                 visible={showConfirmModal}
                 onCancel={() => setShowConfirmModal(false)}
-                onConfirm={() => {
-                    setShowConfirmModal(false);
-                    handleDelete(id as string);
+                onConfirm={async () => {
+                    if (!id || typeof id !== 'string') return;
+
+                    try {
+                        await deleteChild(id);
+                        setShowConfirmModal(false);
+                        router.replace('/(parent)/(tabs)/profile');
+                    } catch (error) {
+                        console.error("Kunne ikke slette barn");
+                    }
                 }}
             />
         </View>

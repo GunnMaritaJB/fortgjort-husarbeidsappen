@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text} from 'react-native';
 import { useRouter } from 'expo-router';
 import { fetchChildrenByHousehold} from '@/features/parent/services/child';
 import { Child } from '@/features/child/models/Child';

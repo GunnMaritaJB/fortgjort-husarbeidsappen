@@ -15,6 +15,10 @@ type Props = {
     onCancel: () => void;
     showPicker: boolean;
     setShowPicker: (show: boolean) => void;
+    points?: number;
+    setPoints?: (value: number) => void;
+    isEdit?: boolean;
+    title?: string;
 };
 
 export default function CreateChildForm({
@@ -28,6 +32,10 @@ export default function CreateChildForm({
                                             onCancel,
                                             showPicker,
                                             setShowPicker,
+                                            points,
+                                            setPoints,
+                                            isEdit,
+                                            title,
                                         }: Props) {
     const onChange = (_: any, selectedDate?: Date) => {
         setShowPicker(false);
@@ -38,7 +46,7 @@ export default function CreateChildForm({
 
     return (
         <View style={c.container}>
-            <Text style={c.title}>Legg til nytt barn</Text>
+            <Text style={c.title}>{title ?? 'Legg til nytt barn'}</Text>
             <Text style={s.label}>Barnets navn</Text>
             <TextInput
                 placeholder="Fornavn"
@@ -68,6 +76,17 @@ export default function CreateChildForm({
                 <AvatarPicker selected={avatar} onSelect={setAvatar}/>
             </View>
 
+            {isEdit && setPoints && (
+                <>
+                    <Text style={s.label}>Poeng</Text>
+                    <TextInput
+                        style={s.input}
+                        value={String(points)}
+                        onChangeText={(val) => setPoints(Number(val))}
+                        keyboardType="numeric"
+                    />
+                </>
+            )}
 
             <View style={s.buttonRow}>
                 <TouchableOpacity style={s.primaryButton} onPress={onSubmit} testID="submitChild">

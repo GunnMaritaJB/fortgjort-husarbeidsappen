@@ -51,3 +51,16 @@ export async function deleteChild(childId: string) {
     const childRef = doc(db, 'children', childId);
     await deleteDoc(childRef);
 }
+
+export const updateChild = async (
+    childId: string,
+    updatedData: {
+        firstName: string;
+        dob: string;
+        avatar: string;
+        points: number;
+    }
+) => {
+    const childRef = doc(db, 'children', childId);
+    await updateDoc(childRef, updatedData);
+};

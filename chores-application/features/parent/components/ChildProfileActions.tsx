@@ -13,10 +13,6 @@ type Props = {
     onDelete: () => void;
 };
 
-
-
-
-
 export default function ChildProfileActions({
                                                 onShowRewards,
                                                 onShowTasks,
