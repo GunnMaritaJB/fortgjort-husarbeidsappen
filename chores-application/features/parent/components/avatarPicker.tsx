@@ -1,7 +1,8 @@
 // features/parent/components/AvatarPicker.tsx
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const AVATARS = ['🦁', '🐯', '🐱', '🐶', '🐰', '🐭', '🦊', '🐼', '🐸', '🐵', '🐷', '🐤'];
+const AVATARS = ['🦁', '🐯', '🐱', '🐶', '🐰', '🐭', '🦊', '🐼', '🐸', '🐵', '🐷', '🐤', '🦄', '🐮', '🐙'];
+
 
 
 type Props = {

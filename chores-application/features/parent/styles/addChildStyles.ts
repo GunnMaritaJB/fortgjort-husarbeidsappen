@@ -4,7 +4,7 @@ export const addChildStyles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: 24,
+        paddingHorizontal: 22,
         paddingVertical: 32,
         backgroundColor: '#F1F8F5',
     },
