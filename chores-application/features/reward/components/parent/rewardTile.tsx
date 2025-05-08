@@ -9,7 +9,7 @@ const RewardTile = ({ title, points }: RewardTileProps) => {
   return (
     <View style={styles.tile}>
       <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{points}</Text>
+      <Text style={styles.subtitle}>{points}p</Text>
     </View>
   );
 };

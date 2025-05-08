@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, StyleSheet } from "react-native";
 import {
   RewardList,
   SearchBar,
@@ -6,17 +7,19 @@ import {
 } from "../../../reward/components/parent";
 
 export default function RewardsScreen() {
+  const [query, setQuery] = useState<string>("");
+
   return (
     <View style={styles.screen}>
       <View style={styles.topContainer}>
         <View style={styles.searchAndAdd}>
-          <SearchBar />
+          <SearchBar query={query} setQuery={setQuery} />
           <AddButton />
         </View>
         <View style={styles.separator} />
       </View>
       <View style={styles.mainContainer}>
-        <RewardList />
+        <RewardList query={query} />
       </View>
     </View>
   );
