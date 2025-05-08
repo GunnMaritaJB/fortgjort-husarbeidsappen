@@ -1,16 +1,24 @@
+import { format } from 'date-fns';
+import { nb } from 'date-fns/locale';
+// parent/screens/tasks/createTask.tsx
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { getDoc, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import {
+    getDoc,
+    doc,
+    addDoc,
+    collection,
+    serverTimestamp,
+} from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { getAuth } from 'firebase/auth';
-import { format } from 'date-fns';
-import { nb } from 'date-fns/locale';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
+
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
     const [recurring, setRecurring] = useState(false);
@@ -21,6 +29,7 @@ export default function CreateTaskScreen() {
 
     const handleSave = async () => {
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
+
 
         const uid = getAuth().currentUser?.uid;
         if (!uid) return;
@@ -43,6 +52,7 @@ export default function CreateTaskScreen() {
         });
 
         router.replace('/tasks');
+
     };
 
     return (
@@ -160,6 +170,7 @@ const styles = StyleSheet.create({
         marginTop: 8,
         alignItems: 'center',
     },
+
     toggleRow: {
         flexDirection: 'row',
         justifyContent: 'center',
