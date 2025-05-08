@@ -1,17 +1,20 @@
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { onSnapshot, collection, query, orderBy } from 'firebase/firestore';
+import { onSnapshot, collection, query, orderBy, where, getDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useEffect, useState } from 'react';
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc, where , updateDoc} from 'firebase/firestore';
-import { Task } from '@/features/task/models/Task'; // juster stien hvis nødvendig
+import { Task } from '@/features/task/models/Task';
+import { format, endOfMonth } from 'date-fns';
+import { nb } from 'date-fns/locale';
+import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
 
 export default function TasksHome() {
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [sortByDeadline, setSortByDeadline] = useState<'asc' | 'desc' | null>(null);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -42,9 +45,30 @@ export default function TasksHome() {
         fetchTasks();
     }, []);
 
-    const filteredTasks = tasks.filter(task =>
-        task.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredTasks = tasks
+        .filter(task =>
+            task.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => {
+            if (!sortByDeadline) return 0;
+
+            const now = new Date();
+
+            const getDate = (task: Task) => {
+                if (task.recurring && Array.isArray(task.repeatDays)) {
+                    const next = getRecurringDates(task.repeatDays, now, endOfMonth(now)).find(d => d > now);
+                    return next ?? new Date(8640000000000000);
+                }
+                return (task.dateForCompletion as any)?.toDate?.() ?? new Date(8640000000000000);
+            };
+
+            const dateA = getDate(a);
+            const dateB = getDate(b);
+
+            return sortByDeadline === 'asc'
+                ? dateA.getTime() - dateB.getTime()
+                : dateB.getTime() - dateA.getTime();
+        });
 
     return (
         <View style={styles.container}>
@@ -64,7 +88,17 @@ export default function TasksHome() {
 
             <View style={styles.filterRow}>
                 <Text style={styles.filter}>Barn</Text>
-                <Text style={styles.filter}>Frist</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        if (sortByDeadline === 'asc') setSortByDeadline('desc');
+                        else if (sortByDeadline === 'desc') setSortByDeadline(null);
+                        else setSortByDeadline('asc');
+                    }}
+                >
+                    <Text style={styles.filter}>
+                        Frist {sortByDeadline === 'asc' ? '▲' : sortByDeadline === 'desc' ? '▼' : ''}
+                    </Text>
+                </TouchableOpacity>
                 <Text style={styles.filter}>Status</Text>
                 <Text style={styles.filter}>Synlig</Text>
             </View>
@@ -76,10 +110,28 @@ export default function TasksHome() {
                 renderItem={({ item }) => (
                     <View style={styles.taskItem}>
                         <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
+                        {item.dateForCompletion && (
+                            <Text style={styles.dueDate}>
+                                Frist: {format((item.dateForCompletion as any)?.toDate?.(), 'dd.MM.yyyy', { locale: nb })}
+                            </Text>
+                        )}
+                        {item.recurring && Array.isArray(item.repeatDays) && item.repeatDays.length > 0 && (
+                            <View style={{ marginTop: 4 }}>
+                                <Text style={styles.dueDate}>Gjentas: {item.repeatDays?.join(', ')}</Text>
+                                {(() => {
+                                    const dates = getRecurringDates(item.repeatDays ?? [], new Date(), endOfMonth(new Date()));
+                                    const next = dates.find(d => d > new Date());
+                                    return next ? (
+                                        <Text style={styles.dueDate}>
+                                            Neste: {format(next, 'dd.MM.yyyy', { locale: nb })}
+                                        </Text>
+                                    ) : null;
+                                })()}
+                            </View>
+                        )}
                     </View>
                 )}
             />
-
         </View>
     );
 }
@@ -116,5 +168,10 @@ const styles = StyleSheet.create({
     taskText: {
         fontSize: 16,
         fontWeight: '500',
+    },
+    dueDate: {
+        marginTop: 4,
+        fontSize: 14,
+        color: '#555',
     },
 });

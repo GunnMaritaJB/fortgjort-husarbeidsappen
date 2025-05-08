@@ -9,7 +9,6 @@ import { nb } from 'date-fns/locale';
 import { DatePickerModal, registerTranslation } from 'react-native-paper-dates';
 import { format } from 'date-fns';
 
-
 const norwegianTranslation = {
     save: 'Lagre',
     selectSingle: 'Velg dato',
@@ -26,23 +25,21 @@ const norwegianTranslation = {
     pickDateFromCalendar: 'Velg dato fra kalender',
     close: 'Lukk',
 };
-
-// 👇 Cast til `any` kun ved bruk, ikke på hele objektet
 registerTranslation('no', norwegianTranslation as any);
-
-
-
-
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
     const [open, setOpen] = useState(false);
     const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
+    const [recurring, setRecurring] = useState(false);
+    const [repeatDays, setRepeatDays] = useState<string[]>([]);
     const router = useRouter();
 
+    const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
+
     const handleSave = async () => {
-        if (!taskName || !points || !dateForCompletion) return;
+        if (!taskName || !points || (!recurring && !dateForCompletion)) return;
 
         const uid = getAuth().currentUser?.uid;
         if (!uid) return;
@@ -58,9 +55,10 @@ export default function CreateTaskScreen() {
             householdId,
             approved: false,
             completed: false,
-            recurring: false,
+            recurring,
+            repeatDays,
             dateAssigned: serverTimestamp(),
-            dateForCompletion,
+            dateForCompletion: recurring ? null : dateForCompletion,
         });
 
         router.replace('/tasks');
@@ -85,24 +83,69 @@ export default function CreateTaskScreen() {
                 style={styles.input}
             />
 
-            <Text style={styles.label}>Frist for oppgave</Text>
-            <TouchableOpacity style={styles.datePickerBtn} onPress={() => setOpen(true)}>
-                <Text>
-                    {dateForCompletion ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb }) : ''}
-                </Text>
-            </TouchableOpacity>
+            <View style={styles.toggleRow}>
+                <TouchableOpacity
+                    style={[styles.toggleBtn, !recurring && styles.selectedToggle]}
+                    onPress={() => setRecurring(false)}
+                >
+                    <Text>En gang</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.toggleBtn, recurring && styles.selectedToggle]}
+                    onPress={() => setRecurring(true)}
+                >
+                    <Text>Gjentagende</Text>
+                </TouchableOpacity>
+            </View>
 
-            <DatePickerModal
-                locale="no"
-                mode="single"
-                visible={open}
-                onDismiss={() => setOpen(false)}
-                date={dateForCompletion}
-                onConfirm={({ date }) => {
-                    setOpen(false);
-                    setDateForCompletion(date);
-                }}
-            />
+            {!recurring ? (
+                <>
+                    <Text style={styles.label}>Frist for oppgave</Text>
+                    <TouchableOpacity style={styles.datePickerBtn} onPress={() => setOpen(true)}>
+                        <Text>
+                            {dateForCompletion
+                                ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb })
+                                : ''}
+                        </Text>
+                    </TouchableOpacity>
+
+                    <DatePickerModal
+                        locale="no"
+                        mode="single"
+                        visible={open}
+                        onDismiss={() => setOpen(false)}
+                        date={dateForCompletion}
+                        onConfirm={({ date }) => {
+                            setOpen(false);
+                            setDateForCompletion(date);
+                        }}
+                    />
+                </>
+            ) : (
+                <>
+                    <Text style={styles.label}>Dager oppgaven skal gjøres på:</Text>
+                    <View style={styles.weekRow}>
+                        {days.map((day, idx) => {
+                            const isSelected = repeatDays.includes(day);
+                            return (
+                                <TouchableOpacity
+                                    key={idx}
+                                    onPress={() => {
+                                        if (isSelected) {
+                                            setRepeatDays(repeatDays.filter((d) => d !== day));
+                                        } else {
+                                            setRepeatDays([...repeatDays, day]);
+                                        }
+                                    }}
+                                    style={[styles.dayBtn, isSelected && styles.selectedDayBtn]}
+                                >
+                                    <Text style={styles.dayText}>{day}</Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </>
+            )}
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -132,6 +175,40 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 8,
         alignItems: 'center',
+    },
+    toggleRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
+    toggleBtn: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        marginHorizontal: 8,
+        backgroundColor: '#ddd',
+    },
+    selectedToggle: {
+        backgroundColor: '#b0e0d3',
+    },
+    weekRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        marginTop: 8,
+    },
+    dayBtn: {
+        margin: 4,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        backgroundColor: '#ccc',
+    },
+    selectedDayBtn: {
+        backgroundColor: '#b0e0d3',
+    },
+    dayText: {
+        fontWeight: 'bold',
     },
     buttonRow: {
         flexDirection: 'row',

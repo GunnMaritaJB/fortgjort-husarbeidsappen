@@ -7,7 +7,7 @@ export interface Task {
     approved: boolean;
     completed: boolean;
     dateAssigned: Timestamp;
-    dateForCompletion: Timestamp;
+    dateForCompletion: Timestamp | null;
     name: string;
     points: number;
     recurring: boolean;
