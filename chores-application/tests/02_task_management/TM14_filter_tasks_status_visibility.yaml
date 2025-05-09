@@ -1,5 +1,5 @@
 appId: com.anonymous.choresapplication
-name: TM14 Filter tasks by visibility
+name: TM14 Filter tasks.tsx by visibility
 
 clearState: true
 
@@ -15,12 +15,12 @@ onFlowComplete:
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
-# Go to tasks screen
+# Go to tasks.tsx screen
 - tapOn:
     id: "taskMenuButton"
     label: "Go to task screen"
 
-# Ensure that some tasks are hidden
+# Ensure that some tasks.tsx are hidden
 - assertVisible: "Skjult"
 
 # Choose to filter by status

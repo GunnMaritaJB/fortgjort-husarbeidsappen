@@ -24,10 +24,10 @@ onFlowComplete:
     label: "Click meny button"
 - assertVisible: "Oppgaver"
 
-# Child chooses to go to tasks
+# Child chooses to go to tasks.tsx
 - tapOn:
     text: "Oppgaver"
-    label: "Choose to go to tasks"
+    label: "Choose to go to tasks.tsx"
 - assertVisible: ${NAME_OF_TASK}
 
 # Child chooses specific task

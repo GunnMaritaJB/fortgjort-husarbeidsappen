@@ -39,7 +39,6 @@ export const createChild = async (data: { firstName: string; dob: string; avatar
         );
 
         const childrenSnap = await getDocs(childrenQuery);
-
         return childrenSnap.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
@@ -47,7 +46,6 @@ export const createChild = async (data: { firstName: string; dob: string; avatar
     };
 
 export async function deleteChild(childId: string) {
-    // Slett barnet fra children
     const childRef = doc(db, 'children', childId);
     await deleteDoc(childRef);
 }

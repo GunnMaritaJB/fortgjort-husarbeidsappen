@@ -1,9 +1,7 @@
 import { View } from 'react-native';
 import { childProfileStyles as styles } from '@/features/parent/styles/childProfileStyles';
 import ChildProfileButton from './ChildProfileButtons';
-import { Alert } from 'react-native';
-import { deleteChild } from '@/features/parent/services/child';
-import {router} from "expo-router";
+
 
 
 type Props = {

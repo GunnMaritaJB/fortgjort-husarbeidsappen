@@ -5,12 +5,15 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import {useRouter} from "expo-router";
 import { householdHomeStyles as styles} from '../styles/householdHomeStyles';
+import { fetchChildrenByHousehold } from '@/features/parent/services/child';
+import {Child} from "@/features/child/models/Child";
 
 
 export default function HouseholdHomeScreen() {
     const [householdName, setHouseholdName] = useState<string | null>(null);
     const [parentName, setParentName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [children, setChildren] = useState<Child[]>([]);
 
     const router = useRouter();
 
@@ -30,12 +33,14 @@ export default function HouseholdHomeScreen() {
                 const householdId = parent?.householdId;
                 if (!householdId) {
                     console.log('Ingen householdId – sender til opprettelse');
-                    router.replace('/(household)'); // 👈 SEND TIL OPPRETT HUSSTAND
+                    router.replace('/(household)');
                     return;
                 }
 
                 const householdRef = doc(db, 'households', householdId);
                 const householdDoc = await getDoc(householdRef);
+                const childrenData = await fetchChildrenByHousehold(householdId);
+                setChildren(childrenData);
 
                 if (!householdDoc.exists()) {
                     console.warn('❌ Husstand finnes ikke – rydder og sender til oppretting');
@@ -51,6 +56,7 @@ export default function HouseholdHomeScreen() {
             } finally {
                 setLoading(false);
             }
+
         };
 
         fetchData();
@@ -75,9 +81,31 @@ export default function HouseholdHomeScreen() {
                     </View>
                     <Text style={styles.avatarLabel}>{parentName}</Text>
                 </TouchableOpacity>
-
             </View>
+            <View style={styles.avatarRow}>
+                {children.map((child) => (
+                    <TouchableOpacity
+                        key={child.id}
+                        style={styles.avatarContainer}
+                        onPress={() => router.push({
+                            pathname: '/(child)/(tabs)/home',
+                            params: {
+                                id: child.id,
+                                name: child.firstName,
+                                avatar: child.avatar,
+                            },
+                        })}
+                    >
+                        <View style={styles.avatarCircle}>
+                            <Text style={styles.avatarEmoji}>{child.avatar}</Text>
+                        </View>
+                        <Text style={styles.avatarLabel}>{child.firstName}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
+
         </View>
+
     );
 
 }

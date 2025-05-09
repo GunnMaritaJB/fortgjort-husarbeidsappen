@@ -38,4 +38,13 @@ export const householdHomeStyles = StyleSheet.create({
         fontSize: 14,
         color: '#222',
     },
+    avatarRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        marginTop: 40,
+        paddingHorizontal: 10,
+        gap: 10,
+    },
+
 });
