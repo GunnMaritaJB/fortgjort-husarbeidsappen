@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {View, Text, ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
@@ -7,6 +7,9 @@ import {useRouter} from "expo-router";
 import { householdHomeStyles as styles} from '../styles/householdHomeStyles';
 import { fetchChildrenByHousehold } from '@/features/parent/services/child';
 import {Child} from "@/features/child/models/Child";
+import MenuDrawer from '@/features/household/components/MenuDrawer';
+import { menuStyles } from '@/features/household/styles/menubar';
+
 
 
 export default function HouseholdHomeScreen() {
@@ -14,6 +17,7 @@ export default function HouseholdHomeScreen() {
     const [parentName, setParentName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [children, setChildren] = useState<Child[]>([]);
+    const [menuVisible, setMenuVisible] = useState(false);
 
     const router = useRouter();
 
@@ -43,9 +47,9 @@ export default function HouseholdHomeScreen() {
                 setChildren(childrenData);
 
                 if (!householdDoc.exists()) {
-                    console.warn('❌ Husstand finnes ikke – rydder og sender til oppretting');
+                    console.warn(' Husstand finnes ikke – rydder og sender til oppretting');
                     await updateDoc(parentRef, { householdId: null });
-                    router.replace('/(household)'); // 👈 SEND TIL OPPRETT HUSSTAND
+                    router.replace('/(household)');
                     return;
                 }
 
@@ -65,48 +69,64 @@ export default function HouseholdHomeScreen() {
     if (loading) {
         return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
     }
-
     return (
-        <View style={styles.container}>
-            <Text style={styles.householdName}>{householdName ?? 'Husstand'}</Text>
+        <View style={{ flex: 1, position: 'relative' }}>
+            <TouchableOpacity
+                style={menuStyles.hamburgerButton}
+                onPress={() => setMenuVisible(!menuVisible)}
+            >
+                <Text style={{ fontSize: 28 }}>☰</Text>
+            </TouchableOpacity>
 
-            <View style={styles.avatarGrid}>
-                <TouchableOpacity
-                    testID="parentUser"
-                    style={styles.avatarContainer}
-                    onPress={() => router.push('/(parent)/(tabs)/profile')}
-                >
-                    <View style={styles.avatarCircle}>
-                        <Text style={styles.avatarEmoji}>👩‍🦰</Text>
-                    </View>
-                    <Text style={styles.avatarLabel}>{parentName}</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.avatarRow}>
-                {children.map((child) => (
+            {menuVisible && (
+                <>
                     <TouchableOpacity
-                        key={child.id}
+                        style={menuStyles.overlay}
+                        onPress={() => setMenuVisible(false)}
+                    />
+                    <MenuDrawer onClose={() => setMenuVisible(false)} />
+                </>
+            )}
+            <View style={styles.container}>
+                <Text style={styles.householdName}>{householdName ?? 'Husstand'}</Text>
+
+                <View style={styles.avatarGrid}>
+                    <TouchableOpacity
+                        testID="parentUser"
                         style={styles.avatarContainer}
-                        onPress={() => router.push({
-                            pathname: '/(child)/(tabs)/home',
-                            params: {
-                                id: child.id,
-                                name: child.firstName,
-                                avatar: child.avatar,
-                            },
-                        })}
+                        onPress={() => router.push('/(parent)/(tabs)/profile')}
                     >
                         <View style={styles.avatarCircle}>
-                            <Text style={styles.avatarEmoji}>{child.avatar}</Text>
+                            <Text style={styles.avatarEmoji}>👩‍🦰</Text>
                         </View>
-                        <Text style={styles.avatarLabel}>{child.firstName}</Text>
+                        <Text style={styles.avatarLabel}>{parentName}</Text>
                     </TouchableOpacity>
-                ))}
+                </View>
+
+                <View style={styles.avatarRow}>
+                    {children.map((child) => (
+                        <TouchableOpacity
+                            key={child.id}
+                            style={styles.avatarContainer}
+                            onPress={() =>
+                                router.push({
+                                    pathname: '/(child)/(tabs)/home',
+                                    params: {
+                                        id: child.id,
+                                        name: child.firstName,
+                                        avatar: child.avatar,
+                                    },
+                                })
+                            }
+                        >
+                            <View style={styles.avatarCircle}>
+                                <Text style={styles.avatarEmoji}>{child.avatar}</Text>
+                            </View>
+                            <Text style={styles.avatarLabel}>{child.firstName}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
             </View>
-
         </View>
-
     );
-
 }
-
