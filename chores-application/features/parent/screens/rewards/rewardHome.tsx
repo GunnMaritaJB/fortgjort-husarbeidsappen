@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
+import { getAuth } from "firebase/auth";
+import { getHouseholdIdForUser } from "@/features/auth/services/authService";
 import {
   RewardList,
   SearchBar,
@@ -8,7 +10,20 @@ import {
 
 export default function RewardsScreen() {
   const [query, setQuery] = useState<string>("");
+  const [householdId, setHouseholdId] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchHouseholdId = async () => {
+      const user = getAuth().currentUser;
+      if (user) {
+        const id = await getHouseholdIdForUser(user.uid);
+        setHouseholdId(id);
+      }
+    };
+
+    fetchHouseholdId();
+  }, []);
+  console.log("Household ID:", householdId);
   return (
     <View style={styles.screen}>
       <View style={styles.topContainer}>
@@ -19,7 +34,7 @@ export default function RewardsScreen() {
         <View style={styles.separator} />
       </View>
       <View style={styles.mainContainer}>
-        <RewardList query={query} />
+        {householdId && <RewardList query={query} householdId={householdId} />}
       </View>
     </View>
   );
