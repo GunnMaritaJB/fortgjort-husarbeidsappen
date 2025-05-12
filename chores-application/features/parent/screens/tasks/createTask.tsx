@@ -1,36 +1,17 @@
-// parent/screens/tasks/createTask.tsx
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { getDoc, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { getAuth } from 'firebase/auth';
-import { nb } from 'date-fns/locale';
-import { DatePickerModal, registerTranslation } from 'react-native-paper-dates';
 import { format } from 'date-fns';
-
-const norwegianTranslation = {
-    save: 'Lagre',
-    selectSingle: 'Velg dato',
-    selectMultiple: 'Velg datoer',
-    selectRange: 'Velg periode',
-    notAccordingToDateFormat: (input: string) => `Ugyldig dato: ${input}`,
-    mustBeHigherThan: (date: string) => `Må være etter ${date}`,
-    mustBeLowerThan: (date: string) => `Må være før ${date}`,
-    mustBeBetween: (start: string, end: string) => `Må være mellom ${start} og ${end}`,
-    dateIsDisabled: (date: string) => `Datoen ${date} er deaktivert`,
-    previous: 'Forrige',
-    next: 'Neste',
-    typeInDate: 'Skriv dato',
-    pickDateFromCalendar: 'Velg dato fra kalender',
-    close: 'Lukk',
-};
-registerTranslation('no', norwegianTranslation as any);
+import { nb } from 'date-fns/locale';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
-    const [open, setOpen] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
     const [recurring, setRecurring] = useState(false);
     const [repeatDays, setRepeatDays] = useState<string[]>([]);
@@ -101,7 +82,7 @@ export default function CreateTaskScreen() {
             {!recurring ? (
                 <>
                     <Text style={styles.label}>Frist for oppgave</Text>
-                    <TouchableOpacity style={styles.datePickerBtn} onPress={() => setOpen(true)}>
+                    <TouchableOpacity style={styles.datePickerBtn} onPress={() => setShowDatePicker(true)}>
                         <Text>
                             {dateForCompletion
                                 ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb })
@@ -109,17 +90,20 @@ export default function CreateTaskScreen() {
                         </Text>
                     </TouchableOpacity>
 
-                    <DatePickerModal
-                        locale="no"
-                        mode="single"
-                        visible={open}
-                        onDismiss={() => setOpen(false)}
-                        date={dateForCompletion}
-                        onConfirm={({ date }) => {
-                            setOpen(false);
-                            setDateForCompletion(date);
-                        }}
-                    />
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={dateForCompletion || new Date()}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            onChange={(event, selectedDate) => {
+                                setShowDatePicker(false);
+                                if (event.type === 'set' && selectedDate) {
+                                    setDateForCompletion(selectedDate);
+                                }
+                            }}
+                            locale="no-NO"
+                        />
+                    )}
                 </>
             ) : (
                 <>
