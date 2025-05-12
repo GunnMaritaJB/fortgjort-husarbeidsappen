@@ -3,8 +3,7 @@ import AvatarPicker from '@/features/parent/components/avatarPicker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { sharedFormStyles as s } from '@/features/parent/styles/sharedParentStyles';
 import { addChildStyles as c } from '@/features/parent/styles/addChildStyles';
-import { DatePickerModal } from 'react-native-paper-dates';
-import { nb } from 'date-fns/locale';
+
 
 type Props = {
     firstName: string;
