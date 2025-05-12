@@ -1,9 +1,10 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { logoutUser } from '@/features/auth/services/logoutService';
-import { styles } from '@/features/household/styles/menubar';
-
+import { menuStyles } from '@/features/household/styles/menubar';
+import { Feather } from '@expo/vector-icons';
 export default function MenuDrawer({ onClose }: { onClose: () => void }) {
+
     const handleLogout = async () => {
         try {
             await logoutUser();
@@ -13,10 +14,13 @@ export default function MenuDrawer({ onClose }: { onClose: () => void }) {
         }
     };
     return (
-        <View style={styles.drawer}>
+        <View style={menuStyles.drawer}>
             <View style={{ height: 120 }} />
-            <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                <Text style={styles.logoutText}>Logg ut</Text>
+            <TouchableOpacity onPress={handleLogout} style={menuStyles.logoutButton}>
+                <View style={menuStyles.iconWithText}>
+                    <Feather name="log-out" size={20} color="#333" style={menuStyles.flippedIcon}/>
+                    <Text style={menuStyles.logoutText}>Logg ut</Text>
+                </View>
             </TouchableOpacity>
         </View>
     );

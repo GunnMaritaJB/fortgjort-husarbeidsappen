@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {View, Text, ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
@@ -8,7 +8,7 @@ import { householdHomeStyles as styles} from '../styles/householdHomeStyles';
 import { fetchChildrenByHousehold } from '@/features/parent/services/child';
 import {Child} from "@/features/child/models/Child";
 import MenuDrawer from '@/features/household/components/MenuDrawer';
-import { menuStyles } from '@/features/household/styles/menubar';
+import { menuStyles } from '@/features/household/styles/menubar'
 
 
 

@@ -56,6 +56,16 @@ export const menuStyles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.3)',
         zIndex: 999,
     },
+    iconWithText: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+
+    flippedIcon: {
+        transform: [{ scaleX: -1 }],
+    },
+
 
 
 });
