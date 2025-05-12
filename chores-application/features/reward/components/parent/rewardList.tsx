@@ -6,26 +6,13 @@ import { Reward } from "../../models/Reward";
 import RewardTile from "./rewardTile";
 import { collections } from "@/shared/paths/firebasePaths";
 
-/* // Sample data for the rewards list
-const DATA = [
-  { id: 1, title: "Movie Night", points: 100 },
-  { id: 2, title: "Ice Cream", points: 50 },
-  { id: 3, title: "Game Night", points: 150 },
-  { id: 4, title: "Pizza Party", points: 200 },
-  { id: 5, title: "Bowling", points: 300 },
-  { id: 6, title: "Amusement Park", points: 500 },
-  { id: 7, title: "Camping Trip", points: 700 },
-  { id: 8, title: "Concert Tickets", points: 800 },
-  { id: 9, title: "Spa Day", points: 900 },
-  { id: 10, title: "Weekend Getaway", points: 1000 },
-]; */
-
 type RewardListProps = {
   query: string;
   householdId: string;
+  onEdit: (reward: Reward) => void;
 };
 
-const RewardList = ({ query, householdId }: RewardListProps) => {
+const RewardList = ({ query, householdId, onEdit }: RewardListProps) => {
   // States
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,9 +58,13 @@ const RewardList = ({ query, householdId }: RewardListProps) => {
 
   return (
     <FlatList
-      data={filteredRewards}
+      data={[...rewards].sort((a, b) => a.name.localeCompare(b.name))}
       renderItem={({ item }) => (
-        <RewardTile title={item.name} points={item.pointPrice} />
+        <RewardTile
+          title={item.name}
+          points={item.pointPrice}
+          onPress={() => onEdit(item)}
+        />
       )}
       keyExtractor={(item) => item.rewardID}
     />

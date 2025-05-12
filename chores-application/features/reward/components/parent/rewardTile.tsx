@@ -1,16 +1,17 @@
-import { View, Text, StyleSheet } from "react-native";
+import { Pressable, Text, StyleSheet } from "react-native";
 
 type RewardTileProps = {
   title: string;
   points: number;
+  onPress: () => void;
 };
 
-const RewardTile = ({ title, points }: RewardTileProps) => {
+const RewardTile = ({ title, points, onPress }: RewardTileProps) => {
   return (
-    <View style={styles.tile}>
+    <Pressable onPress={onPress} style={styles.tile}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{points}p</Text>
-    </View>
+    </Pressable>
   );
 };
 

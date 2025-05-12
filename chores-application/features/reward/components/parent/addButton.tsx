@@ -1,14 +1,33 @@
-import { View, Text, StyleSheet } from "react-native";
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+  Vibration,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
 
-const AddButton = () => {
+type AddButtonProps = {
+  onPress: () => void;
+};
+
+const AddButton = (props: AddButtonProps) => {
+  const handlePress = () => {
+    Vibration.vibrate(50);
+    props.onPress();
+  };
+
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={handlePress}>
       <Text style={styles.symbol}>+</Text>
-    </View>
+    </Pressable>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create<{
+  container: ViewStyle;
+  symbol: TextStyle;
+}>({
   container: {
     padding: 10,
     backgroundColor: "#ddd",
