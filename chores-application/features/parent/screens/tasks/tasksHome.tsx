@@ -102,8 +102,7 @@ export default function TasksHome() {
                         Frist {sortByDeadline === 'asc' ? '▲' : sortByDeadline === 'desc' ? '▼' : ''}
                     </Text>
                 </TouchableOpacity>
-
-                <Text style={styles.filter}>Frist</Text>
+                
                 <Text style={styles.filter}>Status</Text>
                 <Text style={styles.filter}>Synlig</Text>
             </View>
