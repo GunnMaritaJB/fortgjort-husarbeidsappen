@@ -18,7 +18,7 @@ export default function HouseholdHomeScreen() {
     const [loading, setLoading] = useState(true);
     const [children, setChildren] = useState<Child[]>([]);
     const [menuVisible, setMenuVisible] = useState(false);
-
+    const [householdId, setHouseholdId] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -34,12 +34,13 @@ export default function HouseholdHomeScreen() {
 
                 setParentName(parent?.firstName ?? 'Forelder');
 
-                const householdId = parent?.householdId;
+                const householdId = parent?.householdId
                 if (!householdId) {
                     console.log('Ingen householdId – sender til opprettelse');
                     router.replace('/(household)');
                     return;
                 }
+                setHouseholdId(householdId);
 
                 const householdRef = doc(db, 'households', householdId);
                 const householdDoc = await getDoc(householdRef);
@@ -115,6 +116,7 @@ export default function HouseholdHomeScreen() {
                                         id: child.id,
                                         name: child.firstName,
                                         avatar: child.avatar,
+                                        householdId: householdId,
                                     },
                                 })
                             }

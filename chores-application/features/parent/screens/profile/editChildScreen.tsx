@@ -5,7 +5,7 @@ import CreateChildForm from '@/features/parent/forms/child/createChildForm';
 import {updateChild} from "@/features/parent/services/child";
 
 export default function EditChildScreen() {
-    const { id, firstName, avatar, dob, points } = useLocalSearchParams();
+    const { id, householdId, firstName, avatar, dob, points } = useLocalSearchParams();
     const [name, setName] = useState(firstName as string);
     const [birthdate, setBirthdate] = useState(new Date(dob as string));
     const [selectedAvatar, setSelectedAvatar] = useState(avatar as string);
@@ -15,12 +15,13 @@ export default function EditChildScreen() {
     const handleUpdate = async () => {
         if (!id || typeof id !== 'string') return;
 
-        await updateChild(id, {
+        await updateChild(householdId as string, id as string, {
             firstName: name,
             dob: birthdate.toISOString(),
             avatar: selectedAvatar,
             points: score,
         });
+
         router.replace('/(parent)/(tabs)/profile');
     };
 

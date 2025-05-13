@@ -16,12 +16,15 @@ export default function ParentProfileScreen() {
     const router = useRouter();
     const handleAddChild = () => router.push('/(parent)/add-child');
     const handleLogout = () => router.replace('/(household)/home');
+    const [householdId, setHouseholdId] = useState<string | null>(null);
 
     useEffect(() => {
+
         const loadData = async () => {
             try {
                 const { firstName, householdId } = await fetchParentInfo();
                 setParentName(firstName);
+                setHouseholdId(householdId);
                 const kids = await fetchChildrenByHousehold(householdId);
                 setChildren(kids);
             } catch (error) {
@@ -35,7 +38,7 @@ export default function ParentProfileScreen() {
         <View style={s.container}>
             <ParentHeader name={parentName} onLogout={handleLogout} />
             <Text style={s.label}>Velg barneprofil</Text>
-            <ChildList children={children} />
+            <ChildList children={children} householdId={householdId} />
             <AddChildButton onPress={handleAddChild} />
         </View>
     );

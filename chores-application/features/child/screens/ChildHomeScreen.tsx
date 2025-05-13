@@ -14,7 +14,7 @@ export default function ChildHomeScreen() {
     const [loading, setLoading] = useState(true);
     const [pickerVisible, setPickerVisible] = useState(false);
     const router = useRouter();
-    const { id } = useGlobalSearchParams();
+    const { id, householdId } = useGlobalSearchParams();
     const [avatarState, setAvatarState] = useState<string>('😀');
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const [showConfetti, setShowConfetti] = useState(false);
@@ -30,17 +30,17 @@ export default function ChildHomeScreen() {
 
     useEffect(() => {
         const fetchChild = async () => {
-            if (!id || typeof id !== 'string') {
+            if (!id || !householdId || typeof id !== 'string' || typeof householdId !== 'string') {
                 setLoading(false);
                 return;
             }
             try {
-                const childRef = doc(db, 'children', id);
+                const childRef = doc(db, `households/${householdId}/children/${id}`);
                 const snap = await getDoc(childRef);
                 if (snap.exists()) {
                     const data = snap.data();
                     setChildData(data);
-                    setAvatarState(data.avatar); // her setter vi avatar
+                    setAvatarState(data.avatar);
                 }
             } catch (error) {
             } finally {
@@ -78,7 +78,6 @@ export default function ChildHomeScreen() {
                     />
                 )}
 
-
                 <AvatarModal
                     visible={pickerVisible}
                     selected={avatarState}
@@ -86,24 +85,24 @@ export default function ChildHomeScreen() {
                     onSelect={async (avatar) => {
                         setAvatarState(avatar);
                         setPickerVisible(false);
-                        if (id && typeof id === 'string') {
+                        if (
+                            id && householdId &&
+                            typeof id === 'string' &&
+                            typeof householdId === 'string'
+                        ) {
                             try {
-                                await updateChild(id, {
+                                await updateChild(householdId, id, {
                                     firstName: childData.firstName,
                                     dob: childData.dob,
                                     avatar: avatar,
                                     points: childData.points,
                                 });
-
                             } catch (error) {
-
+                                console.error('Kunne ikke oppdatere barnet:', error);
                             }
                         }
                     }}
-
                 />
-
-
 
                 <View style={styles.topSection}>
                     <TouchableOpacity onPress={() => setPickerVisible(true)} activeOpacity={0.8}>

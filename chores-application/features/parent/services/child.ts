@@ -14,29 +14,28 @@ import {
     deleteDoc
 } from 'firebase/firestore';
 import {Child} from "@/features/child/models/Child";
+import { collections } from '@/shared/paths/firebasePaths';
+
 
 export const createChild = async (data: { firstName: string; dob: string; avatar: string; householdId: any }) => {
     const user = getAuth().currentUser;
     if (!user) throw new Error('Ikke logget inn');
-
-    // hent householdId fra forelder
     const parentRef = doc(db, 'parents', user.uid);
     const parentSnap = await getDoc(parentRef);
     const householdId = parentSnap.data()?.householdId;
     if (!householdId) throw new Error('Fant ikke householdId');
 
-    await addDoc(collection(db, 'children'), {
-        ...data,
-        householdId,
-        points: 0,
-    });
+    await addDoc(
+        collection(db, collections.childrenByHousehold(householdId)),
+        {
+            ...data,
+            points: 0,
+        }
+    );
 }
 
     export const fetchChildrenByHousehold = async (householdId: string): Promise<Child[]> => {
-        const childrenQuery = query(
-            collection(db, 'children'),
-            where('householdId', '==', householdId)
-        );
+        const childrenQuery = collection(db, collections.childrenByHousehold(householdId));
 
         const childrenSnap = await getDocs(childrenQuery);
         return childrenSnap.docs.map(doc => ({
@@ -45,12 +44,14 @@ export const createChild = async (data: { firstName: string; dob: string; avatar
         })) as Child[];
     };
 
-export async function deleteChild(childId: string) {
-    const childRef = doc(db, 'children', childId);
+export async function deleteChild(householdId: string, childId: string) {
+    const childRef = doc(db, `households/${householdId}/children/${childId}`);
+
     await deleteDoc(childRef);
 }
 
 export const updateChild = async (
+    householdId: string,
     childId: string,
     updatedData: {
         firstName: string;
@@ -59,6 +60,6 @@ export const updateChild = async (
         points: number;
     }
 ) => {
-    const childRef = doc(db, 'children', childId);
+    const childRef = doc(db, collections.childDocPath(householdId, childId));
     await updateDoc(childRef, updatedData);
 };

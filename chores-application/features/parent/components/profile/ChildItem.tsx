@@ -6,9 +6,11 @@ type Props = {
     id: string;
     firstName: string;
     avatar: string;
+    householdId: string | null;
 };
 
-export default function ChildItem({ id, firstName, avatar }: Props) {
+
+export default function ChildItem({ id, firstName, avatar, householdId }: Props) {
     const router = useRouter();
 
     const handlePress = () => {
@@ -18,6 +20,7 @@ export default function ChildItem({ id, firstName, avatar }: Props) {
                 id,
                 name: firstName,
                 avatar,
+                householdId: householdId,
             },
         });
     };

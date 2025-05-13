@@ -8,19 +8,26 @@ import { childProfileStyles as styles } from '@/features/parent/styles/childProf
 import ChildProfileActions from '@/features/parent/components/ChildProfileActions';
 import {deleteChild} from "@/features/parent/services/child";
 import ConfirmDeleteModal from "@/features/modals/ConfirmDeleteModal";
+import { collections } from '@/shared/paths/firebasePaths';
 export default function ChildProfileScreen() {
 
-    const { id, name, avatar } = useLocalSearchParams();
+
+    const { id, name, avatar, householdId } = useLocalSearchParams();
     const [points, setPoints] = useState<number | null>(null);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [dob, setDob] = useState<Date | null>(null);
 
 
     useEffect(() => {
-        const fetchChildData = async () => {
-            if (!id || typeof id !== 'string') return;
+        if (
+            !id ||
+            typeof id !== 'string' ||
+            !householdId ||
+            typeof householdId !== 'string'
+        ) return;
 
-            const childRef = doc(db, 'children', id);
+        const fetchChildData = async () => {
+            const childRef = doc(db, collections.childDocPath(householdId, id));
             const childSnap = await getDoc(childRef);
 
             if (childSnap.exists()) {
@@ -31,7 +38,8 @@ export default function ChildProfileScreen() {
         };
 
         fetchChildData();
-    }, [id]);
+    }, [id, householdId]);
+
 
 
 
@@ -54,9 +62,10 @@ export default function ChildProfileScreen() {
                             pathname: '/(parent)/edit-child',
                             params: {
                                 id: id as string,
+                                householdId: householdId as string,
                                 firstName: name as string,
                                 avatar: avatar as string,
-                                dob: dob.toISOString(), // 👈 dette er nå riktig
+                                dob: dob.toISOString(),
                                 points: points?.toString() ?? '0',
                             },
                         });
@@ -73,7 +82,7 @@ export default function ChildProfileScreen() {
                     if (!id || typeof id !== 'string') return;
 
                     try {
-                        await deleteChild(id);
+                        await deleteChild(householdId as string, id);
                         setShowConfirmModal(false);
                         router.replace('/(parent)/(tabs)/profile');
                     } catch (error) {
