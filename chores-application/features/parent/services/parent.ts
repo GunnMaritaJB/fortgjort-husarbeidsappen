@@ -1,6 +1,7 @@
 import {getAuth} from "firebase/auth";
-import {doc, getDoc} from "firebase/firestore";
+import {doc, getDoc, updateDoc} from "firebase/firestore";
 import {db} from "@/firebaseConfig";
+import {Parent} from "@/features/parent/models/Parent";
 
 export const fetchParentInfo = async () => {
     const user = getAuth().currentUser;
@@ -15,6 +16,7 @@ export const fetchParentInfo = async () => {
     return {
         firstName: parentData.firstName,
         householdId: parentData.householdId,
+        avatar: parentData.avatar ?? '👤',
     };
 };
 
@@ -30,3 +32,8 @@ export const getParentHouseholdId = async (): Promise<string> => {
 
     return householdId;
 };
+
+export async function updateParent(id: string, data: Partial<Parent>) {
+    const ref = doc(db, 'parents', id);
+    await updateDoc(ref, data);
+}
