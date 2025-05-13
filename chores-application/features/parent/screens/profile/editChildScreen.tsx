@@ -2,7 +2,7 @@
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import CreateChildForm from '@/features/parent/forms/child/createChildForm';
-import {updateChild} from "@/features/parent/services/child";
+import {updateChild} from "@/features/child/services/child";
 
 export default function EditChildScreen() {
     const { id, householdId, firstName, avatar, dob, points } = useLocalSearchParams();

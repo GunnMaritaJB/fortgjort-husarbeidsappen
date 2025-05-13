@@ -1,12 +1,12 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { getDoc, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import { getAuth } from 'firebase/auth';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { createTaskForCurrentUser } from '@/features/task/services/task';
+import { createTaskStyles as styles } from '@/features/task/styles/createTaskStyles';
+
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
@@ -22,27 +22,19 @@ export default function CreateTaskScreen() {
     const handleSave = async () => {
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
 
-        const uid = getAuth().currentUser?.uid;
-        if (!uid) return;
+        try {
+            await createTaskForCurrentUser({
+                name: taskName,
+                points: Number(points),
+                recurring,
+                repeatDays,
+                dateForCompletion: dateForCompletion ?? null,
+            });
 
-        const parentDoc = await getDoc(doc(db, 'parents', uid));
-        const householdId = parentDoc.data()?.householdId;
-        if (!householdId) return;
-
-        await addDoc(collection(db, 'tasks'), {
-            name: taskName,
-            points: Number(points),
-            addedBy: uid,
-            householdId,
-            approved: false,
-            completed: false,
-            recurring,
-            repeatDays,
-            dateAssigned: serverTimestamp(),
-            dateForCompletion: recurring ? null : dateForCompletion,
-        });
-
-        router.replace('/tasks');
+            router.replace('/tasks');
+        } catch (err) {
+            console.error('Feil ved lagring av oppgave:', err);
+        }
     };
 
     return (
@@ -142,74 +134,3 @@ export default function CreateTaskScreen() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f1fefe', padding: 20 },
-    header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-    label: { marginTop: 16, fontSize: 16 },
-    input: {
-        backgroundColor: '#ddd',
-        padding: 10,
-        borderRadius: 10,
-        marginTop: 8,
-    },
-    datePickerBtn: {
-        backgroundColor: '#eee',
-        padding: 12,
-        borderRadius: 10,
-        marginTop: 8,
-        alignItems: 'center',
-    },
-    toggleRow: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 20,
-    },
-    toggleBtn: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 20,
-        marginHorizontal: 8,
-        backgroundColor: '#ddd',
-    },
-    selectedToggle: {
-        backgroundColor: '#b0e0d3',
-    },
-    weekRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        marginTop: 8,
-    },
-    dayBtn: {
-        margin: 4,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-        backgroundColor: '#ccc',
-    },
-    selectedDayBtn: {
-        backgroundColor: '#b0e0d3',
-    },
-    dayText: {
-        fontWeight: 'bold',
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 40,
-    },
-    saveButton: {
-        backgroundColor: '#b0e0d3',
-        paddingHorizontal: 32,
-        paddingVertical: 12,
-        borderRadius: 12,
-    },
-    cancelButton: {
-        backgroundColor: '#ccc',
-        paddingHorizontal: 32,
-        paddingVertical: 12,
-        borderRadius: 12,
-    },
-    buttonText: { fontSize: 16 },
-});

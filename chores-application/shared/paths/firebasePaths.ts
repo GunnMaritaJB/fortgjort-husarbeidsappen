@@ -11,5 +11,10 @@ export const collections = {
   childDocPath: (householdId: string, childID: string) =>
       `households/${householdId}/children/${childID}`,
 
+  tasksByHousehold: (householdId: string) => `households/${householdId}/tasks`,
+
+  taskDocPath: (householdId: string, taskId: string) => `households/${householdId}/tasks/${taskId}`,
+
+
 };
 

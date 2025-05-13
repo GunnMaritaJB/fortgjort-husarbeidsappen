@@ -5,7 +5,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import {useRouter} from "expo-router";
 import { householdHomeStyles as styles} from '../styles/householdHomeStyles';
-import { fetchChildrenByHousehold } from '@/features/parent/services/child';
+import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import {Child} from "@/features/child/models/Child";
 import MenuDrawer from '@/features/household/components/MenuDrawer';
 import { menuStyles } from '@/features/household/styles/menubar'

@@ -6,7 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { childProfileStyles as styles } from '@/features/parent/styles/childProfileStyles';
 import ChildProfileActions from '@/features/parent/components/ChildProfileActions';
-import {deleteChild} from "@/features/parent/services/child";
+import {deleteChild} from "@/features/child/services/child";
 import ConfirmDeleteModal from "@/features/modals/ConfirmDeleteModal";
 import { collections } from '@/shared/paths/firebasePaths';
 export default function ChildProfileScreen() {

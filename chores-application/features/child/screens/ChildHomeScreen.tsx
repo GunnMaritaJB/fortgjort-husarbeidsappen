@@ -6,7 +6,7 @@ import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import AvatarModal from '@/features/child/components/AvatarModal';
-import { updateChild } from '@/features/parent/services/child';
+import { updateChild } from '@/features/child/services/child';
 import {styles} from '../styles/homepagestyles';
 
 export default function ChildHomeScreen() {

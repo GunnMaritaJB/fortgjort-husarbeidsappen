@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text} from 'react-native';
 import { useRouter } from 'expo-router';
-import { fetchChildrenByHousehold} from '@/features/parent/services/child';
+import { fetchChildrenByHousehold} from '@/features/child/services/child';
 import { Child } from '@/features/child/models/Child';
 import {fetchParentInfo} from "@/features/parent/services/parent";
 import {sharedFormStyles as s} from '@/features/parent/styles/sharedParentStyles';
