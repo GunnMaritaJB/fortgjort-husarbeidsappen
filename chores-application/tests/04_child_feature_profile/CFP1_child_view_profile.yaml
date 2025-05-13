@@ -4,16 +4,18 @@ name: CFP1 View Child Profile
 clearState: true
 
 env:
-  CHILD_NAME: "Test Child"
+  CHILD_NAME: "Child"
 
 onFlowStart:
   - runFlow:
-      file: "../stubs/login_vio_for_child.yaml"
+      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
+  - runFlow:
+      file: "../stubs/logout_from_child.yaml"
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "dummyChild_1"
-- assertVisible: "Hei ${CHILD_NAME}!"
+    text: "Child"
+- assertVisible: "Hei, ${CHILD_NAME}!"

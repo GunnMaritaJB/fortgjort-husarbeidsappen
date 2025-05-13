@@ -1,0 +1,6 @@
+appId: com.anonymous.choresapplication
+---
+- tapOn:
+    id: "hamburgerButton"
+- tapOn:
+    id: "logOutUser"

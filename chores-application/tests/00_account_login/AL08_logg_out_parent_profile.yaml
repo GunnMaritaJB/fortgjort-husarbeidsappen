@@ -12,20 +12,21 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 #Log out from parentprofile
 - tapOn:
-    id: "${ID_OF_HOME_ICON}"
+    id: "parentNameLabel"
+
 - tapOn:
     text: "Logg ut"
-#Log out from user
-- tapOn:
-    id: "dummyUser"
 
 #Checks
-- assertVisible: "PIN-kode"
-- assertVisible: "OK"
-
+- assertVisible:
+    id: "hamburgerButton"
+- assertVisible:
+    id: "parentNameLabel"
 
 

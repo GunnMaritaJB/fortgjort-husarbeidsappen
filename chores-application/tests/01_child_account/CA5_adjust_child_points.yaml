@@ -7,27 +7,39 @@ onFlowStart:
       file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
-  -runFlow:
-    file: "../stubs/stop_app.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: "parentNameLabel"
+
 # add_child_btn er inne på parent profile
 - tapOn:
-    id: ""
-
-- tapOn:
-    id: "dummyChild_1"
+    id: "childTest"
 
 - tapOn:
     text: "Rediger profil"
 
 - tapOn:
-    text: "Rediger poengsum"
-
+    id: "inputPoints"
+- eraseText
 - inputText:
     text: "123"
 
+- hideKeyboard
+
 - tapOn:
     text: "Fullfør"
+
+- tapOn:
+    id: "childTest"
 
 - assertVisible: "Opptjente poeng: 123"
 

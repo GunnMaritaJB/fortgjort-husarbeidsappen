@@ -14,7 +14,7 @@ export default function ParentProfileScreen() {
     const [parentName, setParentName] = useState('Forelder');
     const [children, setChildren] = useState<Child[]>([]);
     const router = useRouter();
-    const handleAddChild = () => router.push('/(parent)/add-child');
+    const handleAddChild = () => router.push('/(parent)/(tabs)/profile/add-child');
     const handleLogout = () => router.replace('/(household)/home');
     const [householdId, setHouseholdId] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export default function ParentProfileScreen() {
                 const kids = await fetchChildrenByHousehold(householdId);
                 setChildren(kids);
             } catch (error) {
-                console.error('🚨 Klarte ikke hente data:', error);
+                console.error('Klarte ikke hente data:', error);
             }
         };
         loadData();

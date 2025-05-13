@@ -82,6 +82,7 @@ export default function CreateChildForm({
                     <Text style={s.label}>Poeng</Text>
                     <TextInput
                         style={s.input}
+                        testID="inputPoints"
                         value={String(points)}
                         onChangeText={(val) => setPoints(Number(val))}
                         keyboardType="numeric"

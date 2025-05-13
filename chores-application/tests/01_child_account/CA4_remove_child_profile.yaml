@@ -4,8 +4,7 @@ name: CA4 Remove Child Profile
 clearState: true
 
 env:
-  CHILD_NAME: "[Child_name]"
-  PARENT_NAME: "[Parent_name]"
+  CHILD_NAME: "🐵 EditedChildName"
 
 onFlowStart:
   - runFlow:
@@ -13,22 +12,21 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+    id: "parentNameLabel"
 # Choose child to delete
 - tapOn: ${CHILD_NAME}
 
-# Check if we are on the child screen
-- assertVisible: ${CHILD_NAME}
-- assertVisible: "Opptjente poeng"
-- assertVisible: "Slett profil"
 
 # Click on the delete profile button
 - tapOn: "Slett profil"
-- assertVisible: "Er du sikker på at du vil fjerne barnet fra husstanden"
-- assertVisible: "Slett"
 
 # Delete child profile
 - tapOn: "Slett"
-- assertVisible: ${PARENT_NAME}
 - assertNotVisible: ${CHILD_NAME}

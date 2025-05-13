@@ -1,0 +1,7 @@
+appId: com.anonymous.choresapplication
+---
+- tapOn:
+    id: "starMenuButton"
+- tapOn:
+    text: "Logg ut"
+

@@ -14,7 +14,7 @@ export default function ChildLayout() {
                     }}
                 />
             </SafeAreaView>
-            <FloatingMenu />
+            <FloatingMenu testID="starMenuButton" />
         </>
     );
 }

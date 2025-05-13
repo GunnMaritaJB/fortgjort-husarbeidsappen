@@ -1,0 +1,9 @@
+appId: com.anonymous.choresapplication
+---
+- tapOn:
+    id: "profileTab"
+- tapOn:
+      id: "profileTab"
+- tapOn:
+    text: "Logg ut"
+

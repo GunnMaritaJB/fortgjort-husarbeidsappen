@@ -64,8 +64,8 @@ export default function TasksHome() {
                     value={searchTerm}
                     onChangeText={setSearchTerm}
                 />
-                <TouchableOpacity onPress={() => router.push('/(parent)/(tasks)/create_task')}>
-                    <Ionicons name="add" size={28} color="black" />
+                <TouchableOpacity onPress={() => router.push('/(parent)/(tabs)/tasks/create_task')}>
+                    <Ionicons testID={"addTaskButton"} name="add" size={28} color="black" />
                 </TouchableOpacity>
             </View>
 

@@ -16,7 +16,7 @@ export const handleRegisterUser = async (
   }
 
   try {
-    await registerUser(email, password, firstName, '', '');
+    await registerUser(email, password, firstName, '', '👤');
 
     if (auth.currentUser) {
       await sendEmailVerification(auth.currentUser);

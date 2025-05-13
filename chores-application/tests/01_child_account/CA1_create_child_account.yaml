@@ -8,17 +8,26 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # add_child_btn er inne på parent profile
 - tapOn:
-    text: "+"
+    id: "parentNameLabel"
+
+- tapOn:
+    id: "addChildLabel"
 
 - tapOn:
     text: "Fornavn"
 
 - inputText:
-    text: "Child1"
+    text: "Child"
+
+- hideKeyboard
 
 - tapOn:
     text: "🦁"
@@ -26,8 +35,7 @@ onFlowComplete:
 - tapOn:
     text: "Fullfør"
 
-- assertVisible: "Child1"
-- assertVisible: "🦁"
+- assertVisible: "🦁 Child"
 
 
 

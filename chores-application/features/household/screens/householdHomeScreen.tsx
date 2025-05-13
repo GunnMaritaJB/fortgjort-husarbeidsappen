@@ -14,12 +14,13 @@ import { menuStyles } from '@/features/household/styles/menubar'
 
 export default function HouseholdHomeScreen() {
     const [householdName, setHouseholdName] = useState<string | null>(null);
-    const [parentName, setParentName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [children, setChildren] = useState<Child[]>([]);
     const [menuVisible, setMenuVisible] = useState(false);
     const [householdId, setHouseholdId] = useState<string | null>(null);
     const router = useRouter();
+    const [parentName, setParentName] = useState('');
+    const [avatar, setAvatar] = useState('👤');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,10 +32,10 @@ export default function HouseholdHomeScreen() {
                 const parentRef = doc(db, 'parents', uid);
                 const parentDoc = await getDoc(parentRef);
                 const parent = parentDoc.data();
-
+                const emoji = parent?.avatar;
                 setParentName(parent?.firstName ?? 'Forelder');
-
-                const householdId = parent?.householdId
+                setAvatar(typeof emoji === 'string' && emoji.trim().length > 0 ? emoji : '👤');
+                const householdId = parent?.householdId;
                 if (!householdId) {
                     console.log('Ingen householdId – sender til opprettelse');
                     router.replace('/(household)');
@@ -48,7 +49,7 @@ export default function HouseholdHomeScreen() {
                 setChildren(childrenData);
 
                 if (!householdDoc.exists()) {
-                    console.warn(' Husstand finnes ikke – rydder og sender til oppretting');
+                    console.warn('Husstand finnes ikke – rydder og sender til oppretting');
                     await updateDoc(parentRef, { householdId: null });
                     router.replace('/(household)');
                     return;
@@ -61,11 +62,11 @@ export default function HouseholdHomeScreen() {
             } finally {
                 setLoading(false);
             }
-
         };
 
         fetchData();
     }, []);
+
 
     if (loading) {
         return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
@@ -74,6 +75,7 @@ export default function HouseholdHomeScreen() {
         <View style={{ flex: 1, position: 'relative' }}>
             <TouchableOpacity
                 style={menuStyles.hamburgerButton}
+                testID="hamburgerButton"
                 onPress={() => setMenuVisible(!menuVisible)}
             >
                 <Text style={{ fontSize: 28 }}>☰</Text>
@@ -98,9 +100,11 @@ export default function HouseholdHomeScreen() {
                         onPress={() => router.push('/(parent)/(tabs)/profile')}
                     >
                         <View style={styles.avatarCircle}>
-                            <Text style={styles.avatarEmoji}>👩‍🦰</Text>
+                            <Text testID="parentNameLabel" style={styles.avatarEmoji}>{avatar}</Text>
                         </View>
-                        <Text style={styles.avatarLabel}>{parentName}</Text>
+                        <Text style={styles.avatarLabel} >
+                            {parentName}
+                        </Text>
                     </TouchableOpacity>
                 </View>
 

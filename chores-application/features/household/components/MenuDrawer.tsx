@@ -19,7 +19,7 @@ export default function MenuDrawer({ onClose }: { onClose: () => void }) {
             <TouchableOpacity onPress={handleLogout} style={menuStyles.logoutButton}>
                 <View style={menuStyles.iconWithText}>
                     <Feather name="log-out" size={20} color="#333" style={menuStyles.flippedIcon}/>
-                    <Text style={menuStyles.logoutText}>Logg ut</Text>
+                    <Text style={menuStyles.logoutText}testID="logOutUser">Logg ut</Text>
                 </View>
             </TouchableOpacity>
         </View>

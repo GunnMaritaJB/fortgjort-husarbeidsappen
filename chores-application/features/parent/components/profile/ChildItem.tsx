@@ -15,7 +15,7 @@ export default function ChildItem({ id, firstName, avatar, householdId }: Props)
 
     const handlePress = () => {
         router.push({
-            pathname: '/(parent)/child-profile',
+            pathname: '/(parent)/(tabs)/profile/child-profile',
             params: {
                 id,
                 name: firstName,
@@ -27,7 +27,7 @@ export default function ChildItem({ id, firstName, avatar, householdId }: Props)
 
     return (
         <TouchableOpacity style={p.childBox} onPress={handlePress}>
-            <Text style={p.childText}>{avatar} {firstName}</Text>
+            <Text style={p.childText} testID="childTest">{avatar} {firstName}</Text>
         </TouchableOpacity>
     );
 }

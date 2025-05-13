@@ -45,11 +45,10 @@ export default function ChildProfileScreen() {
 
     return (
         <View style={styles.container}>
-
             <View style={{ alignItems: 'center', marginTop: 10 }}>
                 <Text style={styles.avatar}>{avatar}</Text>
-                <Text style={styles.name}>{name}</Text>
-                <Text style={styles.points}>Opptjente poeng: {points ?? 'Laster...'}</Text>
+                <Text style={styles.name} testID="ChildName" >{name}</Text>
+                <Text style={styles.points} testID="opptjentePoeng">Opptjente poeng: {points ?? 'Laster...'}</Text>
             </View>
             <View style={{ marginTop: 100, width: '100%', alignItems: 'center' }}>
                 <ChildProfileActions
@@ -57,9 +56,8 @@ export default function ChildProfileScreen() {
                     onShowTasks={() => {}}
                     onEdit={() => {
                         if (!dob) return;
-
                         router.push({
-                            pathname: '/(parent)/edit-child',
+                            pathname: '/(parent)/profile/edit-child',
                             params: {
                                 id: id as string,
                                 householdId: householdId as string,

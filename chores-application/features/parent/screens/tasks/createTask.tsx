@@ -46,10 +46,12 @@ export default function CreateTaskScreen() {
                 value={taskName}
                 onChangeText={setTaskName}
                 style={styles.input}
+                testID={"taskNameInput"}
             />
 
             <Text style={styles.label}>Poengsum</Text>
             <TextInput
+                testID={"taskPointsInput"}
                 value={points}
                 onChangeText={setPoints}
                 keyboardType="numeric"
@@ -75,7 +77,7 @@ export default function CreateTaskScreen() {
                 <>
                     <Text style={styles.label}>Frist for oppgave</Text>
                     <TouchableOpacity style={styles.datePickerBtn} onPress={() => setShowDatePicker(true)}>
-                        <Text>
+                        <Text testID={"datePicker"}>
                             {dateForCompletion
                                 ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb })
                                 : ''}

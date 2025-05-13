@@ -1,23 +1,27 @@
 appId: com.anonymous.choresapplication
-name: TM1 View all tasks.tsx
+name: TM1 View all index.tsx
 
 clearState: true
-
 onFlowStart:
   - runFlow:
       file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # Press the task option on the menu bar
 - tapOn:
+    id: "parentNameLabel"
+- tapOn:
     id: "taskMenuButton"
-    label: "Go to task screen"
 
 # Press the task option on the menu bar
 - assertVisible: "OPPGAVER"
-- assertVisible: "Søk task"
+- assertVisible: "Søk i oppgaver"
 - assertVisible:
     id: "addTaskButton"

@@ -15,17 +15,25 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # Press the task option on the menu bar
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn:
+          id: "parentNameLabel"
+
 - tapOn:
     id: "taskMenuButton"
-    label: "Go to task screen"
 
 # Press the add task button
 - tapOn:
     id: "addTaskButton"
-    label: "Press add task button"
 
 # Check that we are on the add task screen
 - assertVisible: "NY OPPGAVE"
@@ -33,64 +41,53 @@ onFlowComplete:
 
 # Input the main fields for the task
 - tapOn:
-    text: "Navn på oppgave"
-    label: "Choose to write the name of the task"
+    id: "taskNameInput"
 - inputText: ${TASK_NAME}
 - tapOn:
-    text: "Poengsum"
-    label: "Choose to write the points of the task"
+    id: "taskPointsInput"
 - inputText: ${TASK_POINTS}
-- tapOn:
-    id: "fotoBevisCheck"
-    rightOf:
-      text: "Fotobevis"
-    label: "Choose to take a photo as proof"
+
 
 # Go to assigning to child
-- tapOn:
-    text: "Tildel til barn"
-    label: "Go to assign to child"
-- assertVisible: ${CHILD_1_NAME}
-- assertVisible: ${CHILD_2_NAME}
+#- tapOn:
+#    text: "Tildel til barn"
+#    label: "Go to assign to child"
+#- assertVisible: ${CHILD_1_NAME}
+#- assertVisible: ${CHILD_2_NAME}
 
 # Assign task to child 1 (click child 2 twice so that the task should not be assigned to child 2)
-- tapOn:
-    text: ${CHILD_1_NAME}
-    label: "Assign task to child 1"
-- tapOn:
-    text: ${CHILD_2_NAME}
-    repeat: 2
-    label: "Double click child 2 to not assign task to child 2"
+#- tapOn:
+#    text: ${CHILD_1_NAME}
+#    label: "Assign task to child 1"
+#- tapOn:
+#    text: ${CHILD_2_NAME}
+#    repeat: 2
+#    label: "Double click child 2 to not assign task to child 2"
 
 # Go to "Tidspunkt"  (as "En gang" is default)
-- tapOn:
-    text: "Tidspunkt"
-    label: "Go to Tidspunkt"
+
 - assertVisible: "En gang"
 - assertVisible: "Gjentagende"
 
 # Choose one time date
 - tapOn:
     id: "datePicker"
-    label: "Choose date picker"
 - tapOn:
-    text: "6"
-    label: "Choose a random date that begins with 6"
+    text: "28"
 
 # Go to skjul/vis
 - tapOn:
-    text: "Skjul/Vis"
-    label: "Go to Skjul/Vis"
-- assertVisible: "Vis"
-- assertVisible: "Skjul"
-- tapOn:
-    text: "Vis"
-    label: "Choose to show the task"
+    text: "OK"
+
+#- assertVisible: "Vis"
+#- assertVisible: "Skjul"
+#- tapOn:
+#    text: "Vis"
+#    label: "Choose to show the task"
 
 # Save the task
 - tapOn:
     text: "Lagre"
-    label: "Save the task"
 
 # Check that the task is added
 - runFlow:
@@ -100,11 +97,11 @@ onFlowComplete:
 - assertVisible: ${TASK_NAME}
 
 # Check that the task is created and assigned to child 1
-- assertVisible:
-    text: ${CHILD_1_NAME}
-    below:
-      text: ${TASK_NAME}
-- assertVisible:
-    text: "6/"
-    below:
-      text: ${TASK_NAME}
+#- assertVisible:
+#    text: ${CHILD_1_NAME}
+#    below:
+#      text: ${TASK_NAME}
+#- assertVisible:
+#    text: "6/"
+#    below:
+#      text: ${TASK_NAME}

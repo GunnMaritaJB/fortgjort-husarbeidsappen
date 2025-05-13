@@ -4,7 +4,7 @@ import { parentProfileStyles as p } from '@/features/parent/styles/parentProfile
 export default function AddChildButton({ onPress }: { onPress: () => void }) {
     return (
         <TouchableOpacity style={p.addChildButton} onPress={onPress}>
-            <Text style={p.addChildText}>＋</Text>
+            <Text style={p.addChildText} testID="addChildLabel">＋</Text>
         </TouchableOpacity>
     );
 }

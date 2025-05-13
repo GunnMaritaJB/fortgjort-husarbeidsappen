@@ -3,28 +3,22 @@ name: Log in
 # description: A simple flow to test the app's launch and welcome screen.
 clearState: true
 onFlowStart:
-  - launchApp
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
-  - stopApp
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
 
-- tapOn:
-    id: "logInUserName"
+- assertVisible:
+    id: "hamburgerButton"
+- assertVisible:
+    id: "parentNameLabel"
 
-- tapOn:
-    id: "emailInput"
 
-- inputText: "vionoreply@gmail.com"
-
-- tapOn:
-    id: "password_input"
-
-- inputText: "Testing123."
-
-- tapOn: "Logg inn"
-
-- assertVisible: "Test House"
 
 
 
