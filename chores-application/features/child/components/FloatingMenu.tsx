@@ -15,7 +15,7 @@ export default function FloatingMenu({}: FloatingMenuProps) {
     const [menuVisible, setMenuVisible] = useState(false);
     const router = useRouter();
     const starScale = useRef(new Animated.Value(1)).current;
-    const { childId } = useChild();
+    const { childId, householdId } = useChild();
 
 
 
@@ -97,7 +97,17 @@ export default function FloatingMenu({}: FloatingMenuProps) {
                             onPress={() => {
                                 setMenuVisible(false);
                                 playStarSpin(() => {
-                                    router.push('/(child)/(tabs)/tasks');
+                                    if (!childId || !householdId) {
+                                        console.warn('childId/householdId mangler');
+                                        return;
+                                    }
+                                    router.push({
+                                        pathname: '/(child)/(tabs)/tasks',
+                                        params: {
+                                            id: childId,
+                                            householdId,
+                                        },
+                                    });
                                 });
                             }}
                         />
