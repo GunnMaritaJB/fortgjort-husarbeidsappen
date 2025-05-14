@@ -37,6 +37,7 @@ export const createTaskForCurrentUser = async (task: {
     recurring: boolean;
     repeatDays: string[];
     dateForCompletion: Date | null;
+    assignedChildIds: string[];
 }) => {
     const uid = getAuth().currentUser?.uid;
     if (!uid) throw new Error('Bruker ikke innlogget');
@@ -56,5 +57,6 @@ export const createTaskForCurrentUser = async (task: {
         repeatDays: task.repeatDays,
         dateAssigned: serverTimestamp(),
         dateForCompletion: task.recurring ? null : task.dateForCompletion,
+        assignedTo: task.assignedChildIds,
     });
 };

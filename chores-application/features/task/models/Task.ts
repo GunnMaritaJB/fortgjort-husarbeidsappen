@@ -12,4 +12,5 @@ export interface Task {
     points: number;
     recurring: boolean;
     repeatDays?: string[];
+    assignedTo?: string[];
 }

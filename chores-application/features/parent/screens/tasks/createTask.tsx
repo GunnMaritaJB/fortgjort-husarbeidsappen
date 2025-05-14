@@ -1,11 +1,14 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { createTaskForCurrentUser } from '@/features/task/services/task';
 import { createTaskStyles as styles } from '@/features/task/styles/createTaskStyles';
+import { fetchChildrenByHousehold } from '@/features/child/services/child';
+import { getParentHouseholdId } from '@/features/parent/services/parent';
+import { Child } from '@/features/child/models/Child';
 
 
 export default function CreateTaskScreen() {
@@ -16,11 +19,31 @@ export default function CreateTaskScreen() {
     const [recurring, setRecurring] = useState(false);
     const [repeatDays, setRepeatDays] = useState<string[]>([]);
     const router = useRouter();
-
+    const [children, setChildren] = useState<Child[]>([]);
+    const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
     const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
+
+    useEffect(() => {
+        const loadChildren = async () => {
+            try {
+                const householdId = await getParentHouseholdId();
+                const data = await fetchChildrenByHousehold(householdId);
+                setChildren(data);
+            } catch (err) {
+                console.error('Kunne ikke hente barn:', err);
+            }
+        };
+        loadChildren();
+    }, []);
+
 
     const handleSave = async () => {
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
+
+        if (selectedChildIds.length === 0) {
+            alert('Du må velge minst ett barn');
+            return;
+        }
 
         try {
             await createTaskForCurrentUser({
@@ -29,6 +52,7 @@ export default function CreateTaskScreen() {
                 recurring,
                 repeatDays,
                 dateForCompletion: dateForCompletion ?? null,
+                assignedChildIds: selectedChildIds,
             });
 
             router.replace('/tasks');
@@ -48,6 +72,29 @@ export default function CreateTaskScreen() {
                 onChangeText={setTaskName}
                 style={styles.input}
             />
+
+            <Text style={styles.label}>Tildel til barn</Text>
+            <View style={styles.weekRow}>
+                {children.map((child) => {
+                    const isSelected = selectedChildIds.includes(child.id);
+                    return (
+                        <TouchableOpacity
+                            key={child.id}
+                            onPress={() => {
+                                if (isSelected) {
+                                    setSelectedChildIds(selectedChildIds.filter((id) => id !== child.id));
+                                } else {
+                                    setSelectedChildIds([...selectedChildIds, child.id]);
+                                }
+                            }}
+                            style={[styles.dayBtn, isSelected && styles.selectedDayBtn]}
+                        >
+                            <Text style={styles.dayText}>{child.firstName}</Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+
 
             <Text style={styles.label}>Poengsum</Text>
             <TextInput

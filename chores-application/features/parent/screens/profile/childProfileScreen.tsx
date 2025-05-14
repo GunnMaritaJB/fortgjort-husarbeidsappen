@@ -57,7 +57,7 @@ export default function ChildProfileScreen() {
                     onEdit={() => {
                         if (!dob) return;
                         router.push({
-                            pathname: '/(parent)/profile/edit-child',
+                            pathname: '/(parent)/(tabs)/profile/edit-child',
                             params: {
                                 id: id as string,
                                 householdId: householdId as string,

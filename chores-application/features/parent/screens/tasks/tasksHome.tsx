@@ -8,16 +8,38 @@ import { nb } from 'date-fns/locale';
 import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
 import { listenToTasksForParent } from '@/features/task/services/task';
 import { taskListStyles as styles } from '@/features/task/styles/taskListStyles';
+import { fetchChildrenByHousehold } from '@/features/child/services/child';
+import { getParentHouseholdId } from '@/features/parent/services/parent';
+import { Child } from '@/features/child/models/Child';
 
 export default function TasksHome() {
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [childMap, setChildMap] = useState<Record<string, string>>({});
     const [searchTerm, setSearchTerm] = useState('');
     const [sortByDeadline, setSortByDeadline] = useState<'asc' | 'desc' | null>(null);
 
 
     useEffect(() => {
         let unsubscribe: () => void;
+
+        const loadChildren = async () => {
+            try {
+                const householdId = await getParentHouseholdId();
+                const children = await fetchChildrenByHousehold(householdId);
+
+                const map: Record<string, string> = {};
+                children.forEach(child => {
+                    map[child.id] = child.firstName;
+                });
+                setChildMap(map);
+            } catch (err) {
+                console.error('Feil ved lasting av barn:', err);
+            }
+        };
+
+        loadChildren();
+
 
         const start = async () => {
             unsubscribe = await listenToTasksForParent(setTasks);
@@ -94,6 +116,11 @@ export default function TasksHome() {
                 renderItem={({ item }) => (
                     <View style={styles.taskItem}>
                         <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
+                        {item.assignedTo && item.assignedTo.length > 0 && (
+                            <Text style={styles.dueDate}>
+                                Tildelt: {item.assignedTo.map(id => childMap[id] ?? 'Ukjent').join(', ')}
+                            </Text>
+                        )}
                         {item.dateForCompletion && (
                             <Text style={styles.dueDate}>
                                 Frist: {format((item.dateForCompletion as any)?.toDate?.(), 'dd.MM.yyyy', { locale: nb })}
