@@ -1,8 +1,12 @@
-import { Tabs } from 'expo-router';
-import { View, SafeAreaView, StatusBar } from 'react-native';
-import FloatingMenu from '@/features/child/components/FloatingMenu';
+import {Tabs, useGlobalSearchParams} from 'expo-router';
+import {SafeAreaView} from "react-native";
+import { StatusBar } from 'react-native';
+import FloatingMenu from "@/features/child/components/FloatingMenu";
+
 
 export default function ChildLayout() {
+    const { householdId, id: childId } = useGlobalSearchParams();
+
     return (
         <>
             <SafeAreaView style={{ flex: 1 }}>
@@ -10,11 +14,11 @@ export default function ChildLayout() {
                 <Tabs
                     screenOptions={{
                         headerShown: false,
-                        tabBarStyle: { display: 'none' }, // Skjuler tab-baren siden du har egen floating menu
+                        tabBarStyle: { display: 'none' },
                     }}
                 />
             </SafeAreaView>
-            <FloatingMenu testID="starMenuButton" />
+            <FloatingMenu householdId={householdId as string} childId={childId as string} />
         </>
     );
 }

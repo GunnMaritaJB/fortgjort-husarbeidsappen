@@ -9,6 +9,8 @@ import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import {Child} from "@/features/child/models/Child";
 import MenuDrawer from '@/features/household/components/MenuDrawer';
 import { menuStyles } from '@/features/household/styles/menubar'
+import { useChild } from '@/shared/contexts/ChildContext';
+
 
 
 
@@ -21,6 +23,7 @@ export default function HouseholdHomeScreen() {
     const router = useRouter();
     const [parentName, setParentName] = useState('');
     const [avatar, setAvatar] = useState('👤');
+    const { setChild } = useChild();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,6 +50,7 @@ export default function HouseholdHomeScreen() {
                 const householdDoc = await getDoc(householdRef);
                 const childrenData = await fetchChildrenByHousehold(householdId);
                 setChildren(childrenData);
+
 
                 if (!householdDoc.exists()) {
                     console.warn('Husstand finnes ikke – rydder og sender til oppretting');
@@ -113,7 +117,8 @@ export default function HouseholdHomeScreen() {
                         <TouchableOpacity
                             key={child.id}
                             style={styles.avatarContainer}
-                            onPress={() =>
+                            onPress={() => {
+                                setChild(child.id, child.householdId);
                                 router.push({
                                     pathname: '/(child)/(tabs)/home',
                                     params: {
@@ -122,8 +127,8 @@ export default function HouseholdHomeScreen() {
                                         avatar: child.avatar,
                                         householdId: householdId,
                                     },
-                                })
-                            }
+                                });
+                            }}
                         >
                             <View style={styles.avatarCircle}>
                                 <Text style={styles.avatarEmoji}>{child.avatar}</Text>

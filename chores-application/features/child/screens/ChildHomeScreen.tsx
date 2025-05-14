@@ -14,10 +14,11 @@ export default function ChildHomeScreen() {
     const [loading, setLoading] = useState(true);
     const [pickerVisible, setPickerVisible] = useState(false);
     const router = useRouter();
-    const { id, householdId } = useGlobalSearchParams();
+    const { id: childId, householdId } = useGlobalSearchParams();
     const [avatarState, setAvatarState] = useState<string>('😀');
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const [showConfetti, setShowConfetti] = useState(false);
+
     const burst = () => {
         Animated.sequence([
             Animated.timing(scaleAnim, { toValue: 1.4, duration: 100, useNativeDriver: true }),
@@ -30,12 +31,13 @@ export default function ChildHomeScreen() {
 
     useEffect(() => {
         const fetchChild = async () => {
-            if (!id || !householdId || typeof id !== 'string' || typeof householdId !== 'string') {
+            if (!childId || !householdId || typeof childId !== 'string' || typeof householdId !== 'string') {
                 setLoading(false);
                 return;
             }
+
             try {
-                const childRef = doc(db, `households/${householdId}/children/${id}`);
+                const childRef = doc(db, `households/${householdId}/children/${childId}`);
                 const snap = await getDoc(childRef);
                 if (snap.exists()) {
                     const data = snap.data();
@@ -49,11 +51,12 @@ export default function ChildHomeScreen() {
         };
 
         fetchChild();
-    }, [id]);
+    }, [childId]);
 
     if (loading || !childData) {
         return <Text style={{ textAlign: 'center', marginTop: 100 }}>Laster barn...</Text>;
     }
+
     const { firstName, points, goal } = childData;
     const goalTitle = goal?.title;
     const goalCost = goal?.cost || 0;
@@ -86,12 +89,12 @@ export default function ChildHomeScreen() {
                         setAvatarState(avatar);
                         setPickerVisible(false);
                         if (
-                            id && householdId &&
-                            typeof id === 'string' &&
+                            childId && householdId &&
+                            typeof childId === 'string' &&
                             typeof householdId === 'string'
                         ) {
                             try {
-                                await updateChild(householdId, id, {
+                                await updateChild(householdId, childId, {
                                     firstName: childData.firstName,
                                     dob: childData.dob,
                                     avatar: avatar,
@@ -107,7 +110,7 @@ export default function ChildHomeScreen() {
                 <View style={styles.topSection}>
                     <TouchableOpacity onPress={() => setPickerVisible(true)} activeOpacity={0.8}>
                         <View style={styles.avatarCircle}>
-                            <Text style={styles.avatar}>{avatarState}</Text>
+                            <Text testID={"AvatarBtn"} style={styles.avatar}>{avatarState}</Text>
                         </View>
                     </TouchableOpacity>
                     <Text style={styles.greeting}>Hei, {firstName}!</Text>

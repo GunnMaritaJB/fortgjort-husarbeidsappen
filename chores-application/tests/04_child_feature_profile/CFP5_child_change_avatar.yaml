@@ -4,23 +4,23 @@ name: Child Change Avatar
 clearState: true
 onFlowStart:
   - runFlow:
-      file: "../stubs/login_vio_for_child.yaml"
+      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
-  -runFlow:
-    file: "../stubs/stop_app.yaml"
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "dummyChild_1"
+    text: "Child"
 
 - tapOn:
-    image: "avatar1.png"
+    id: "avatarBtn"
 
 - tapOn:
-    id: "avatar2"
+    text: "🐭"
 
 - assertVisible:
-    image: "avatar2.png"
+    image: "🐭"
 
 
 

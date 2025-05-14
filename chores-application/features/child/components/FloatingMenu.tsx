@@ -4,12 +4,20 @@ import { useRouter } from 'expo-router';
 import { useRef, useState, useEffect } from 'react';
 import CurvedMenuBackground from '@/features/child/components/CurvedMenuBackground';
 import { styles } from '../styles/menustyles';
+import { useChild } from '@/shared/contexts/ChildContext';
 
 
-export default function FloatingMenu({ testID }: { testID?: string }) {
+type FloatingMenuProps = {
+    householdId: string;
+    childId: string;
+};
+export default function FloatingMenu({}: FloatingMenuProps) {
     const [menuVisible, setMenuVisible] = useState(false);
     const router = useRouter();
     const starScale = useRef(new Animated.Value(1)).current;
+    const { childId } = useChild();
+
+
 
     useEffect(() => {
         if (menuVisible) {
@@ -52,19 +60,12 @@ export default function FloatingMenu({ testID }: { testID?: string }) {
         outputRange: ['0deg', '360deg'],
     });
 
-    const MenuItem = ({ title, icon, backgroundColor, route }: any) => {
-        const handlePress = () => {
-            setMenuVisible(false);
-            playStarSpin(() => {
-                router.push(route);
-            });
-        };
-
+    const MenuItem = ({ title, icon, backgroundColor, onPress }: any) => {
         return (
-            <TouchableOpacity  testID={testID}  style={[styles.menuItem, { backgroundColor }]} onPress={handlePress}>
+            <TouchableOpacity style={[styles.menuItem, { backgroundColor }]} onPress={onPress}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                    <Ionicons testID="starMenuButton"  name={icon} size={24} color="#4D4421" />
-                    <Text testID={testID} style={styles.menuText}>{title}</Text>
+                    <Ionicons testID="starMenuButton" name={icon} size={24} color="#4D4421" />
+                    <Text style={styles.menuText}>{title}</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -76,16 +77,70 @@ export default function FloatingMenu({ testID }: { testID?: string }) {
                 <>
                     <CurvedMenuBackground />
                     <View style={styles.menuContainer}>
-                        <MenuItem title="Hjem" icon="home" backgroundColor="#FFF59D" route="/(child)/(tabs)/home" />
-                        <MenuItem title="Oppgaver" icon="checkmark-done" backgroundColor="#81D4FA" route="/(child)/(tabs)/tasks" />
-                        <MenuItem title="Belønninger" icon="gift" backgroundColor="#A5D6A7" route="/(child)/(tabs)/rewards" />
-                        <MenuItem testID="logoutChildButton" title="Logg ut" icon="log-out" backgroundColor="#FF8A65"  route="/(household)/home" />
+                        <MenuItem
+                            title="Hjem"
+                            icon="home"
+                            backgroundColor="#FFF59D"
+                            onPress={() => {
+                                setMenuVisible(false);
+                                playStarSpin(() => {
+                                    router.push('/(child)/(tabs)/home');
+                                });
+                            }}
+                        />
+
+                        <MenuItem
+                            title="Oppgaver"
+                            icon="checkmark-done"
+                            backgroundColor="#81D4FA"
+                            onPress={() => {
+                                setMenuVisible(false);
+                                playStarSpin(() => {
+                                    router.push('/(child)/(tabs)/tasks');
+                                });
+                            }}
+                        />
+
+                        <MenuItem
+                            title="Belønninger"
+                            icon="gift"
+                            backgroundColor="#A5D6A7"
+                            onPress={() => {
+                                setMenuVisible(false);
+                                playStarSpin(() => {
+                                    if (!childId) {
+                                        console.warn('childId mangler – kan ikke åpne belønninger');
+                                        return;
+                                    }
+                                    router.push({
+                                        pathname: '/(child)/(tabs)/rewards',
+                                        params: {
+                                            id: childId,
+                                        },
+                                    });
+
+                                });
+                            }}
+                        />
+                        <MenuItem
+                            testID="logoutChildButton"
+                            title="Logg ut"
+                            icon="log-out"
+                            backgroundColor="#FF8A65"
+                            onPress={() => {
+                                setMenuVisible(false);
+                                playStarSpin(() => {
+                                    router.replace('/(household)/home');
+                                });
+                            }}
+                        />
+
                     </View>
                 </>
             )}
 
             <Animated.View style={[styles.fabButtonContainer, { transform: [{ scale: starScale }] }]}>
-                <TouchableOpacity testID={testID} style={styles.fabButton} onPress={toggleMenu}>
+                <TouchableOpacity  style={styles.fabButton} onPress={toggleMenu}>
                     <Animated.View style={{ transform: [{ rotate: spin }] }}>
                         <Ionicons  name="star" size={40} color="#fff" />
                     </Animated.View>

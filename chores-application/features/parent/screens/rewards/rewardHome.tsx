@@ -1,234 +1,142 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
-  StyleSheet,
-  Modal,
-  ViewStyle,
-  TextStyle,
   Text,
-  Button,
-} from "react-native";
-import { getAuth } from "firebase/auth";
-import { getHouseholdIdForUser } from "@/features/auth/services/authService";
-import {
-  RewardList,
-  SearchBar,
-  AddButton,
-  AddRewardForm,
-  EditRewardForm,
-} from "../../../reward/components/parent";
-import { collections } from "@/shared/paths/firebasePaths";
-import { Reward, RewardInputFromFrom } from "../../../reward/models/Reward";
-import {
-  collection,
-  addDoc,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
-import { db } from "@/firebaseConfig";
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
+import { useGlobalSearchParams } from 'expo-router';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+import { collections } from '@/shared/paths/firebasePaths';
 
-export default function RewardsScreen() {
-  const [query, setQuery] = useState<string>("");
-  const [householdId, setHouseholdId] = useState<string | null>(null);
-  const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
-  const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
-  const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
+interface Reward {
+  rewardID: string;
+  name: string;
+  pointPrice: number;
+}
+
+export default function ChildRewardsScreen() {
+  const { id: childId } = useGlobalSearchParams();
+  const [points, setPoints] = useState(0);
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchHouseholdId = async () => {
-      const user = getAuth().currentUser;
-      if (user) {
-        const id = await getHouseholdIdForUser(user.uid);
-        setHouseholdId(id);
+    const fetchData = async () => {
+      if (!childId || typeof childId !== 'string') return;
+
+      try {
+        // 1. Hent barnet
+        const childSnap = await getDoc(doc(db, `children/${childId}`));
+        if (!childSnap.exists()) return;
+
+        const childData = childSnap.data();
+        setPoints(childData.points || 0);
+        const householdId = childData.householdId;
+        if (!householdId) return;
+
+        // 2. Hent rewards for household
+        const rewardsSnap = await getDocs(
+            collection(db, collections.rewardsByHousehold(householdId))
+        );
+        const loadedRewards = rewardsSnap.docs.map((doc) => ({
+          rewardID: doc.id,
+          ...doc.data(),
+        })) as Reward[];
+
+        setRewards(loadedRewards);
+      } catch (error) {
+        console.error('Feil ved henting av rewards:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchHouseholdId();
+    fetchData();
   }, []);
 
+  if (loading) {
+    return <ActivityIndicator style={{ marginTop: 100 }} size="large" />;
+  }
+
   return (
-    <View style={styles.screen}>
-      <View style={styles.topContainer}>
-        <View style={styles.searchAndAdd}>
-          <SearchBar query={query} setQuery={setQuery} />
-          <AddButton onPress={() => setAddModalVisible(true)} />
+      <View style={styles.container}>
+        {/* Poengboble */}
+        <View style={styles.pointsBubble}>
+          <Text style={styles.points}>{points}</Text>
+          <Text style={styles.pointsLabel}>POENG</Text>
         </View>
-        <View style={styles.separator} />
-      </View>
-      <View style={styles.mainContainer}>
-        {householdId && (
-          <RewardList
-            query={query}
-            householdId={householdId}
-            onEdit={(reward) => {
-              setSelectedReward(reward);
-              setEditModalVisible(true);
-            }}
-          />
-        )}
-      </View>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={addModalVisible}
-        onRequestClose={() => {
-          setAddModalVisible(false);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Legg til belønning</Text>
-
-            <AddRewardForm
-              onSave={async (rewardData: RewardInputFromFrom) => {
-                const user = getAuth().currentUser;
-                if (!user || !householdId) {
-                  console.error("User or household ID not found.");
-                  return;
-                }
-
-                const newReward: Omit<Reward, "rewardID"> = {
-                  name: rewardData.name,
-                  pointPrice: rewardData.pointPrice,
-                  addedBy: user.uid,
-                };
-
-                try {
-                  await addDoc(
-                    collection(db, collections.rewardsByHousehold(householdId)),
-                    newReward
-                  );
-                  console.log("Reward added successfully!");
-                  setAddModalVisible(false);
-                } catch (error) {
-                  console.error("Error adding reward:", error);
-                }
-              }}
-              onCancel={() => {
-                setAddModalVisible(false);
-              }}
-            />
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={editModalVisible}
-        onRequestClose={() => {
-          setEditModalVisible(false);
-          setSelectedReward(null);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Rediger belønning</Text>
-
-            {selectedReward && householdId && (
-              <EditRewardForm
-                reward={selectedReward}
-                onSave={async (updated) => {
-                  try {
-                    const path = collections.rewardDocPath(
-                      householdId,
-                      selectedReward.rewardID
-                    );
-                    const rewardRef = doc(db, path);
-
-                    await updateDoc(rewardRef, {
-                      name: updated.name,
-                      pointPrice: updated.pointPrice,
-                    });
-
-                    console.log("Reward updated!");
-                    setEditModalVisible(false);
-                    setSelectedReward(null);
-                  } catch (err) {
-                    console.error("Failed to update reward:", err);
-                  }
-                }}
-                onDelete={async () => {
-                  try {
-                    const path = collections.rewardDocPath(
-                      householdId,
-                      selectedReward.rewardID
-                    );
-                    const rewardRef = doc(db, path);
-
-                    await deleteDoc(rewardRef);
-
-                    console.log("Reward deleted!");
-                    setEditModalVisible(false);
-                    setSelectedReward(null);
-                  } catch (err) {
-                    console.error("Failed to delete reward:", err);
-                  }
-                }}
-                onCancel={() => {
-                  setEditModalVisible(false);
-                  setSelectedReward(null);
-                }}
-              />
+        {/* Grid med belønninger */}
+        <FlatList
+            data={rewards}
+            keyExtractor={(item) => item.rewardID}
+            numColumns={3}
+            contentContainerStyle={styles.grid}
+            renderItem={({ item }) => (
+                <TouchableOpacity style={styles.rewardBubble} onPress={() => {}}>
+                  <Text style={styles.rewardPrice}>{item.pointPrice} ⭐</Text>
+                  <Text style={styles.rewardName}>{item.name}</Text>
+                </TouchableOpacity>
             )}
-          </View>
-        </View>
-      </Modal>
-    </View>
+        />
+      </View>
   );
 }
 
-const styles = StyleSheet.create<{
-  screen: ViewStyle;
-  separator: ViewStyle;
-  topContainer: ViewStyle;
-  searchAndAdd: ViewStyle;
-  mainContainer: ViewStyle;
-
-  modalContainer: ViewStyle;
-  modalContent: ViewStyle;
-  modalTitle: TextStyle;
-}>({
-  screen: {
+const styles = StyleSheet.create({
+  container: {
     flex: 1,
+    backgroundColor: '#E3F2FD',
+    paddingTop: 60,
+    paddingHorizontal: 10,
+  },
+  pointsBubble: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    backgroundColor: '#FFEB3B',
+    borderRadius: 40,
     paddingHorizontal: 16,
-    backgroundColor: "#e8f5e9",
+    paddingVertical: 8,
+    alignItems: 'center',
+    zIndex: 10,
+    elevation: 4,
   },
-  separator: {
-    height: 1,
-    width: "90%",
-    backgroundColor: "rgba(33, 33, 33, 0.89)",
-    marginVertical: 10,
-    alignSelf: "center",
+  points: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
   },
-  topContainer: {
-    flex: 1,
-    paddingTop: 30,
+  pointsLabel: {
+    fontSize: 12,
+    color: '#333',
   },
-  searchAndAdd: {
-    flexDirection: "row",
+  grid: {
+    paddingTop: 100,
+    paddingBottom: 40,
+    alignItems: 'center',
   },
-  mainContainer: {
-    flex: 5,
+  rewardBubble: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#BBDEFB',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    padding: 6,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.75)",
+  rewardPrice: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+    fontSize: 14,
   },
-  modalContent: {
-    backgroundColor: "#ddd",
-    padding: 20,
-    borderRadius: 5,
-    width: "80%",
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+  rewardName: {
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
