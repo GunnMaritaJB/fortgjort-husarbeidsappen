@@ -2,7 +2,7 @@ appId: com.anonymous.choresapplication
 ---
 - launchApp
 - tapOn:
-      text: "Logg inn med brukernavn og passord"
+      id: "logInUserName"
 - tapOn:
     id: "emailInput"
 - inputText: "test@testens.no"

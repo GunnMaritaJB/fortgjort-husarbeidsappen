@@ -16,9 +16,12 @@ onFlowComplete:
 ---
 # Press the task option on the menu bar
 - tapOn:
-    id: "parentNameLabel"
+    id: "parentUser"
+
 - tapOn:
-    id: "taskMenuButton"
+    text: "Oppgaver"
+    #id: "taskMenuButton"
+    label: "Go to task screen"
 
 # Press the task option on the menu bar
 - assertVisible: "OPPGAVER"

@@ -15,9 +15,11 @@ onFlowComplete:
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+    id: "parentUser"
 # Press the task option on the menu bar
 - tapOn:
-    id: "taskMenuButton"
+    text: "Oppgaver"
     label: "Go to task screen"
 
 # Press the add task button
@@ -31,18 +33,18 @@ onFlowComplete:
 
 # Input the main fields for the task
 - tapOn:
-    text: "Navn på oppgave"
+    id: "taskNameID"
     label: "Choose to write the name of the task"
 - inputText: ${TASK_NAME}
 - tapOn:
-    text: "Poengsum"
+    id: "pointsID"
     label: "Choose to write the points of the task"
 - inputText: ${TASK_POINTS}
-- tapOn:
-    id: "fotoBevisCheck"
-    rightOf:
-      text: "Fotobevis"
-    label: "Choose to take a photo as proof"
+#- tapOn:
+#    id: "fotoBevisCheck"
+#    rightOf:
+#      text: "Fotobevis"
+#    label: "Choose to take a photo as proof"
 
 # Save the task
 - tapOn:

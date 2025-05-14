@@ -21,6 +21,9 @@ onFlowComplete:
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+   id: "parentUser"
+
 # Press the task option on the menu bar
 - retry:
     maxRetries: 3
@@ -29,7 +32,9 @@ onFlowComplete:
           id: "parentNameLabel"
 
 - tapOn:
-    id: "taskMenuButton"
+
+    text: "Oppgaver"
+    label: "Go to task screen"
 
 # Press the add task button
 - tapOn:
@@ -41,12 +46,18 @@ onFlowComplete:
 
 # Input the main fields for the task
 - tapOn:
-    id: "taskNameInput"
+    id: "taskNameID"
+    label: "Choose to write the name of the task"
 - inputText: ${TASK_NAME}
 - tapOn:
-    id: "taskPointsInput"
+    id: "pointsID"
+    label: "Choose to write the points of the task"
 - inputText: ${TASK_POINTS}
-
+#- tapOn:
+#    id: "fotoBevisCheck"
+#    rightOf:
+#      text: "Fotobevis"
+#    label: "Choose to take a photo as proof"
 
 # Go to assigning to child
 #- tapOn:
