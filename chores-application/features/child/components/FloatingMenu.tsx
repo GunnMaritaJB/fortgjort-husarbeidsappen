@@ -19,6 +19,7 @@ export default function FloatingMenu({}: FloatingMenuProps) {
 
 
 
+
     useEffect(() => {
         if (menuVisible) {
             Animated.sequence([
@@ -140,7 +141,7 @@ export default function FloatingMenu({}: FloatingMenuProps) {
             )}
 
             <Animated.View style={[styles.fabButtonContainer, { transform: [{ scale: starScale }] }]}>
-                <TouchableOpacity  style={styles.fabButton} onPress={toggleMenu}>
+                <TouchableOpacity testID={"starMenuButton"} accessible={true} style={styles.fabButton} onPress={toggleMenu}>
                     <Animated.View style={{ transform: [{ rotate: spin }] }}>
                         <Ionicons  name="star" size={40} color="#fff" />
                     </Animated.View>

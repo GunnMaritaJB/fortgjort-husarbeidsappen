@@ -8,6 +8,10 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_child.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
@@ -20,7 +24,7 @@ onFlowComplete:
     text: "🐭"
 
 - assertVisible:
-    image: "🐭"
+    text: "🐭"
 
 
 
