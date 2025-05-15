@@ -25,14 +25,13 @@ onFlowComplete:
    id: "parentUser"
 
 # Press the task option on the menu bar
-- retry:
-    maxRetries: 3
-    commands:
-      - tapOn:
-          id: "parentNameLabel"
+#- retry:
+#    maxRetries: 3
+#    commands:
+#      - tapOn:
+#          id: "parentNameLabel"
 
 - tapOn:
-
     text: "Oppgaver"
     label: "Go to task screen"
 
@@ -49,10 +48,7 @@ onFlowComplete:
     id: "taskNameID"
     label: "Choose to write the name of the task"
 - inputText: ${TASK_NAME}
-- tapOn:
-    id: "pointsID"
-    label: "Choose to write the points of the task"
-- inputText: ${TASK_POINTS}
+
 #- tapOn:
 #    id: "fotoBevisCheck"
 #    rightOf:
@@ -60,9 +56,13 @@ onFlowComplete:
 #    label: "Choose to take a photo as proof"
 
 # Go to assigning to child
-#- tapOn:
-#    text: "Tildel til barn"
-#    label: "Go to assign to child"
+- assertVisible:
+    id: "assign_child"
+- tapOn:
+    id: "assign_child"
+- assertVisible:
+    id: "assign_child"
+    label: "Go to assign to child"
 #- assertVisible: ${CHILD_1_NAME}
 #- assertVisible: ${CHILD_2_NAME}
 
@@ -75,6 +75,11 @@ onFlowComplete:
 #    repeat: 2
 #    label: "Double click child 2 to not assign task to child 2"
 
+- tapOn:
+    id: "pointsID"
+    label: "Choose to write the points of the task"
+- inputText: ${TASK_POINTS}
+
 # Go to "Tidspunkt"  (as "En gang" is default)
 
 - assertVisible: "En gang"
@@ -85,16 +90,18 @@ onFlowComplete:
     id: "datePicker"
 - tapOn:
     text: "28"
-
-# Go to skjul/vis
 - tapOn:
     text: "OK"
 
-#- assertVisible: "Vis"
-#- assertVisible: "Skjul"
+# Go to skjul/vis
 #- tapOn:
-#    text: "Vis"
-#    label: "Choose to show the task"
+#    text: "OK"
+
+- assertVisible: "Vis"
+- assertVisible: "Skjul"
+- tapOn:
+    text: "Vis"
+    label: "Choose to show the task"
 
 # Save the task
 - tapOn:

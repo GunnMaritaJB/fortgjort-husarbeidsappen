@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
@@ -10,7 +10,6 @@ import { listenToTasksForParent } from '@/features/task/services/task';
 import { taskListStyles as styles } from '@/features/task/styles/taskListStyles';
 import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import { getParentHouseholdId } from '@/features/parent/services/parent';
-import { Child } from '@/features/child/models/Child';
 
 export default function TasksHome() {
     const router = useRouter();
@@ -18,7 +17,8 @@ export default function TasksHome() {
     const [childMap, setChildMap] = useState<Record<string, string>>({});
     const [searchTerm, setSearchTerm] = useState('');
     const [sortByDeadline, setSortByDeadline] = useState<'asc' | 'desc' | null>(null);
-
+    const [sortByChildName, setSortByChildName] = useState<'asc' | 'desc' | null>(null);
+    const [sortByVisibility, setSortByVisibility] = useState<'asc' | 'desc' | null>(null);
 
     useEffect(() => {
         let unsubscribe: () => void;
@@ -40,7 +40,6 @@ export default function TasksHome() {
 
         loadChildren();
 
-
         const start = async () => {
             unsubscribe = await listenToTasksForParent(setTasks);
         };
@@ -53,10 +52,20 @@ export default function TasksHome() {
     }, []);
 
     const filteredTasks = tasks
-        .filter(task =>
-            task.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        .filter(task => task.name.toLowerCase().includes(searchTerm.toLowerCase()))
         .sort((a, b) => {
+            if (sortByChildName) {
+                const nameA = (a.assignedTo?.map(id => childMap[id]) ?? ['']).join(', ');
+                const nameB = (b.assignedTo?.map(id => childMap[id]) ?? ['']).join(', ');
+                return sortByChildName === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            }
+
+            if (sortByVisibility) {
+                const visA = a.visibleToChild ? 1 : 0;
+                const visB = b.visibleToChild ? 1 : 0;
+                return sortByVisibility === 'asc' ? visA - visB : visB - visA;
+            }
+
             if (!sortByDeadline) return 0;
 
             const now = new Date();
@@ -93,7 +102,18 @@ export default function TasksHome() {
             </View>
 
             <View style={styles.filterRow}>
-                <Text style={styles.filter}>Barn</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        if (sortByChildName === 'asc') setSortByChildName('desc');
+                        else if (sortByChildName === 'desc') setSortByChildName(null);
+                        else setSortByChildName('asc');
+                    }}
+                >
+                    <Text style={styles.filter}>
+                        Barn {sortByChildName === 'asc' ? '▲' : sortByChildName === 'desc' ? '▼' : ''}
+                    </Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                     onPress={() => {
                         if (sortByDeadline === 'asc') setSortByDeadline('desc');
@@ -105,8 +125,20 @@ export default function TasksHome() {
                         Frist {sortByDeadline === 'asc' ? '▲' : sortByDeadline === 'desc' ? '▼' : ''}
                     </Text>
                 </TouchableOpacity>
+
                 <Text style={styles.filter}>Status</Text>
-                <Text style={styles.filter}>Synlig</Text>
+
+                <TouchableOpacity
+                    onPress={() => {
+                        if (sortByVisibility === 'asc') setSortByVisibility('desc');
+                        else if (sortByVisibility === 'desc') setSortByVisibility(null);
+                        else setSortByVisibility('asc');
+                    }}
+                >
+                    <Text style={styles.filter}>
+                        Synlig {sortByVisibility === 'asc' ? '▲' : sortByVisibility === 'desc' ? '▼' : ''}
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <FlatList
@@ -114,36 +146,58 @@ export default function TasksHome() {
                 keyExtractor={(item) => item.id}
                 ListEmptyComponent={<Text style={styles.noTasks}>Ingen oppgaver enda</Text>}
                 renderItem={({ item }) => (
-                    <View style={styles.taskItem}>
-                        <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
-                        {item.assignedTo && item.assignedTo.length > 0 && (
-                            <Text style={styles.dueDate}>
-                                Tildelt: {item.assignedTo.map(id => childMap[id] ?? 'Ukjent').join(', ')}
-                            </Text>
-                        )}
-                        {item.dateForCompletion && (
-                            <Text style={styles.dueDate}>
-                                Frist: {format((item.dateForCompletion as any)?.toDate?.(), 'dd.MM.yyyy', { locale: nb })}
-                            </Text>
-                        )}
-                        {item.recurring && Array.isArray(item.repeatDays) && item.repeatDays.length > 0 && (
-                            <View style={{ marginTop: 4 }}>
-                                <Text style={styles.dueDate}>Gjentas: {item.repeatDays?.join(', ')}</Text>
-                                {(() => {
-                                    const dates = getRecurringDates(item.repeatDays ?? [], new Date(), endOfMonth(new Date()));
-                                    const next = dates.find(d => d > new Date());
-                                    return next ? (
-                                        <Text style={styles.dueDate}>
-                                            Neste: {format(next, 'dd.MM.yyyy', { locale: nb })}
-                                        </Text>
-                                    ) : null;
-                                })()}
-                            </View>
-                        )}
-                    </View>
+                    <TouchableOpacity onPress={() => router.push(`/tasks/edit_task?id=${item.id}`)}>
+                        <View style={styles.taskItem}>
+                            <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
+
+                            {item.assignedTo && item.assignedTo.length > 0 && (
+                                <Text style={styles.dueDate}>
+                                    Tildelt: {item.assignedTo.map(id => childMap[id] ?? 'Ukjent').join(', ')}
+                                </Text>
+                            )}
+
+                            {item.dateForCompletion && (
+                                <Text style={styles.dueDate}>
+                                    Frist: {format((item.dateForCompletion as any)?.toDate?.(), 'dd.MM.yyyy', { locale: nb })}
+                                </Text>
+                            )}
+
+                            {item.recurring && Array.isArray(item.repeatDays) && item.repeatDays.length > 0 && (
+                                <View style={{ marginTop: 4 }}>
+                                    <Text style={styles.dueDate}>Gjentas: {item.repeatDays?.join(', ')}</Text>
+                                    {(() => {
+                                        const dates = getRecurringDates(item.repeatDays ?? [], new Date(), endOfMonth(new Date()));
+                                        const next = dates.find(d => d > new Date());
+                                        return next ? (
+                                            <Text style={styles.dueDate}>
+                                                Neste: {format(next, 'dd.MM.yyyy', { locale: nb })}
+                                            </Text>
+                                        ) : null;
+                                    })()}
+                                </View>
+                            )}
+
+                            {typeof item.visibleToChild === 'boolean' && (
+                                <Text
+                                    style={{
+                                        marginTop: 4,
+                                        paddingVertical: 4,
+                                        paddingHorizontal: 10,
+                                        borderRadius: 8,
+                                        backgroundColor: item.visibleToChild ? '#D4F1D7' : '#F2C2C2',
+                                        color: '#333',
+                                        alignSelf: 'flex-start',
+                                        fontSize: 12,
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {item.visibleToChild ? 'Synlig' : 'Skjult'}
+                                </Text>
+                            )}
+                        </View>
+                    </TouchableOpacity>
                 )}
             />
         </View>
-
     );
 }

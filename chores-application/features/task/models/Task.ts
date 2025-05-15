@@ -13,4 +13,5 @@ export interface Task {
     recurring: boolean;
     repeatDays?: string[];
     assignedTo?: string[];
+    visibleToChild: boolean;
 }

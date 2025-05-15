@@ -1,42 +1,60 @@
-import { ScrollView, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createTaskForCurrentUser } from '@/features/task/services/task';
 import { createTaskStyles as styles } from '@/features/task/styles/createTaskStyles';
 import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import { getParentHouseholdId } from '@/features/parent/services/parent';
+import { db } from '@/firebaseConfig';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Child } from '@/features/child/models/Child';
 
-
-export default function CreateTaskScreen() {
+export default function EditTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
     const [recurring, setRecurring] = useState(false);
     const [repeatDays, setRepeatDays] = useState<string[]>([]);
-    const router = useRouter();
+    const [visibleToChild, setVisibleToChild] = useState(true);
     const [children, setChildren] = useState<Child[]>([]);
     const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
     const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
-    const [visibleToChild, setVisibleToChild] = useState(true);
+
+    const router = useRouter();
+    const { id: taskId } = useLocalSearchParams();
 
     useEffect(() => {
-        const loadChildren = async () => {
+        const loadTaskAndChildren = async () => {
             try {
                 const householdId = await getParentHouseholdId();
+
+                // Fetch children
                 const data = await fetchChildrenByHousehold(householdId);
                 setChildren(data);
+
+                // Fetch task
+                const taskRef = doc(db, `households/${householdId}/tasks/${taskId}`);
+                const taskSnap = await getDoc(taskRef);
+                if (taskSnap.exists()) {
+                    const task = taskSnap.data();
+                    setTaskName(task.name);
+                    setPoints(task.points.toString());
+                    setRecurring(task.recurring);
+                    setRepeatDays(task.repeatDays || []);
+                    setDateForCompletion(task.dateForCompletion?.toDate?.() || new Date());
+                    setVisibleToChild(task.visibleToChild ?? true);
+                    setSelectedChildIds(task.assignedTo ?? []);
+                }
             } catch (err) {
-                console.error('Kunne ikke hente barn:', err);
+                console.error('Feil ved lasting:', err);
             }
         };
-        loadChildren();
-    }, []);
 
+        if (taskId) loadTaskAndChildren();
+    }, [taskId]);
 
     const handleSave = async () => {
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
@@ -47,30 +65,32 @@ export default function CreateTaskScreen() {
         }
 
         try {
-            await createTaskForCurrentUser({
+            const householdId = await getParentHouseholdId();
+            const taskRef = doc(db, `households/${householdId}/tasks/${taskId}`);
+
+            await updateDoc(taskRef, {
                 name: taskName,
                 points: Number(points),
                 recurring,
                 repeatDays,
-                dateForCompletion: dateForCompletion ?? null,
-                assignedChildIds: selectedChildIds,
+                dateForCompletion: recurring ? null : dateForCompletion,
+                assignedTo: selectedChildIds,
                 visibleToChild,
             });
 
-            router.replace('/tasks');
+            router.replace('/(parent)/(tabs)/tasks');
         } catch (err) {
-            console.error('Feil ved lagring av oppgave:', err);
+            console.error('Feil ved oppdatering av oppgave:', err);
         }
     };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.header}>NY OPPGAVE</Text>
+            <Text style={styles.header}>REDIGER OPPGAVE</Text>
 
             <Text style={styles.label}>Navn på oppgave</Text>
             <TextInput
                 value={taskName}
-                testID="taskNameID"
                 onChangeText={setTaskName}
                 style={styles.input}
             />
@@ -82,7 +102,6 @@ export default function CreateTaskScreen() {
                     return (
                         <TouchableOpacity
                             key={child.id}
-                            testID="assign_child"
                             onPress={() => {
                                 if (isSelected) {
                                     setSelectedChildIds(selectedChildIds.filter((id) => id !== child.id));
@@ -98,11 +117,9 @@ export default function CreateTaskScreen() {
                 })}
             </View>
 
-
             <Text style={styles.label}>Poengsum</Text>
             <TextInput
                 value={points}
-                testID="pointsID"
                 onChangeText={setPoints}
                 keyboardType="numeric"
                 style={styles.input}
@@ -126,7 +143,7 @@ export default function CreateTaskScreen() {
             {!recurring ? (
                 <>
                     <Text style={styles.label}>Frist for oppgave</Text>
-                    <TouchableOpacity style={styles.datePickerBtn} testID="datePicker" onPress={() => setShowDatePicker(true)}>
+                    <TouchableOpacity style={styles.datePickerBtn} onPress={() => setShowDatePicker(true)}>
                         <Text>
                             {dateForCompletion
                                 ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb })
@@ -174,11 +191,11 @@ export default function CreateTaskScreen() {
                     </View>
                 </>
             )}
+
             <View style={styles.toggleRow}>
                 <TouchableOpacity
                     style={[styles.toggleBtn, visibleToChild && styles.selectedToggle]}
                     onPress={() => setVisibleToChild(true)}
-                    testID="visibleToggle"
                 >
                     <Text>Vis</Text>
                 </TouchableOpacity>
@@ -186,12 +203,10 @@ export default function CreateTaskScreen() {
                 <TouchableOpacity
                     style={[styles.toggleBtn, !visibleToChild && styles.selectedToggle]}
                     onPress={() => setVisibleToChild(false)}
-                    testID="hiddenToggle"
                 >
                     <Text>Skjul</Text>
                 </TouchableOpacity>
             </View>
-
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
