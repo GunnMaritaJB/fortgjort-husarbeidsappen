@@ -3,6 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { collection, doc, getDoc,addDoc, serverTimestamp, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { Task } from '@/features/task/models/Task';
 import { collections } from '@/shared/paths/firebasePaths';
+import { Timestamp } from 'firebase/firestore';
 
 
 export const listenToTasksForParent = async (
@@ -57,7 +58,9 @@ export const createTaskForCurrentUser = async (task: {
         recurring: task.recurring,
         repeatDays: task.repeatDays,
         dateAssigned: serverTimestamp(),
-        dateForCompletion: task.recurring ? null : task.dateForCompletion,
+        dateForCompletion: task.dateForCompletion
+            ? Timestamp.fromDate(task.dateForCompletion)
+            : null,
         assignedTo: task.assignedChildIds,
         visibleToChild: task.visibleToChild,
     });

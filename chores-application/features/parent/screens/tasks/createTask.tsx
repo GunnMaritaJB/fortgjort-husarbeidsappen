@@ -9,7 +9,8 @@ import { createTaskStyles as styles } from '@/features/task/styles/createTaskSty
 import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import { getParentHouseholdId } from '@/features/parent/services/parent';
 import { Child } from '@/features/child/models/Child';
-
+import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
+import { Timestamp } from 'firebase/firestore';
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
@@ -45,6 +46,19 @@ export default function CreateTaskScreen() {
             alert('Du må velge minst ett barn');
             return;
         }
+        
+        let finalDateForCompletion: Date | null = dateForCompletion ?? null;
+
+        if (recurring && repeatDays.length > 0) {
+            const today = new Date();
+            const end = new Date();
+            end.setDate(end.getDate() + 30); // se 30 dager frem
+
+            const recurringDates = getRecurringDates(repeatDays, today, end);
+            if (recurringDates.length > 0) {
+                finalDateForCompletion = recurringDates[0]; // bruk første passende dato
+            }
+        }
 
         try {
             await createTaskForCurrentUser({
@@ -52,7 +66,7 @@ export default function CreateTaskScreen() {
                 points: Number(points),
                 recurring,
                 repeatDays,
-                dateForCompletion: dateForCompletion ?? null,
+                dateForCompletion: finalDateForCompletion,
                 assignedChildIds: selectedChildIds,
                 visibleToChild,
             });
@@ -62,6 +76,7 @@ export default function CreateTaskScreen() {
             console.error('Feil ved lagring av oppgave:', err);
         }
     };
+
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
