@@ -1,70 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { collection, doc, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useGlobalSearchParams } from 'expo-router';
 import { collections } from '@/shared/paths/firebasePaths';
 import CompleteTaskModal from '@/features/child/components/completeTaskModal';
 import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { Task, listenToTasksForChild, toggleTaskCompletion } from '@/features/task/services/task';
+
 
 
 export default function ChildTasksHomeScreen() {
-    const [tasks, setTasks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState<any | null>(null);
-
     const rawParams = useGlobalSearchParams();
     const childId = typeof rawParams.id === 'string' ? rawParams.id : Array.isArray(rawParams.id) ? rawParams.id[0] : null;
     const householdId = typeof rawParams.householdId === 'string' ? rawParams.householdId : Array.isArray(rawParams.householdId) ? rawParams.householdId[0] : null;
 
+    const [tasks, setTasks] = useState<Task[]>([]);
+
     useEffect(() => {
-        if (!childId || !householdId || typeof childId !== 'string' || typeof householdId !== 'string') {
-            console.warn('Ugyldig childId eller householdId');
-            setLoading(false);
-            return;
-        }
-
-        const q = query(
-            collection(db, collections.tasksByHousehold(householdId)),
-            where('assignedTo', 'array-contains', childId)
-        );
-
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const data = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setTasks(data);
-                setLoading(false);
-            },
-            (error) => {
-                console.error('Feil ved henting av oppgaver:', error);
-                setLoading(false);
-            }
-        );
-
-        return () => unsubscribe();
+        if (!childId || !householdId) return;
+        const unsubscribe = listenToTasksForChild(householdId, childId, setTasks, setLoading);
+        return unsubscribe;
     }, [childId, householdId]);
+
+
+    const confirmTaskDone = async () => {
+        if (!selectedTask || typeof householdId !== 'string') return;
+        await toggleTaskCompletion(householdId, selectedTask.id, !selectedTask.completed);
+        setModalVisible(false);
+        setSelectedTask(null);
+    };
 
     const handleCompleteTask = (task: any) => {
         setSelectedTask(task);
         setModalVisible(true);
-    };
-
-    const confirmTaskDone = async () => {
-        if (!selectedTask || typeof householdId !== 'string') return;
-
-        const taskRef = doc(db, collections.taskDocPath(householdId, selectedTask.id));
-
-        await updateDoc(taskRef, {
-            completed: !selectedTask.completed,
-        });
-
-        setModalVisible(false);
-        setSelectedTask(null);
     };
 
     const getEmoji = (taskName: string) => {

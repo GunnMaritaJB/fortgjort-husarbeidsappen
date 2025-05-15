@@ -1,11 +1,38 @@
+// features/task/services/taskService.ts
+import {
+    collection,
+    doc,
+    getDoc,
+    addDoc,
+    serverTimestamp,
+    onSnapshot,
+    orderBy,
+    query,
+    where,
+    updateDoc,
+    Timestamp, deleteDoc,
+} from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, getDoc,addDoc, serverTimestamp, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { Task } from '@/features/task/models/Task';
 import { collections } from '@/shared/paths/firebasePaths';
 import { Timestamp } from 'firebase/firestore';
 
+export type Task = {
+    id: string;
+    name: string;
+    points: number;
+    completed: boolean;
+    approved: boolean;
+    dateForCompletion?: Timestamp;
+    dateAssigned?: Timestamp;
+    assignedTo: string[];
+    recurring: boolean;
+    repeatDays: string[];
+    addedBy: string;
+    householdId: string;
+};
 
+// ✅ Hent oppgaver for forelder
 export const listenToTasksForParent = async (
     onUpdate: (tasks: Task[]) => void
 ): Promise<() => void> => {
@@ -22,7 +49,7 @@ export const listenToTasksForParent = async (
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-        const data: Task[] = snapshot.docs.map(doc => ({
+        const data: Task[] = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...(doc.data() as Omit<Task, 'id'>),
         }));
@@ -64,4 +91,82 @@ export const createTaskForCurrentUser = async (task: {
         assignedTo: task.assignedChildIds,
         visibleToChild: task.visibleToChild,
     });
+};
+
+import { getRecurringDates } from '@/features/task/services/generateRecurringDates'; // sørg for riktig path
+
+export const approveTask = async (householdId: string, taskId: string) => {
+    const taskRef = doc(db, collections.taskDocPath(householdId, taskId));
+    const taskSnap = await getDoc(taskRef);
+
+    if (!taskSnap.exists()) throw new Error('Fant ikke oppgaven');
+
+    const task = taskSnap.data();
+
+    if (task.recurring && Array.isArray(task.repeatDays)) {
+        //const nextDate = getRecurringDates(task.repeatDays);
+
+        await updateDoc(taskRef, {
+            completed: false,
+            approved: false,
+           // dateForCompletion: nextDate,
+            dateAssigned: serverTimestamp(),
+        });
+    } else {
+        await updateDoc(taskRef, { approved: true });
+    }
+};
+
+
+// 🆕 Fjern task
+export const deleteTask = async (householdId: string, taskId: string) => {
+    const taskRef = doc(db, collections.taskDocPath(householdId, taskId));
+    await deleteDoc(taskRef);
+};
+
+export const listenToTasksForChild = (
+    householdId: string,
+    childId: string,
+    onUpdate: (tasks: Task[]) => void,
+    setLoading: (loading: boolean) => void
+): (() => void) => {
+    const q = query(
+        collection(db, collections.tasksByHousehold(householdId)),
+        where('assignedTo', 'array-contains', childId)
+    );
+
+    const unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+            const now = new Date();
+            const data: Task[] = snapshot.docs
+                .map(doc => {
+                    const task = { id: doc.id, ...doc.data() } as Task;
+                    return task;
+                })
+                .filter(task => {
+                    const deadline = task.dateForCompletion?.toDate?.() ?? new Date(8640000000000000);
+                    const keep = !(task.completed && task.approved) && deadline >= now;
+                    return keep;
+                });
+
+            onUpdate(data);
+            setLoading(false);
+        },
+        (error) => {
+            console.error('🔥 Feil ved snapshot:', error);
+        }
+    );
+
+    return unsubscribe;
+};
+
+
+export const toggleTaskCompletion = async (
+    householdId: string,
+    taskId: string,
+    completed: boolean
+) => {
+    const taskRef = doc(db, collections.taskDocPath(householdId, taskId));
+    await updateDoc(taskRef, { completed });
 };
