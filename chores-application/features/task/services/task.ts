@@ -15,7 +15,7 @@ import {
 import { db } from '@/firebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { collections } from '@/shared/paths/firebasePaths';
-import { Timestamp } from 'firebase/firestore';
+
 
 export type Task = {
     id: string;

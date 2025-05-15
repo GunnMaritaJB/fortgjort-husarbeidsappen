@@ -1,4 +1,11 @@
-import { ScrollView, View, Text, TextInput, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+    ScrollView,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Platform,
+} from 'react-native';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { format } from 'date-fns';
@@ -10,20 +17,20 @@ import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import { getParentHouseholdId } from '@/features/parent/services/parent';
 import { Child } from '@/features/child/models/Child';
 import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
-import { Timestamp } from 'firebase/firestore';
 
 export default function CreateTaskScreen() {
     const [taskName, setTaskName] = useState('');
     const [points, setPoints] = useState('');
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [dateForCompletion, setDateForCompletion] = useState<Date | undefined>(new Date());
+    const [dateForCompletion, setDateForCompletion] = useState(new Date());
     const [recurring, setRecurring] = useState(false);
     const [repeatDays, setRepeatDays] = useState<string[]>([]);
-    const router = useRouter();
     const [children, setChildren] = useState<Child[]>([]);
     const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
-    const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
     const [visibleToChild, setVisibleToChild] = useState(true);
+    const router = useRouter();
+
+    const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
 
     useEffect(() => {
         const loadChildren = async () => {
@@ -35,9 +42,9 @@ export default function CreateTaskScreen() {
                 console.error('Kunne ikke hente barn:', err);
             }
         };
+
         loadChildren();
     }, []);
-
 
     const handleSave = async () => {
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
@@ -46,17 +53,17 @@ export default function CreateTaskScreen() {
             alert('Du må velge minst ett barn');
             return;
         }
-        
+
         let finalDateForCompletion: Date | null = dateForCompletion ?? null;
 
         if (recurring && repeatDays.length > 0) {
             const today = new Date();
             const end = new Date();
-            end.setDate(end.getDate() + 30); // se 30 dager frem
+            end.setDate(today.getDate() + 30);
 
             const recurringDates = getRecurringDates(repeatDays, today, end);
             if (recurringDates.length > 0) {
-                finalDateForCompletion = recurringDates[0]; // bruk første passende dato
+                finalDateForCompletion = recurringDates[0];
             }
         }
 
@@ -76,7 +83,6 @@ export default function CreateTaskScreen() {
             console.error('Feil ved lagring av oppgave:', err);
         }
     };
-
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -100,9 +106,11 @@ export default function CreateTaskScreen() {
                             testID="assign_child"
                             onPress={() => {
                                 if (isSelected) {
-                                    setSelectedChildIds(selectedChildIds.filter((id) => id !== child.id));
+                                    setSelectedChildIds((prev) =>
+                                        prev.filter((id) => id !== child.id)
+                                    );
                                 } else {
-                                    setSelectedChildIds([...selectedChildIds, child.id]);
+                                    setSelectedChildIds((prev) => [...prev, child.id]);
                                 }
                             }}
                             style={[styles.dayBtn, isSelected && styles.selectedDayBtn]}
@@ -112,7 +120,6 @@ export default function CreateTaskScreen() {
                     );
                 })}
             </View>
-
 
             <Text style={styles.label}>Poengsum</Text>
             <TextInput
@@ -141,7 +148,11 @@ export default function CreateTaskScreen() {
             {!recurring ? (
                 <>
                     <Text style={styles.label}>Frist for oppgave</Text>
-                    <TouchableOpacity style={styles.datePickerBtn} testID="datePicker" onPress={() => setShowDatePicker(true)}>
+                    <TouchableOpacity
+                        style={styles.datePickerBtn}
+                        onPress={() => setShowDatePicker(true)}
+                        testID="datePicker"
+                    >
                         <Text>
                             {dateForCompletion
                                 ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb })
@@ -151,12 +162,12 @@ export default function CreateTaskScreen() {
 
                     {showDatePicker && (
                         <DateTimePicker
-                            value={dateForCompletion || new Date()}
+                            value={dateForCompletion}
                             mode="date"
-                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
                             onChange={(event, selectedDate) => {
                                 setShowDatePicker(false);
-                                if (event.type === 'set' && selectedDate) {
+                                if (event?.type === 'set' && selectedDate) {
                                     setDateForCompletion(selectedDate);
                                 }
                             }}
@@ -189,6 +200,7 @@ export default function CreateTaskScreen() {
                     </View>
                 </>
             )}
+
             <View style={styles.toggleRow}>
                 <TouchableOpacity
                     style={[styles.toggleBtn, visibleToChild && styles.selectedToggle]}
@@ -206,7 +218,6 @@ export default function CreateTaskScreen() {
                     <Text>Skjul</Text>
                 </TouchableOpacity>
             </View>
-
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
