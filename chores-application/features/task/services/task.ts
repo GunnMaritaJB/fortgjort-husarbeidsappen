@@ -161,7 +161,6 @@ export const listenToTasksForChild = (
     return unsubscribe;
 };
 
-
 export const toggleTaskCompletion = async (
     householdId: string,
     taskId: string,
