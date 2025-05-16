@@ -14,9 +14,13 @@ onFlowComplete:
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+
+- tapOn:
+    id: "parentUser"
+
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
+    text: "Oppgaver"
     label: "Go to task screen"
 
 # Find the task to edit
