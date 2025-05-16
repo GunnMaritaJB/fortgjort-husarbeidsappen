@@ -3,20 +3,44 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGlobalSearchParams } from 'expo-router';
 
-import { fetchRewardsForHousehold } from '@/features/reward/services/rewardService';
+import { fetchRewardsForHousehold, purchaseReward } from '@/features/reward/services/rewardService';
 import { Reward } from '@/features/reward/models/Reward';
 import { getChildById } from '@/features/child/services/child';
-
+import ConfirmRewardPurchaseModal from '@/features/reward/components/child/ConfirmRewardPurchaseModal';
 
 export default function ChildRewardsHomeScreen() {
     const [rewards, setRewards] = useState<Reward[]>([]);
     const [loading, setLoading] = useState(true);
     const [points, setPoints] = useState<number>(0);
 
-    const { householdId, id: childId } = useGlobalSearchParams();
+    const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
+    const [confirmVisible, setConfirmVisible] = useState(false);
+
+    const { householdId: rawHouseholdId, id: rawChildId } = useGlobalSearchParams();
+    const householdId = typeof rawHouseholdId === 'string' ? rawHouseholdId : rawHouseholdId?.[0];
+    const childId = typeof rawChildId === 'string' ? rawChildId : rawChildId?.[0];
+
+    const handlePressReward = (reward: Reward) => {
+        setSelectedReward(reward);
+        setConfirmVisible(true);
+    };
+
+    const handleConfirmPurchase = async () => {
+        if (!householdId || !childId || !selectedReward) return;
+
+        try {
+            await purchaseReward(householdId, childId, selectedReward);
+            setPoints(prev => prev - selectedReward.pointPrice);
+            setConfirmVisible(false);
+            setSelectedReward(null);
+        } catch (error) {
+            console.error('❌ Klarte ikke å kjøpe reward:', error);
+            // Vis en feilmelding til bruker hvis ønsket
+        }
+    };
 
     useEffect(() => {
-        if (!householdId || !childId || typeof householdId !== 'string' || typeof childId !== 'string') return;
+        if (!householdId || !childId) return;
 
         const loadData = async () => {
             setLoading(true);
@@ -25,7 +49,6 @@ export default function ChildRewardsHomeScreen() {
                     fetchRewardsForHousehold(householdId),
                     getChildById(householdId, childId),
                 ]);
-
                 setRewards(rewardsData);
                 setPoints(childData.points || 0);
             } finally {
@@ -36,38 +59,25 @@ export default function ChildRewardsHomeScreen() {
         loadData();
     }, [householdId, childId]);
 
-
-
-
     const renderItem = ({ item }: { item: Reward }) => (
-        <View style={styles.rewardCircle}>
+        <TouchableOpacity onPress={() => handlePressReward(item)} style={styles.rewardCircle}>
             <Text style={styles.rewardTitle}>{item.name}</Text>
             <View style={styles.priceTag}>
                 <Text style={styles.priceText}>{item.pointPrice}p</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     if (loading) {
         return (
-            <LinearGradient
-                colors={['#D7FBE8', '#FFF8DC']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.container}
-            >
+            <LinearGradient colors={['#D7FBE8', '#FFF8DC']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.container}>
                 <Text style={{ textAlign: 'center', marginTop: 100 }}>Laster belønninger...</Text>
             </LinearGradient>
         );
     }
 
     return (
-        <LinearGradient
-            colors={['#D7FBE8', '#FFF8DC']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.container}
-        >
+        <LinearGradient colors={['#D7FBE8', '#FFF8DC']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.container}>
             <View style={styles.pointsContainer}>
                 <View style={styles.starburst}>
                     <Text style={styles.pointsText}>{points}</Text>
@@ -87,9 +97,20 @@ export default function ChildRewardsHomeScreen() {
             <TouchableOpacity style={styles.backpackButton}>
                 <Text style={styles.backpackText}>🎒</Text>
             </TouchableOpacity>
+
+            {selectedReward && (
+                <ConfirmRewardPurchaseModal
+                    visible={confirmVisible}
+                    rewardName={selectedReward.name}
+                    rewardPrice={selectedReward.pointPrice}
+                    onConfirm={handleConfirmPurchase}
+                    onCancel={() => setConfirmVisible(false)}
+                />
+            )}
         </LinearGradient>
     );
 }
+
 
 
 const CIRCLE_SIZE = 90;
