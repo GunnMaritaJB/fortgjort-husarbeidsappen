@@ -5,25 +5,39 @@ import { useGlobalSearchParams } from 'expo-router';
 
 import { fetchRewardsForHousehold } from '@/features/reward/services/rewardService';
 import { Reward } from '@/features/reward/models/Reward';
+import { getChildById } from '@/features/child/services/child';
+
 
 export default function ChildRewardsHomeScreen() {
     const [rewards, setRewards] = useState<Reward[]>([]);
     const [loading, setLoading] = useState(true);
+    const [points, setPoints] = useState<number>(0);
 
-    const { householdId } = useGlobalSearchParams();
+    const { householdId, id: childId } = useGlobalSearchParams();
 
     useEffect(() => {
-        const loadRewards = async () => {
-            if (!householdId || typeof householdId !== 'string') return;
+        if (!householdId || !childId || typeof householdId !== 'string' || typeof childId !== 'string') return;
 
+        const loadData = async () => {
             setLoading(true);
-            const data = await fetchRewardsForHousehold(householdId);
-            setRewards(data);
-            setLoading(false);
+            try {
+                const [rewardsData, childData] = await Promise.all([
+                    fetchRewardsForHousehold(householdId),
+                    getChildById(householdId, childId),
+                ]);
+
+                setRewards(rewardsData);
+                setPoints(childData.points || 0);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        loadRewards();
-    }, [householdId]);
+        loadData();
+    }, [householdId, childId]);
+
+
+
 
     const renderItem = ({ item }: { item: Reward }) => (
         <View style={styles.rewardCircle}>
@@ -56,7 +70,7 @@ export default function ChildRewardsHomeScreen() {
         >
             <View style={styles.pointsContainer}>
                 <View style={styles.starburst}>
-                    <Text style={styles.pointsText}>123</Text>
+                    <Text style={styles.pointsText}>{points}</Text>
                     <Text style={styles.pointsLabel}>POENG</Text>
                 </View>
             </View>
@@ -132,22 +146,22 @@ const styles = StyleSheet.create({
     },
     priceTag: {
         position: 'absolute',
-        top: -6,
-        right: -6,
+        top: 6,
+        right: 3,
         backgroundColor: '#FFD600',
-        borderRadius: 10,
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        elevation: 2,
+        borderRadius: 12,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
     },
-
     priceText: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: 'bold',
+        color: '#333',
     },
     backpackButton: {
         position: 'absolute',

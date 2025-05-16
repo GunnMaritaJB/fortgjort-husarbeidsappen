@@ -127,6 +127,7 @@ export default function FloatingMenu({}: FloatingMenuProps) {
                                         pathname: '/(child)/(tabs)/rewards',
                                         params: {
                                             id: childId,
+                                            householdId: householdId,
                                         },
                                     });
 

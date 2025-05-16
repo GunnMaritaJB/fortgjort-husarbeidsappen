@@ -63,3 +63,16 @@ export const updateChild = async (
     const childRef = doc(db, collections.childDocPath(householdId, childId));
     await updateDoc(childRef, updatedData);
 };
+
+export const getChildById = async (householdId: string, childId: string): Promise<Child> => {
+    const childRef = doc(db, collections.childDocPath(householdId, childId));
+    const snap = await getDoc(childRef);
+    if (!snap.exists()) {
+        throw new Error('Barn ikke funnet');
+    }
+
+    return {
+        id: childId,
+        ...snap.data(),
+    } as Child;
+};
