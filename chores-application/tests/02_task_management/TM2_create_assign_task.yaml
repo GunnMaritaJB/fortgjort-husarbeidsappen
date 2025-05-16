@@ -56,13 +56,13 @@ onFlowComplete:
 #    label: "Choose to take a photo as proof"
 
 # Go to assigning to child
-- assertVisible:
-    id: "assign_child"
+- tapOn:
+    text: "Tildel til barn"
 - tapOn:
     id: "assign_child"
 - assertVisible:
     id: "assign_child"
-    label: "Go to assign to child"
+#    label: "Go to assign to child"
 #- assertVisible: ${CHILD_1_NAME}
 #- assertVisible: ${CHILD_2_NAME}
 
@@ -86,6 +86,8 @@ onFlowComplete:
 - assertVisible: "Gjentagende"
 
 # Choose one time date
+- assertVisible:
+    id: "datePicker"
 - tapOn:
     id: "datePicker"
 - tapOn:

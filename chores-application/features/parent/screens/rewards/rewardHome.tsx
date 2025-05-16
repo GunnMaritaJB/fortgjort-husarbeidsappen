@@ -50,11 +50,12 @@ export default function RewardsScreen() {
   return (
       <View style={styles.screen}>
         <View style={styles.topContainer}>
+          <Text style={styles.header}>BELØNNINGER</Text>
           <View style={styles.searchAndAdd}>
             <SearchBar query={query} setQuery={setQuery} />
             <AddButton onPress={() => setAddModalVisible(true)} />
           </View>
-          <View style={styles.separator} />
+
         </View>
         <View style={styles.mainContainer}>
           {householdId && (
@@ -113,6 +114,7 @@ export default function RewardsScreen() {
             </View>
           </View>
         </Modal>
+
 
         <Modal
             animationType="fade"
@@ -177,10 +179,13 @@ export default function RewardsScreen() {
           </View>
         </Modal>
       </View>
+
   );
 }
 
+
 const styles = StyleSheet.create<{
+  header: TextStyle;
   screen: ViewStyle;
   separator: ViewStyle;
   topContainer: ViewStyle;
@@ -194,7 +199,14 @@ const styles = StyleSheet.create<{
   screen: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: "#e8f5e9",
+    backgroundColor: "#f0fdfb",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 16,
+    color: '#000',
   },
   separator: {
     height: 1,
@@ -209,7 +221,11 @@ const styles = StyleSheet.create<{
   },
   searchAndAdd: {
     flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
+
   mainContainer: {
     flex: 5,
   },
@@ -231,4 +247,6 @@ const styles = StyleSheet.create<{
     fontWeight: "bold",
     marginBottom: 10,
   },
+
+
 });

@@ -6,6 +6,7 @@ import {
   ViewStyle,
   TextStyle,
 } from "react-native";
+import {Ionicons} from "@expo/vector-icons";
 
 type AddButtonProps = {
   onPress: () => void;
@@ -18,13 +19,13 @@ const AddButton = (props: AddButtonProps) => {
   };
 
   return (
-    <Pressable style={styles.container} onPress={handlePress}>
-      <Text style={styles.symbol}>+</Text>
-    </Pressable>
+      <Pressable onPress={handlePress}>
+        <Ionicons name="add" size={28} color="black" />
+      </Pressable>
   );
 };
 
-const styles = StyleSheet.create<{
+/*const styles = StyleSheet.create<{
   container: ViewStyle;
   symbol: TextStyle;
 }>({
@@ -37,5 +38,5 @@ const styles = StyleSheet.create<{
     fontWeight: "bold",
     color: "#000",
   },
-});
+});*/
 export default AddButton;
