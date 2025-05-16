@@ -52,3 +52,18 @@ export const purchaseReward = async (
         purchase
     );
 };
+
+
+export const fetchPurchasedRewards = async (
+    householdId: string,
+    childId: string
+): Promise<PurchasedReward[]> => {
+    const snapshot = await getDocs(
+        collection(db, `households/${householdId}/children/${childId}/purchasedRewards`)
+    );
+
+    return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    })) as PurchasedReward[];
+};

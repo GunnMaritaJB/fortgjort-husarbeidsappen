@@ -3,18 +3,29 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGlobalSearchParams } from 'expo-router';
 
-import { fetchRewardsForHousehold, purchaseReward } from '@/features/reward/services/rewardService';
+import {
+    fetchPurchasedRewards,
+    fetchRewardsForHousehold,
+    purchaseReward
+} from '@/features/reward/services/rewardService';
 import { Reward } from '@/features/reward/models/Reward';
 import { getChildById } from '@/features/child/services/child';
 import ConfirmRewardPurchaseModal from '@/features/reward/components/child/ConfirmRewardPurchaseModal';
+import BackpackModal from '@/features/reward/components/child/BackpackModal';
+import {PurchasedReward} from "@/features/reward/models/PurchasedReward";
+
 
 export default function ChildRewardsHomeScreen() {
     const [rewards, setRewards] = useState<Reward[]>([]);
     const [loading, setLoading] = useState(true);
     const [points, setPoints] = useState<number>(0);
+    const [purchasedRewards, setPurchasedRewards] = useState<PurchasedReward[]>([]);
+
 
     const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
     const [confirmVisible, setConfirmVisible] = useState(false);
+    const [backpackVisible, setBackpackVisible] = useState(false);
+
 
     const { householdId: rawHouseholdId, id: rawChildId } = useGlobalSearchParams();
     const householdId = typeof rawHouseholdId === 'string' ? rawHouseholdId : rawHouseholdId?.[0];
@@ -59,6 +70,18 @@ export default function ChildRewardsHomeScreen() {
         loadData();
     }, [householdId, childId]);
 
+    useEffect(() => {
+        if (!householdId || !childId) return;
+
+        const loadPurchases = async () => {
+            const purchases = await fetchPurchasedRewards(householdId, childId);
+            setPurchasedRewards(purchases);
+        };
+
+        loadPurchases();
+    }, [householdId, childId]);
+
+
     const renderItem = ({ item }: { item: Reward }) => (
         <TouchableOpacity onPress={() => handlePressReward(item)} style={styles.rewardCircle}>
             <Text style={styles.rewardTitle}>{item.name}</Text>
@@ -78,12 +101,20 @@ export default function ChildRewardsHomeScreen() {
 
     return (
         <LinearGradient colors={['#D7FBE8', '#FFF8DC']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.container}>
-            <View style={styles.pointsContainer}>
+            <View style={styles.topBar}>
+
                 <View style={styles.starburst}>
                     <Text style={styles.pointsText}>{points}</Text>
                     <Text style={styles.pointsLabel}>POENG</Text>
                 </View>
+
+                <TouchableOpacity style={styles.topIcon} onPress={() => setBackpackVisible(true)}>
+                    <Text style={styles.topEmoji}>🎒</Text>
+                </TouchableOpacity>
+
+
             </View>
+
 
             <FlatList
                 data={rewards}
@@ -94,9 +125,6 @@ export default function ChildRewardsHomeScreen() {
                 contentContainerStyle={styles.grid}
             />
 
-            <TouchableOpacity style={styles.backpackButton}>
-                <Text style={styles.backpackText}>🎒</Text>
-            </TouchableOpacity>
 
             {selectedReward && (
                 <ConfirmRewardPurchaseModal
@@ -107,6 +135,14 @@ export default function ChildRewardsHomeScreen() {
                     onCancel={() => setConfirmVisible(false)}
                 />
             )}
+
+            <BackpackModal
+                visible={backpackVisible}
+                onClose={() => setBackpackVisible(false)}
+                rewards={purchasedRewards ?? []}
+            />
+
+
         </LinearGradient>
     );
 }
@@ -184,28 +220,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
     },
-    backpackButton: {
-        position: 'absolute',
-        bottom: 24,
-        right: 24,
-        backgroundColor: '#FFD600',
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 6,
-    },
-    backpackText: {
-        fontSize: 28,
-    },
+
     pointsContainer: {
         alignItems: 'center',
         marginTop: 40,
         marginBottom: 40,
     },
-
-
     starburst: {
         backgroundColor: '#FFD600',
         padding: 20,
@@ -232,6 +252,23 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#333',
     },
+    topBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 50,
+        marginTop: 30,
+        marginBottom: 20,
+    },
+
+    topIcon: {
+        padding: 2,
+    },
+
+    topEmoji: {
+        fontSize: 58,
+    },
+
 
 
 });
