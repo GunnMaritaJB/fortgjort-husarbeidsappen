@@ -55,8 +55,8 @@ export default function TasksHome() {
         .filter(task => task.name.toLowerCase().includes(searchTerm.toLowerCase()))
         .sort((a, b) => {
             if (sortByChildName) {
-                const nameA = (a.assignedTo?.map(id => childMap[id]) ?? ['']).join(', ');
-                const nameB = (b.assignedTo?.map(id => childMap[id]) ?? ['']).join(', ');
+                const nameA = childMap[a.childId] ?? '';
+                const nameB = childMap[b.childId] ?? '';
                 return sortByChildName === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
             }
 
@@ -150,9 +150,9 @@ export default function TasksHome() {
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
 
-                            {item.assignedTo && item.assignedTo.length > 0 && (
+                            {item.childId && (
                                 <Text style={styles.dueDate}>
-                                    Tildelt: {item.assignedTo.map(id => childMap[id] ?? 'Ukjent').join(', ')}
+                                    Tildelt: {childMap[item.childId] ?? 'Ukjent'}
                                 </Text>
                             )}
 

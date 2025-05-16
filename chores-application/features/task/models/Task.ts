@@ -1,17 +1,18 @@
 import { Timestamp } from "react-native-reanimated/lib/typescript/commonTypes";
 
 export interface Task {
-    id: string; 
-    childId: string;
-    addedBy: string;
-    approved: boolean;
-    completed: boolean;
-    dateAssigned: Timestamp;
-    dateForCompletion: Timestamp | null;
+    id: string;
     name: string;
     points: number;
+    approved: boolean;
+    completed: boolean;
+    completedAt?: number | null;
+    dateAssigned: Timestamp;
+    dateForCompletion: Timestamp | null;
     recurring: boolean;
     repeatDays?: string[];
-    assignedTo?: string[];
+    childId: string;
+    childName?: string;
+    householdId: string;
     visibleToChild: boolean;
 }

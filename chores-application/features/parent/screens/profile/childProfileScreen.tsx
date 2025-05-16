@@ -41,8 +41,6 @@ export default function ChildProfileScreen() {
     }, [id, householdId]);
 
 
-
-
     return (
         <View style={styles.container}>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
@@ -53,7 +51,17 @@ export default function ChildProfileScreen() {
             <View style={{ marginTop: 100, width: '100%', alignItems: 'center' }}>
                 <ChildProfileActions
                     onShowRewards={() => {}}
-                    onShowTasks={() => {}}
+                    onShowTasks={() => {router.push({
+                        pathname: '/(parent)/(tabs)/profile/view-childs-tasks',
+                        params: {
+                            id: id as string,
+                            householdId: householdId as string,
+                            firstName: name as string,
+                            avatar: avatar as string,
+                            points: points?.toString() ?? '0',
+                        },
+                    });
+                    }}
                     onEdit={() => {
                         if (!dob) return;
                         router.push({

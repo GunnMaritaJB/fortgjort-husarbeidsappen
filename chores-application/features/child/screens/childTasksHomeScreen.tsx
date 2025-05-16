@@ -3,8 +3,9 @@ import { useGlobalSearchParams } from 'expo-router';
 import CompleteTaskModal from '@/features/child/components/completeTaskModal';
 import { LinearGradient } from 'expo-linear-gradient';
 import { View, Text, FlatList, TouchableOpacity} from 'react-native';
-import { Task, listenToTasksForChild, toggleTaskCompletion } from '@/features/task/services/task';
+import { listenToTasksForChild, toggleTaskCompletion } from '@/features/task/services/task';
 import {styles} from '@/features/task/styles/taskHomeScreenStyles'
+import{Task} from '@/features/task/models/Task'
 
 
 
