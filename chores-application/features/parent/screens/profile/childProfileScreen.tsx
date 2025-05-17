@@ -50,7 +50,13 @@ export default function ChildProfileScreen() {
             </View>
             <View style={{ marginTop: 100, width: '100%', alignItems: 'center' }}>
                 <ChildProfileActions
-                    onShowRewards={() => {}}
+                    onShowRewards={() => {router.push({
+                        pathname: '/(parent)/(tabs)/profile/view-child-rewards',
+                        params: {
+                            id: id as string,
+                            householdId: householdId as string,
+                        }
+                    })}}
                     onShowTasks={() => {router.push({
                         pathname: '/(parent)/(tabs)/profile/view-childs-tasks',
                         params: {

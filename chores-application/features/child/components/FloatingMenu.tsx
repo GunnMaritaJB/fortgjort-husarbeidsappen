@@ -65,7 +65,7 @@ export default function FloatingMenu({}: FloatingMenuProps) {
         return (
             <TouchableOpacity style={[styles.menuItem, { backgroundColor }]} onPress={onPress}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                    <Ionicons testID="starMenuButton" name={icon} size={24} color="#4D4421" />
+                    <Ionicons name={icon} size={24} color="#4D4421" />
                     <Text style={styles.menuText}>{title}</Text>
                 </View>
             </TouchableOpacity>
@@ -151,13 +151,18 @@ export default function FloatingMenu({}: FloatingMenuProps) {
                 </>
             )}
 
-            <Animated.View style={[styles.fabButtonContainer, { transform: [{ scale: starScale }] }]}>
-                <TouchableOpacity testID={"starMenuButton"} accessible={true} style={styles.fabButton} onPress={toggleMenu}>
-                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Ionicons  name="star" size={40} color="#fff" />
-                    </Animated.View>
-                </TouchableOpacity>
-            </Animated.View>
+            <TouchableOpacity
+                testID="starMenuButton"
+                accessibilityRole="button"
+                accessibilityLabel="Åpne meny"
+                style={[styles.fabButtonContainer, styles.fabButton]}
+                onPress={toggleMenu}
+            >
+                <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                    <Ionicons name="star" size={40} color="#fff" />
+                </Animated.View>
+            </TouchableOpacity>
+
         </View>
     );
 }

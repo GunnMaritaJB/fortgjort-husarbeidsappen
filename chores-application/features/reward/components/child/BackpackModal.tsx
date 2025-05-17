@@ -22,24 +22,26 @@ export default function BackpackModal({ visible, onClose, rewards }: BackpackMod
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                 >
-                    {/* Close button */}
                     <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
                         <Ionicons name="close" size={28} color="#fff" />
                     </TouchableOpacity>
 
-                    {/* Placeholder for content */}
                     <Text style={styles.header}>Belønninger du har kjøpt</Text>
 
                     <ScrollView contentContainerStyle={styles.scrollContent} style={{ flex: 1, width: '100%' }}>
-                        {(rewards?.length ?? 0) === 0 ? (
-                            <Text style={styles.emptyText}>Du har ikke kjøpt noen belønninger enda.</Text>
+                        {rewards.length === 0 ? (
+                            <Text style={styles.emptyText}>Sekken er tom</Text>
                         ) : (
-                            rewards.map((reward) => (
-                                <Text key={reward.id} style={styles.rewardText}>
-                                    🎁 {reward.name} ({reward.pointPrice}p)
-                                </Text>
-                            ))
+                            <View style={styles.rewardGrid}>
+                                {rewards.map((reward) => (
+                                    <View key={reward.id} style={styles.rewardBubble}>
+                                        <Text style={styles.rewardEmoji}>🎁</Text>
+                                        <Text style={styles.rewardText}>{reward.name}</Text>
+                                    </View>
+                                ))}
+                            </View>
                         )}
+
                     </ScrollView>
 
                 </LinearGradient>
@@ -83,17 +85,66 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         alignItems: 'center',
     },
-    rewardText: {
-        fontSize: 16,
-        color: '#fff',
-        marginBottom: 10,
-    },
     emptyText: {
         fontSize: 16,
         color: '#fff',
         marginTop: 20,
         textAlign: 'center',
     },
-
+    rewardItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        marginVertical: 6,
+        width: '100%',
+        elevation: 2,
+    },
+    emoji: {
+        fontSize: 20,
+    },
+    rewardName: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '500',
+        marginLeft: 12,
+    },
+    rewardPoints: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#888',
+    },
+    rewardGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginTop: 20,
+        gap: 12,
+    },
+    rewardBubble: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#FFF8E1',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    rewardEmoji: {
+        fontSize: 26,
+        marginBottom: 4,
+    },
+    rewardText: {
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
 
 });

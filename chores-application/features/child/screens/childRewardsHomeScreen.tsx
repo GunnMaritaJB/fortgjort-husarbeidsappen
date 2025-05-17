@@ -12,6 +12,7 @@ import { Reward } from '@/features/reward/models/Reward';
 import { getChildById } from '@/features/child/services/child';
 import ConfirmRewardPurchaseModal from '@/features/reward/components/child/ConfirmRewardPurchaseModal';
 import BackpackModal from '@/features/reward/components/child/BackpackModal';
+import InsufficientPointsModal from "@/features/child/components/InsufficientPointsModal";
 import {PurchasedReward} from "@/features/reward/models/PurchasedReward";
 
 
@@ -31,6 +32,10 @@ export default function ChildRewardsHomeScreen() {
     const householdId = typeof rawHouseholdId === 'string' ? rawHouseholdId : rawHouseholdId?.[0];
     const childId = typeof rawChildId === 'string' ? rawChildId : rawChildId?.[0];
 
+    const [insufficientModalVisible, setInsufficientModalVisible] = useState(false);
+    const [missingPoints, setMissingPoints] = useState<number>(0);
+
+
     const handlePressReward = (reward: Reward) => {
         setSelectedReward(reward);
         setConfirmVisible(true);
@@ -44,11 +49,18 @@ export default function ChildRewardsHomeScreen() {
             setPoints(prev => prev - selectedReward.pointPrice);
             setConfirmVisible(false);
             setSelectedReward(null);
+
+            // 🔁 Oppdater kjøpte rewards etter kjøp
+            const updatedPurchases = await fetchPurchasedRewards(householdId, childId);
+            const unused = updatedPurchases.filter((r) => !r.used);
+            setPurchasedRewards(unused);
+
         } catch (error) {
-            console.error('❌ Klarte ikke å kjøpe reward:', error);
-            // Vis en feilmelding til bruker hvis ønsket
+            setInsufficientModalVisible(true);
         }
     };
+
+
 
     useEffect(() => {
         if (!householdId || !childId) return;
@@ -75,11 +87,13 @@ export default function ChildRewardsHomeScreen() {
 
         const loadPurchases = async () => {
             const purchases = await fetchPurchasedRewards(householdId, childId);
-            setPurchasedRewards(purchases);
+            const unused = purchases.filter((r) => !r.used);
+            setPurchasedRewards(unused);
         };
 
         loadPurchases();
     }, [householdId, childId]);
+
 
 
     const renderItem = ({ item }: { item: Reward }) => (
@@ -140,6 +154,12 @@ export default function ChildRewardsHomeScreen() {
                 visible={backpackVisible}
                 onClose={() => setBackpackVisible(false)}
                 rewards={purchasedRewards ?? []}
+            />
+
+            <InsufficientPointsModal
+                visible={insufficientModalVisible}
+                missingPoints={missingPoints}
+                onClose={() => setInsufficientModalVisible(false)}
             />
 
 

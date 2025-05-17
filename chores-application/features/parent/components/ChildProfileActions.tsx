@@ -20,7 +20,7 @@ export default function ChildProfileActions({
     return (
         <View style={styles.actionContainer}>
             <ChildProfileButton title="Vis belønninger" onPress={onShowRewards} />
-            <ChildProfileButton title="Vis tasks" onPress={onShowTasks} />
+            <ChildProfileButton title="Vis oppgaver" onPress={onShowTasks} />
             <ChildProfileButton title="Rediger profil" onPress={onEdit} />
             <ChildProfileButton title="Slett profil" onPress={onDelete} />
         </View>

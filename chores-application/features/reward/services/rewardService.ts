@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, updateDoc, getDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, getDoc, addDoc, query, where } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { collections } from '@/shared/paths/firebasePaths';
 import { Reward } from '../models/Reward';
@@ -66,4 +66,14 @@ export const fetchPurchasedRewards = async (
         id: doc.id,
         ...doc.data(),
     })) as PurchasedReward[];
+};
+
+export const updateRewardUsage = async (
+    householdId: string,
+    childId: string,
+    rewardId: string,
+    used: boolean
+) => {
+    const ref = doc(db, `households/${householdId}/children/${childId}/purchasedRewards/${rewardId}`);
+    await updateDoc(ref, { used });
 };
