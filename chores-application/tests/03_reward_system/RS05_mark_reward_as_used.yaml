@@ -16,7 +16,7 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "myProfileIcon"
+    id: "parentNameLabel"
 - tapOn:
     text: "${NAME_OF_CHILD}"
 - tapOn:
@@ -26,8 +26,3 @@ onFlowComplete:
 - tapOn:
     id: "${ID_OF_SLIDE_BTN}"
 - assertVisible: "Brukt"
-
-
-
-
-

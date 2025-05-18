@@ -6,7 +6,6 @@ name: Edit picture and name of reward
 #PILEN TIL HØYRE MÅ HA ID "rightArrow"
 #TEXTFELTET HVOR NAVNET SKRIVES MÅ HA ID "currentName"
 
-
 clearState: true
 env:
   NAME_OF_REWARD: "Test belønning"
@@ -43,6 +42,3 @@ onFlowComplete:
     text: "Sjokolademelk"
 - assertNotVisible: "${NAME_OF_REWARD}"
 - assertNotVisible: "${ID_OF_CURRENT_IMAGE}"
-
-
-

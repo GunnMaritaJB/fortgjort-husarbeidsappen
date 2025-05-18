@@ -12,6 +12,8 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
+    id: "parentNameLabel"
+- tapOn:
     id: "rewardIcon"
 - tapOn:
     text: "${NAME_OF_REWARD}"
@@ -20,11 +22,3 @@ onFlowComplete:
 - tapOn:
     text: "Slett"
 - assertNotVisible: "${NAME_OF_REWARD}"
-
-
-
-
-
-
-
-

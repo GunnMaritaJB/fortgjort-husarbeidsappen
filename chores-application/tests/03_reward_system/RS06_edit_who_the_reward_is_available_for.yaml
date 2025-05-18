@@ -15,6 +15,8 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
+    id: "parentNameLabel"
+- tapOn:
     id: "rewardIcon"
 - tapOn:
     text: "${NAME_OF_REWARD}"
@@ -24,11 +26,5 @@ onFlowComplete:
     text: "Lagre"
 - tapOn:
     text: "${NAME_OF_REWARD}"
-
 #Så må man legge til hvordan man kan sjekke om Child 1 ikke lenger er markert.
-
-
-
-
-
 

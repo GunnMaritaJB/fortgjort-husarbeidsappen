@@ -1,24 +1,30 @@
-import { collection, getDocs, doc, updateDoc, getDoc, addDoc, query, where } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, getDoc, deleteDoc, addDoc, query, where } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { collections } from '@/shared/paths/firebasePaths';
 import { Reward } from '../models/Reward';
 import { PurchasedReward } from '../models/PurchasedReward';
 
-export const fetchRewardsForHousehold = async (householdId: string): Promise<Reward[]> => {
-    try {
-        const rewardsRef = collection(db, collections.rewardsByHousehold(householdId));
-        const snapshot = await getDocs(rewardsRef);
 
-        const rewards: Reward[] = snapshot.docs.map((doc) => ({
-            rewardID: doc.id,
-            ...doc.data(),
-        })) as Reward[];
+export const fetchRewardsForHousehold = async (
+  householdId: string
+): Promise<Reward[]> => {
+  try {
+    const rewardsRef = collection(
+      db,
+      collections.rewardsByHousehold(householdId)
+    );
+    const snapshot = await getDocs(rewardsRef);
 
-        return rewards;
-    } catch (error) {
-        console.error('Error fetching rewards:', error);
-        return [];
-    }
+    const rewards: Reward[] = snapshot.docs.map((doc) => ({
+      rewardID: doc.id,
+      ...doc.data(),
+    })) as Reward[];
+
+    return rewards;
+  } catch (error) {
+    console.error("Error fetching rewards:", error);
+    return [];
+  }
 };
 
 
@@ -77,3 +83,51 @@ export const updateRewardUsage = async (
     const ref = doc(db, `households/${householdId}/children/${childId}/purchasedRewards/${rewardId}`);
     await updateDoc(ref, { used });
 };
+
+export async function addReward(
+  householdID: string,
+  reward: Omit<Reward, "rewardID">
+): Promise<string> {
+  try {
+    const rewardsRef = collection(
+      db,
+      collections.rewardsByHousehold(householdID)
+    );
+    const docRef = await addDoc(rewardsRef, reward);
+    console.log("Document written with ID: ", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding reward:", error);
+    throw error;
+  }
+}
+
+export async function updateReward(
+  householdID: string,
+  rewardID: string,
+  updated: { name: string; pointPrice: number }
+): Promise<void> {
+  try {
+    const path = collections.rewardDocPath(householdID, rewardID);
+    const rewardRef = doc(db, path);
+    await updateDoc(rewardRef, updated);
+  } catch (error) {
+    console.error("Error updating reward:", error);
+    throw error;
+  }
+}
+
+export async function deleteReward(
+  householdID: string,
+  rewardID: string
+): Promise<void> {
+  try {
+    const path = collections.rewardDocPath(householdID, rewardID);
+    const rewardRef = doc(db, path);
+    await deleteDoc(rewardRef);
+  } catch (error) {
+    console.error("Error deleting reward:", error);
+    throw error;
+  }
+}
+

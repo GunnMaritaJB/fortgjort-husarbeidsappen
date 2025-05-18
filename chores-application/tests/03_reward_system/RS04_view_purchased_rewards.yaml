@@ -14,11 +14,10 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "myProfileIcon"
+    id: "parentNameLabel"
 - tapOn:
     text: "${NAME_OF_CHILD}"
 - tapOn:
     text: "Vis belønninger"
 - assertVisible: "Opptjente poeng:"
 - assertVisible: "${NAME_OF_REWARD}"
-

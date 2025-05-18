@@ -4,10 +4,8 @@ name: Add New Reward Test
 clearState: true
 
 env:
-  PARENT_NAME: "Parent"
-  CHILD_NAME_1: "Child 1"
-  CHILD_NAME_2: "Child 2"
-  REWARD_NAME: "${REWARD_NAME}"
+  PARENT_NAME: "Dummyuser1"
+  REWARD_NAME: "Go to the park"
 
 onFlowStart:
   - runFlow:
@@ -17,6 +15,9 @@ onFlowComplete:
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+    id: "parentNameLabel"
+
 # Test if we are on the right screen
 - assertVisible: ${PARENT_NAME}
 
@@ -36,26 +37,16 @@ onFlowComplete:
 
 # Input details
 - tapOn:
-    text: "Navn"
+    text: "Belønningsnavn"
 - inputText: ${REWARD_NAME}
 - tapOn:
-    text: "Poeng"
+    text: "Belønningspoeng"
 - inputText: "50"
 - tapOn:
-    text: ${CHILD_NAME_1}
-- tapOn:
-    text: ${CHILD_NAME_2}
-- tapOn:
-    text: "Legg til"
+    text: "Lagre"
 
 # Check that the reward is added
 - assertVisible: "BELØNNINGER"
-
-# Find the reward
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${REWARD_NAME}
 
 - assertVisible:
     text: ${REWARD_NAME}

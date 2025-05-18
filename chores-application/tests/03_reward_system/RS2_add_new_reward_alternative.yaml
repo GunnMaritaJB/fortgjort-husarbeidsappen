@@ -4,7 +4,7 @@ name: RS2 Add New Reward Alternative
 clearState: true
 
 env:
-  PARENT_NAME: "Parent"
+  PARENT_NAME: "Dummyuser1"
   CHILD_NAME_1: "Child 1"
   CHILD_NAME_2: "Child 2"
   REWARD_NAME: "Reward_name"

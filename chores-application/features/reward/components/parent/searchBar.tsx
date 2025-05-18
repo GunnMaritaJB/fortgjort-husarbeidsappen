@@ -1,4 +1,5 @@
-import { View, StyleSheet, TextInput } from "react-native";
+import { View, TextInput } from "react-native";
+import { searchBarStyles as styles } from "../../styles/searchBarStyles";
 
 type SearchBarProps = {
   query: string;
@@ -18,22 +19,5 @@ const SearchBar = ({ query, setQuery }: SearchBarProps) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginRight: 10,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 8,
-    height: 40,
-    justifyContent: "center",
-  },
-  input: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 15,
-    color: "#000",
-  },
-});
 
 export default SearchBar;
