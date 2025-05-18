@@ -17,8 +17,12 @@ import { getAuth } from 'firebase/auth';
 import { collections } from '@/shared/paths/firebasePaths';
 import { Task } from '../models/Task';
 import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
-import { endOfMonth } from 'date-fns';
-import { startOfDay } from 'date-fns';
+import {endOfDay, endOfMonth} from 'date-fns';
+import { startOfDay, addDays } from 'date-fns';
+import { shouldShowInChildView } from '@/features/task/services/taskFilter';
+import { shouldShowInParentView } from '@/features/task/services/taskFilter';
+
+
 
 
 export const listenToTasksForParent = async (
@@ -44,7 +48,7 @@ export const listenToTasksForParent = async (
         });
 
         const data = await Promise.all(promises);
-        onUpdate(data);
+        onUpdate(data.filter(shouldShowInParentView));
     });
 
     return unsubscribe;
@@ -101,9 +105,6 @@ export const confirmApproval = async (householdId: string, task: Task) => {
 };
 
 
-
-
-// 🆕 Fjern task
 export const deleteTask = async (householdId: string, taskId: string) => {
     const taskRef = doc(db, collections.taskDocPath(householdId, taskId));
     await deleteDoc(taskRef);
@@ -114,7 +115,7 @@ export const listenToTasksForChild = (
     childId: string,
     onUpdate: (tasks: Task[]) => void,
     setLoading: (loading: boolean) => void,
-    options?: { showCompletedAndApproved?: boolean }
+    options?: { showCompletedAndApproved?: boolean } // 👈 NYTT PARAMETER
 ): (() => void) => {
     const q = query(
         collection(db, collections.tasksByHousehold(householdId)),
@@ -126,21 +127,22 @@ export const listenToTasksForChild = (
         (snapshot) => {
             const now = new Date();
 
+            const getDeadlineDate = (date: Timestamp | number | undefined | null): Date => {
+                if (!date) return new Date(8640000000000000);
+                if (typeof date === 'number') return new Date(date);
+                if ('toDate' in date) return date.toDate();
+                return new Date(8640000000000000);
+            };
+
             const data: Task[] = snapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() } as Task))
                 .filter(task => {
-                    const getDeadlineDate = (date: Timestamp | number | undefined | null): Date => {
-                        if (!date) return new Date(8640000000000000);
-                        if (typeof date === 'number') return new Date(date);
-                        if ('toDate' in date) return date.toDate();
-                        return new Date(8640000000000000);
-                    };
-
                     const deadline = getDeadlineDate(task.dateForCompletion);
-
-                    return ((options?.showCompletedAndApproved || !(task.completed && task.approved)) &&
-                        deadline >= startOfDay(now)
-                        && task.visibleToChild);
+                    return (
+                        (options?.showCompletedAndApproved || !(task.completed && task.approved)) &&
+                        deadline >= startOfDay(now) &&
+                        task.visibleToChild
+                    );
                 });
 
             onUpdate(data);
@@ -154,6 +156,7 @@ export const listenToTasksForChild = (
 
     return unsubscribe;
 };
+
 
 
 export const toggleTaskCompletion = async (
@@ -177,16 +180,17 @@ export const rejectTask = async (householdId: string, taskId: string) => {
     });
 };
 
+
+
 export const resetIfExpired = async (taskRef: any, task: Task): Promise<void> => {
     const now = new Date();
-    const deadline = (task.dateForCompletion as any)?.toDate?.() ?? new Date(8640000000000000);
+    const deadlineDate = (task.dateForCompletion as any)?.toDate?.() ?? new Date(8640000000000000);
+    const expired = now > endOfDay(deadlineDate); // 🟢 Endringen er her
 
-    if (deadline > now) return;
+    if (!expired) return;
 
     if (task.recurring && Array.isArray(task.repeatDays)) {
-        if (task.completed && !task.approved) {
-            return;
-        }
+        if (task.completed && !task.approved) return;
 
         const upcoming = getRecurringDates(task.repeatDays, now, endOfMonth(now));
         const next = upcoming.find(d => d > now);
@@ -195,21 +199,23 @@ export const resetIfExpired = async (taskRef: any, task: Task): Promise<void> =>
             completed: false,
             approved: false,
             completedAt: null,
-            dateAssigned: serverTimestamp(),
+            dateAssigned: Timestamp.now(),
             dateForCompletion: next ? Timestamp.fromDate(next) : null,
         });
+
         return;
     }
 
-    if (task.completed && task.approved) {
+    if (!task.recurring && task.completed && task.approved) {
         await updateDoc(taskRef, {
             completed: false,
             approved: false,
             completedAt: null,
-            dateAssigned: serverTimestamp(),
+            dateAssigned: Timestamp.now(),
         });
     }
 };
+
 
 export const fetchTaskById = async (householdId: string, taskId: string) => {
     const taskRef = doc(db, collections.taskDocPath(householdId, taskId));

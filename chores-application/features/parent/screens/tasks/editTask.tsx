@@ -1,7 +1,7 @@
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { format } from 'date-fns';
+import {endOfMonth, format} from 'date-fns';
 import { nb } from 'date-fns/locale';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { createTaskStyles as styles } from '@/features/task/styles/createTaskStyles';
@@ -10,6 +10,8 @@ import { getParentHouseholdId } from '@/features/parent/services/parent';
 import { db } from '@/firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Child } from '@/features/child/models/Child';
+import {Task} from '@/features/task/models/Task'
+import {getRecurringDates} from "@/features/task/services/generateRecurringDates";
 
 export default function EditTaskScreen() {
     const [taskName, setTaskName] = useState('');
@@ -22,6 +24,17 @@ export default function EditTaskScreen() {
     const [children, setChildren] = useState<Child[]>([]);
     const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
     const days = ['MA', 'TI', 'ON', 'TO', 'FR', 'LØ', 'SØ'];
+    const [taskData, setTaskData] = useState<Task | null>(null);
+    const parseToDate = (value: any): Date => {
+        if (!value) return new Date();
+        if (typeof value === 'number') return new Date(value);
+        if (typeof value?.toDate === 'function') return value.toDate();
+        return new Date();
+    };
+
+
+
+
 
     const router = useRouter();
     const { id: taskId } = useLocalSearchParams();
@@ -31,22 +44,23 @@ export default function EditTaskScreen() {
             try {
                 const householdId = await getParentHouseholdId();
 
-                // Fetch children
                 const data = await fetchChildrenByHousehold(householdId);
                 setChildren(data);
 
-                // Fetch task
                 const taskRef = doc(db, `households/${householdId}/tasks/${taskId}`);
                 const taskSnap = await getDoc(taskRef);
                 if (taskSnap.exists()) {
-                    const task = taskSnap.data();
-                    setTaskName(task.name);
-                    setPoints(task.points.toString());
-                    setRecurring(task.recurring);
-                    setRepeatDays(task.repeatDays || []);
-                    setDateForCompletion(task.dateForCompletion?.toDate?.() || new Date());
-                    setVisibleToChild(task.visibleToChild ?? true);
-                    setSelectedChildIds(task.assignedTo ?? []);
+                    const task = taskSnap.data() as Task;
+                    const fullTask = { ...task, id: taskId as string };
+                    setTaskData(fullTask);
+
+                    setTaskName(fullTask.name);
+                    setPoints(fullTask.points.toString());
+                    setRecurring(fullTask.recurring);
+                    setRepeatDays(fullTask.repeatDays || []);
+                    setDateForCompletion(parseToDate(fullTask.dateForCompletion));
+                    setVisibleToChild(fullTask.visibleToChild ?? true);
+                    setSelectedChildIds([fullTask.childId]);
                 }
             } catch (err) {
                 console.error('Feil ved lasting:', err);
@@ -59,8 +73,8 @@ export default function EditTaskScreen() {
     const handleSave = async () => {
         if (!taskName || !points || (!recurring && !dateForCompletion)) return;
 
-        if (selectedChildIds.length === 0) {
-            alert('Du må velge minst ett barn');
+        if (taskData?.completed && !taskData.approved) {
+            alert("Denne oppgaven er fullført av barnet, men ikke godkjent enda. Du kan ikke redigere den nå.");
             return;
         }
 
@@ -68,14 +82,34 @@ export default function EditTaskScreen() {
             const householdId = await getParentHouseholdId();
             const taskRef = doc(db, `households/${householdId}/tasks/${taskId}`);
 
+            // Beregn ny frist hvis recurring
+            let updatedDateForCompletion: Date | null = null;
+            if (recurring) {
+                const now = new Date();
+                const dates = getRecurringDates(repeatDays, now, endOfMonth(now));
+                const next = dates.find((d) => d > now);
+                updatedDateForCompletion = next ?? null;
+            }
+
+            // 👇 Nullstill status hvis type eller dato endres
+            const wasRecurring = taskData?.recurring ?? false;
+            const oldDate = parseToDate(taskData?.dateForCompletion);
+            const isTypeChanged = wasRecurring !== recurring;
+            const isDateChanged = !recurring && oldDate.getTime() !== dateForCompletion?.getTime();
+            const shouldResetStatus = taskData?.completed && taskData?.approved && (isTypeChanged || isDateChanged);
+
             await updateDoc(taskRef, {
                 name: taskName,
                 points: Number(points),
                 recurring,
                 repeatDays,
-                dateForCompletion: recurring ? null : dateForCompletion,
-                assignedTo: selectedChildIds,
+                dateForCompletion: recurring ? updatedDateForCompletion : dateForCompletion,
                 visibleToChild,
+                ...(shouldResetStatus && {
+                    completed: false,
+                    approved: false,
+                    completedAt: null,
+                }),
             });
 
             router.replace('/(parent)/(tabs)/tasks');
@@ -83,6 +117,8 @@ export default function EditTaskScreen() {
             console.error('Feil ved oppdatering av oppgave:', err);
         }
     };
+
+
 
     return (
         <ScrollView contentContainerStyle={styles.container}>

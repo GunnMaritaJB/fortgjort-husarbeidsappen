@@ -10,6 +10,15 @@ import { listenToTasksForParent } from '@/features/task/services/task';
 import { taskListStyles as styles } from '@/features/task/styles/taskListStyles';
 import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import { getParentHouseholdId } from '@/features/parent/services/parent';
+import ConfirmApprovalModal from '@/features/parent/components/approveModal';
+import RejectConfirmationModal from '@/features/parent/components/rejectModal';
+import { confirmApproval, rejectTask } from '@/features/task/services/task';
+import{styles as approvestyles} from '@/features/parent/styles/taskForChildrenScreenStyles'
+import { deleteTask } from '@/features/task/services/task';
+import { Alert } from 'react-native';
+
+
+
 
 export default function TasksHome() {
     const router = useRouter();
@@ -19,6 +28,10 @@ export default function TasksHome() {
     const [sortByDeadline, setSortByDeadline] = useState<'asc' | 'desc' | null>(null);
     const [sortByChildName, setSortByChildName] = useState<'asc' | 'desc' | null>(null);
     const [sortByVisibility, setSortByVisibility] = useState<'asc' | 'desc' | null>(null);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [showApprovalModal, setShowApprovalModal] = useState(false);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+
 
     useEffect(() => {
         let unsubscribe: () => void;
@@ -162,6 +175,65 @@ export default function TasksHome() {
                                 </Text>
                             )}
 
+                            {item.completed ? (
+                                <><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 }}>
+                                    {item.completed && (
+                                        <Text style={[styles.statusBadge, { backgroundColor: '#FFF8E1', color: '#FF9800' }]}>
+                                            ✅ Fullført
+                                        </Text>
+                                    )}
+                                    {item.completed && !item.approved && (
+                                        <Text style={[styles.statusBadge, { backgroundColor: '#FFF3E0', color: '#FB8C00' }]}>
+                                            🕒 Venter på godkjenning
+                                        </Text>
+                                    )}
+                                    {item.approved && (
+                                        <Text style={[styles.statusBadge, { backgroundColor: '#E8F5E9', color: '#2E7D32' }]}>
+                                            🟢 Godkjent
+                                        </Text>
+                                    )}
+                                    {item.visibleToChild ? (
+                                        <Text style={[styles.statusBadge, { backgroundColor: '#E3F2FD', color: '#1565C0' }]}>
+                                            Synlig
+                                        </Text>
+                                    ) : (
+                                        <Text style={[styles.statusBadge, { backgroundColor: '#FBE9E7', color: '#D84315' }]}>
+                                            🚫 Skjult
+                                        </Text>
+                                    )}
+                                </View>
+
+
+
+                                    {!item.approved && (
+                                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
+                                            <TouchableOpacity
+                                                style={approvestyles.approveBtn}
+                                                onPress={() => {
+                                                    setSelectedTask(item);
+                                                    setShowApprovalModal(true);
+                                                }}
+                                            >
+                                                <Text style={approvestyles.approveText}>Bekreft</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={approvestyles.rejectBtn}
+                                                onPress={() => {
+                                                    setSelectedTask(item);
+                                                    setShowRejectModal(true);
+                                                }}
+                                            >
+                                                <Text style={approvestyles.rejectText}>Underkjenn</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                </>
+                            ) : (
+                                <Text style={{ color: '#8B0000', fontWeight: 'bold' }}>❌ Ikke fullført</Text>
+                            )}
+
+
                             {item.recurring && Array.isArray(item.repeatDays) && item.repeatDays.length > 0 && (
                                 <View style={{ marginTop: 4 }}>
                                     <Text style={styles.dueDate}>Gjentas: {item.repeatDays?.join(', ')}</Text>
@@ -176,28 +248,77 @@ export default function TasksHome() {
                                     })()}
                                 </View>
                             )}
+                            <TouchableOpacity
+                                onPress={async () => {
+                                    const householdId = await getParentHouseholdId();
 
-                            {typeof item.visibleToChild === 'boolean' && (
-                                <Text
-                                    style={{
-                                        marginTop: 4,
-                                        paddingVertical: 4,
-                                        paddingHorizontal: 10,
-                                        borderRadius: 8,
-                                        backgroundColor: item.visibleToChild ? '#D4F1D7' : '#F2C2C2',
-                                        color: '#333',
-                                        alignSelf: 'flex-start',
-                                        fontSize: 12,
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {item.visibleToChild ? 'Synlig' : 'Skjult'}
-                                </Text>
-                            )}
+                                    if (item.completed && !item.approved) {
+                                        Alert.alert(
+                                            'Kan ikke slette',
+                                            'Oppgaven er fullført av barnet, men ikke godkjent enda. Du må godkjenne eller avvise den før den kan slettes.'
+                                        );
+                                        return;
+                                    }
+
+                                    Alert.alert(
+                                        'Slett oppgave',
+                                        'Er du sikker på at du vil slette denne oppgaven?',
+                                        [
+                                            { text: 'Avbryt', style: 'cancel' },
+                                            {
+                                                text: 'Slett',
+                                                style: 'destructive',
+                                                onPress: async () => {
+                                                    await deleteTask(householdId, item.id);
+                                                },
+                                            },
+                                        ]
+                                    );
+                                }}
+                                style={styles.deleteButton}
+                            >
+                                <Text style={styles.deleteButtonText}>Slett</Text>
+                            </TouchableOpacity>
+
+
                         </View>
                     </TouchableOpacity>
                 )}
             />
+            <ConfirmApprovalModal
+                visible={showApprovalModal}
+                task={selectedTask}
+                onCancel={() => {
+                    setShowApprovalModal(false);
+                    setSelectedTask(null);
+                }}
+                onConfirm={async () => {
+                    if (selectedTask) {
+                        const householdId = await getParentHouseholdId();
+                        await confirmApproval(householdId, selectedTask);
+                    }
+                    setShowApprovalModal(false);
+                    setSelectedTask(null);
+                }}
+            />
+
+            <RejectConfirmationModal
+                visible={showRejectModal}
+                task={selectedTask}
+                onCancel={() => {
+                    setShowRejectModal(false);
+                    setSelectedTask(null);
+                }}
+                onConfirm={async () => {
+                    if (selectedTask) {
+                        const householdId = await getParentHouseholdId();
+                        await rejectTask(householdId, selectedTask.id);
+                    }
+                    setShowRejectModal(false);
+                    setSelectedTask(null);
+                }}
+            />
+
         </View>
     );
 }
