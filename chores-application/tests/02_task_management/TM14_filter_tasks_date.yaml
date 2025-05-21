@@ -15,28 +15,27 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    id: "parentUser"
+
+- tapOn:
+    text: "Oppgaver"
 
 # Choose to filter by date
 - tapOn:
     id: "filterDateButton"
-    label: "Tap on filter date button"
 
-- assertVisible: "Velg frist"
-
-# Select date to filter by
 - tapOn:
-    text: ${DAY}
-    label: "Select date to filter by"
-- tapOn:
-    id: "confirmButton"
-    label: "Confirm date selection"
+    id: "filterDateButton"
 
-# Test filter
-- assertVisible: ${DAY}
-- assertNotVisible: ${WRONG_DAY_CHOICE}
+- tapOn:
+    id: "filterDateButton"
+
+

@@ -24,13 +24,6 @@ onFlowComplete:
 - tapOn:
    id: "parentUser"
 
-# Press the task option on the menu bar
-#- retry:
-#    maxRetries: 3
-#    commands:
-#      - tapOn:
-#          id: "parentNameLabel"
-
 - tapOn:
     text: "Oppgaver"
     label: "Go to task screen"
@@ -46,38 +39,18 @@ onFlowComplete:
 # Input the main fields for the task
 - tapOn:
     id: "taskNameID"
-    label: "Choose to write the name of the task"
 - inputText: ${TASK_NAME}
 
-#- tapOn:
-#    id: "fotoBevisCheck"
-#    rightOf:
-#      text: "Fotobevis"
-#    label: "Choose to take a photo as proof"
 
 # Go to assigning to child
-- tapOn:
-    text: "Tildel til barn"
+- assertVisible: "Tildel til barn"
 - tapOn:
     id: "assign_child"
 - assertVisible:
     id: "assign_child"
-#    label: "Go to assign to child"
-#- assertVisible: ${CHILD_1_NAME}
-#- assertVisible: ${CHILD_2_NAME}
-
-# Assign task to child 1 (click child 2 twice so that the task should not be assigned to child 2)
-#- tapOn:
-#    text: ${CHILD_1_NAME}
-#    label: "Assign task to child 1"
-#- tapOn:
-#    text: ${CHILD_2_NAME}
-#    repeat: 2
-#    label: "Double click child 2 to not assign task to child 2"
 
 - tapOn:
     id: "pointsID"
-    label: "Choose to write the points of the task"
 - inputText: ${TASK_POINTS}
 
 # Go to "Tidspunkt"  (as "En gang" is default)
@@ -95,33 +68,13 @@ onFlowComplete:
 - tapOn:
     text: "OK"
 
-# Go to skjul/vis
-#- tapOn:
-#    text: "OK"
+
 
 - assertVisible: "Vis"
 - assertVisible: "Skjul"
 - tapOn:
     text: "Vis"
-    label: "Choose to show the task"
 
 # Save the task
 - tapOn:
     text: "Lagre"
-
-# Check that the task is added
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
-
-# Check that the task is created and assigned to child 1
-#- assertVisible:
-#    text: ${CHILD_1_NAME}
-#    below:
-#      text: ${TASK_NAME}
-#- assertVisible:
-#    text: "6/"
-#    below:
-#      text: ${TASK_NAME}

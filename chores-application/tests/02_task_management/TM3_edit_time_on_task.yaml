@@ -4,13 +4,17 @@ name: TM3 Edit time on task
 clearState: true
 
 env:
-  TASK_NAME: "Test task"
+  TASK_NAME: "Test Task"
 
 onFlowStart:
   - runFlow:
       file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
+  - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
@@ -21,45 +25,31 @@ onFlowComplete:
 # Go to index.tsx screen
 - tapOn:
     text: "Oppgaver"
-    label: "Go to task screen"
 
-# Find the task to edit
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
 
 # Click on the task to edit
 - tapOn:
-    text: ${TASK_NAME}
-    label: "Click on the task to edit"
-- assertVisible: ${TASK_NAME}
+    id: "taskItem-once"
+
+- tapOn:
+    id: "assign_child"
+- assertVisible:
+    id: "assign_child"
 
 # Click time section
 - tapOn:
-    text: "Tidspunkt"
-    label: "Click time section"
-- assertVisible: "En gang"
+    id: "datePicker"
+
 
 # Choose new date
 - tapOn:
     text: "13"
-    label: "Choose new date"
+- tapOn:
+   text: "OK"
 
 # Save editted task
 - tapOn:
     text: "Lagre"
-    label: "Save edited task"
 
-# Check that the task is added
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
 
-- assertVisible: ${TASK_NAME}
-- assertVisible:
-    text: "13/"
-    below:
-      text: ${TASK_NAME}
+

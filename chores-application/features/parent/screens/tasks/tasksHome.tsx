@@ -146,7 +146,8 @@ export default function TasksHome() {
                 keyExtractor={(item) => item.id}
                 ListEmptyComponent={<Text style={styles.noTasks}>Ingen oppgaver enda</Text>}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => router.push(`/tasks/edit_task?id=${item.id}`)}>
+                    <TouchableOpacity
+                        onPress={() => router.push(`/tasks/edit_task?id=${item.id}`)}>
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
 

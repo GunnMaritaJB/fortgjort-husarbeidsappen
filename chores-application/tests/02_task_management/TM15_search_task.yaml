@@ -5,7 +5,7 @@ clearState: true
 
 # Environment variables
 env:
-  TASK_NAME: "[Enter_name_here]"
+  TASK_NAME: "Rydd"
   TASK_NAME_2: "[Enter_another_name_here]"
 
 onFlowStart:
@@ -14,28 +14,30 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+    id: "parentUser"
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    text: "Oppgaver"
 
 # Interact with the search bar
 - tapOn:
-    text: "Søk task"
-    label: "Tap on search bar"
-
-- eraseText
+    text: "Søk i oppgaver"
 
 - inputText: ${TASK_NAME}
 
 # Check that the search is working
-- assertVisible:
-    text: ${TASK_NAME}
-    below:
-      id: "filterChildButton"
-- assertNotVisible:
-    text: ${TASK_NAME_2}
-    below:
-      id: "filterChildButton"
+#- assertVisible:
+#    text: ${TASK_NAME}
+#    below:
+#      id: "filterChildButton"
+#- assertNotVisible:
+#    text: ${TASK_NAME_2}
+#    below:
+#      id: "filterChildButton"

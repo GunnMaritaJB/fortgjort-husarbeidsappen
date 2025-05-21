@@ -179,7 +179,10 @@ export default function EditTaskScreen() {
             {!recurring ? (
                 <>
                     <Text style={styles.label}>Frist for oppgave</Text>
-                    <TouchableOpacity style={styles.datePickerBtn} onPress={() => setShowDatePicker(true)}>
+                    <TouchableOpacity style={styles.datePickerBtn}
+                                      onPress={() => setShowDatePicker(true)}
+                                      testID="datePicker"
+                    >
                         <Text>
                             {dateForCompletion
                                 ? format(dateForCompletion, 'dd.MM.yyyy', { locale: nb })

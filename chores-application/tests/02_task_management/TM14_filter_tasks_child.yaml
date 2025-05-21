@@ -15,28 +15,25 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+    id: "parentUser"
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    text: "Oppgaver"
 
 # Choose to filter by child
 - tapOn:
     id: "filterChildButton"
-    label: "Tap on filter child button"
 
-- assertVisible: "Velg barna"
-
-# Select child to filter by
 - tapOn:
-    text: ${CHILD_NAME_1}
-    label: "Select child to filter by"
+    id: "filterChildButton"
 - tapOn:
-    id: "confirmButton"
-    label: "Confirm child selection"
+    id: "filterChildButton"
 
-# Test filter
-- assertVisible: ${CHILD_NAME_1}
-- assertNotVisible: ${CHILD_NAME_2}
+

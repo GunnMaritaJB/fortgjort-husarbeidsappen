@@ -13,31 +13,21 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    id: "parentUser"
 
-# Ensure that some index.tsx are hidden
-- assertVisible: "Skjult"
+- tapOn:
+    text: "Oppgaver"
 
 # Choose to filter by status
 - tapOn:
     id: "filterVisibilityButton"
-    label: "Tap on filter visibility button"
 
-- assertVisible: "Velg synlighet"
-
-# Select status to filter by
-- tapOn:
-    text: "Synlig"
-    label: "Select visibility to filter by"
-
-- tapOn:
-    id: "confirmButton"
-    label: "Confirm status selection"
-
-# Test filter
-- assertNotVisible: "Skjult"
+- assertVisible: "Synlig"

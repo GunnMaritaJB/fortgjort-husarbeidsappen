@@ -15,17 +15,23 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
+- tapOn:
+    id: "parentUser"
 # Press the task option on the menu bar
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    text: "Oppgaver"
+#    label: "Go to task screen"
 
 # Press the add task button
 - tapOn:
     id: "addTaskButton"
-    label: "Press add task button"
+#    label: "Press add task button"
 
 # Check that we are on the add task screen
 - assertVisible: "NY OPPGAVE"
@@ -33,64 +39,45 @@ onFlowComplete:
 
 # Input the main fields for the task
 - tapOn:
-    text: "Navn på oppgave"
-    label: "Choose to write the name of the task"
+    id: "taskNameID"
 - inputText: ${TASK_NAME}
-- tapOn:
-    text: "Poengsum"
-    label: "Choose to write the points of the task"
-- inputText: ${TASK_POINTS}
-- tapOn:
-    id: "fotoBevisCheck"
-    rightOf:
-      text: "Fotobevis"
-    label: "Choose to take a photo as proof"
 
 # Go to assigning to child
-- tapOn:
+- assertVisible:
     text: "Tildel til barn"
-    label: "Go to assign to child"
-- assertVisible: ${CHILD_1_NAME}
-
-# Assign task to child 1
 - tapOn:
-    text: ${CHILD_1_NAME}
-    label: "Assign task to child 1"
+    id: "assign_child"
+- assertVisible:
+    id: "assign_child"
 
-# Go to "Tidspunkt"
 - tapOn:
-    text: "Tidspunkt"
-    label: "Go to Tidspunkt"
+    id: "pointsID"
+- inputText: ${TASK_POINTS}
+
+
 - assertVisible: "En gang"
 - assertVisible: "Gjentagende"
 
 # Choose one time date
 - tapOn:
     text: "Gjentagende"
-    label: "Choose recurring date option"
-- assertVisible: "Dager oppgaven skal gjøres på"
-- assertVisible: "Hvor mange ganger skal oppgaven gjentas?"
-- tapOn:
-    id: "mandagButton"
-- tapOn:
-    id: "tirsdagButton"
-- tapOn: "Hvor mange ganger skal oppgaven gjentas?"
-- inputText: "2"
+- assertVisible: "Dager oppgaven skal gjøres på:"
 
-# Go to skjul/vis
 - tapOn:
-    text: "Skjul/Vis"
-    label: "Go to Skjul/Vis"
+    text: "MA"
+- tapOn:
+    text: "TI"
+
+
 - assertVisible: "Vis"
 - assertVisible: "Skjul"
 - tapOn:
     text: "Vis"
-    label: "Choose to show the task"
 
 # Save the task
 - tapOn:
     text: "Lagre"
-    label: "Save the task"
+
 
 # Check that the task is added
 - runFlow:
@@ -100,8 +87,8 @@ onFlowComplete:
 - assertVisible: ${TASK_NAME}
 
 # Check that the task is created and assigned to child 1
-- assertVisible: ${CHILD_1_NAME}
+
 - assertVisible:
-    id: "recurringIcon"
-    rightOf:
-      text: ${TASK_NAME}
+    text: "Gjentas:"
+- assertVisible:
+    text: "Neste:"

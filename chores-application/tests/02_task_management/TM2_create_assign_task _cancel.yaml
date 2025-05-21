@@ -13,6 +13,10 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
@@ -20,12 +24,10 @@ onFlowComplete:
 # Press the task option on the menu bar
 - tapOn:
     text: "Oppgaver"
-    label: "Go to task screen"
 
 # Press the add task button
 - tapOn:
     id: "addTaskButton"
-    label: "Press add task button"
 
 # Check that we are on the add task screen
 - assertVisible: "NY OPPGAVE"
@@ -34,28 +36,17 @@ onFlowComplete:
 # Input the main fields for the task
 - tapOn:
     id: "taskNameID"
-    label: "Choose to write the name of the task"
+
 - inputText: ${TASK_NAME}
 - tapOn:
     id: "pointsID"
-    label: "Choose to write the points of the task"
+
 - inputText: ${TASK_POINTS}
-#- tapOn:
-#    id: "fotoBevisCheck"
-#    rightOf:
-#      text: "Fotobevis"
-#    label: "Choose to take a photo as proof"
 
 # Save the task
 - tapOn:
     text: "Avbryt"
-    label: "Cancel the task"
 
-# Check that the task is created and assigned to child 1
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
 
 - assertNotVisible:
     text: ${TASK_NAME}

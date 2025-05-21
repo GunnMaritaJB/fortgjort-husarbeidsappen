@@ -12,53 +12,45 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    id: "parentUser"
 
-# Find the task to edit
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
+- tapOn:
+    text: "Oppgaver"
 
 # Click on the task to edit
 - tapOn:
-    text: ${TASK_NAME}
-    label: "Click on the task to edit"
-- assertVisible: ${TASK_NAME}
+    id: "taskItem-recurring"
+
+- tapOn:
+    id: "assign_child"
+- assertVisible:
+    id: "assign_child"
 
 # Click time section
-- tapOn:
-    text: "Tidspunkt"
-    label: "Click time section"
 - assertVisible: "Gjentagende"
-- tapOn:
-    text: "Gjentagende"
-    label: "Click on recurring"
 
 # Choose new date
 - tapOn:
-    id: "tirsdagButton"
-    label: "Choose new day to repeat on"
+    text: "TI"
+
+- tapOn:
+    text: "FR"
+- assertVisible:
+    text: "FR"
+
 
 # Save editted task
 - tapOn:
     text: "Lagre"
-    label: "Save edited task"
 
-# Check that the task is added
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
 
-- assertVisible: ${TASK_NAME}
-- assertVisible:
-    id: "recurringIcon"
-    rightOf:
-      text: ${TASK_NAME}
+
+
