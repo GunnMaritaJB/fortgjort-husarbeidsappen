@@ -82,7 +82,7 @@ export default function EditTaskScreen() {
             const householdId = await getParentHouseholdId();
             const taskRef = doc(db, `households/${householdId}/tasks/${taskId}`);
 
-            // Beregn ny frist hvis recurring
+
             let updatedDateForCompletion: Date | null = null;
             if (recurring) {
                 const now = new Date();
@@ -91,7 +91,7 @@ export default function EditTaskScreen() {
                 updatedDateForCompletion = next ?? null;
             }
 
-            // 👇 Nullstill status hvis type eller dato endres
+
             const wasRecurring = taskData?.recurring ?? false;
             const oldDate = parseToDate(taskData?.dateForCompletion);
             const isTypeChanged = wasRecurring !== recurring;

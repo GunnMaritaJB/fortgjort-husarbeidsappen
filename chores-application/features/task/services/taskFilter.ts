@@ -27,12 +27,12 @@ export const shouldShowInParentView = (task: Task): boolean => {
     const now = new Date();
     const deadline = getDeadline(task.dateForCompletion);
 
-    // vis alltid om ikke godkjent
+
     if (task.completed && !task.approved) return true;
 
-    // vis frem til frist hvis ikke fullført
+
     if (!task.completed && deadline >= startOfDay(now)) return true;
 
-    // hvis fullført OG godkjent, men frist er utløpt → skjul
+
     return !(task.completed && task.approved && deadline < startOfDay(now));
 };

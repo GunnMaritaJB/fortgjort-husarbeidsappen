@@ -19,7 +19,6 @@ import { Task } from '../models/Task';
 import { getRecurringDates } from '@/features/task/services/generateRecurringDates';
 import {endOfDay, endOfMonth} from 'date-fns';
 import { startOfDay, addDays } from 'date-fns';
-import { shouldShowInChildView } from '@/features/task/services/taskFilter';
 import { shouldShowInParentView } from '@/features/task/services/taskFilter';
 
 
@@ -115,7 +114,7 @@ export const listenToTasksForChild = (
     childId: string,
     onUpdate: (tasks: Task[]) => void,
     setLoading: (loading: boolean) => void,
-    options?: { showCompletedAndApproved?: boolean } // 👈 NYTT PARAMETER
+    options?: { showCompletedAndApproved?: boolean }
 ): (() => void) => {
     const q = query(
         collection(db, collections.tasksByHousehold(householdId)),
@@ -176,7 +175,7 @@ export const rejectTask = async (householdId: string, taskId: string) => {
     await updateDoc(taskRef, {
         completed: false,
         approved: false,
-        completedAt: null, // 👈 Dette må med!
+        completedAt: null,
     });
 };
 
@@ -217,19 +216,4 @@ export const resetIfExpired = async (taskRef: any, task: Task): Promise<void> =>
 };
 
 
-export const fetchTaskById = async (householdId: string, taskId: string) => {
-    const taskRef = doc(db, collections.taskDocPath(householdId, taskId));
-    const taskSnap = await getDoc(taskRef);
-    if (!taskSnap.exists()) throw new Error('Oppgaven finnes ikke');
-    return taskSnap.data();
-};
-
-export const updateTaskById = async (
-    householdId: string,
-    taskId: string,
-    updatedFields: Partial<Task>
-) => {
-    const taskRef = doc(db, collections.taskDocPath(householdId, taskId));
-    await updateDoc(taskRef, updatedFields);
-};
 

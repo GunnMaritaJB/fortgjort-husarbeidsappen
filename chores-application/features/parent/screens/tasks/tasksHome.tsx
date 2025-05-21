@@ -17,9 +17,6 @@ import{styles as approvestyles} from '@/features/parent/styles/taskForChildrenSc
 import { deleteTask } from '@/features/task/services/task';
 import { Alert } from 'react-native';
 
-
-
-
 export default function TasksHome() {
     const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -50,20 +47,15 @@ export default function TasksHome() {
                 console.error('Feil ved lasting av barn:', err);
             }
         };
-
         loadChildren();
-
         const start = async () => {
             unsubscribe = await listenToTasksForParent(setTasks);
         };
-
         start();
-
         return () => {
             if (unsubscribe) unsubscribe();
         };
     }, []);
-
     const filteredTasks = tasks
         .filter(task => task.name.toLowerCase().includes(searchTerm.toLowerCase()))
         .sort((a, b) => {
@@ -72,7 +64,6 @@ export default function TasksHome() {
                 const nameB = childMap[b.childId] ?? '';
                 return sortByChildName === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
             }
-
             if (sortByVisibility) {
                 const visA = a.visibleToChild ? 1 : 0;
                 const visB = b.visibleToChild ? 1 : 0;
@@ -100,7 +91,6 @@ export default function TasksHome() {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>OPPGAVER</Text>
-
             <View style={styles.searchRow}>
                 <TextInput
                     placeholder="Søk i oppgaver"
@@ -108,12 +98,10 @@ export default function TasksHome() {
                     value={searchTerm}
                     onChangeText={setSearchTerm}
                 />
-
                 <TouchableOpacity onPress={() => router.push('/(parent)/(tabs)/tasks/create_task')}>
                     <Ionicons testID={"addTaskButton"} name="add" size={28} color="black" />
                 </TouchableOpacity>
             </View>
-
             <View style={styles.filterRow}>
                 <TouchableOpacity
                     onPress={() => {
@@ -126,7 +114,6 @@ export default function TasksHome() {
                         Barn {sortByChildName === 'asc' ? '▲' : sortByChildName === 'desc' ? '▼' : ''}
                     </Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     onPress={() => {
                         if (sortByDeadline === 'asc') setSortByDeadline('desc');
@@ -202,9 +189,6 @@ export default function TasksHome() {
                                         </Text>
                                     )}
                                 </View>
-
-
-
                                     {!item.approved && (
                                         <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
                                             <TouchableOpacity
@@ -232,8 +216,6 @@ export default function TasksHome() {
                             ) : (
                                 <Text style={{ color: '#8B0000', fontWeight: 'bold' }}>❌ Ikke fullført</Text>
                             )}
-
-
                             {item.recurring && Array.isArray(item.repeatDays) && item.repeatDays.length > 0 && (
                                 <View style={{ marginTop: 4 }}>
                                     <Text style={styles.dueDate}>Gjentas: {item.repeatDays?.join(', ')}</Text>
@@ -301,7 +283,6 @@ export default function TasksHome() {
                     setSelectedTask(null);
                 }}
             />
-
             <RejectConfirmationModal
                 visible={showRejectModal}
                 task={selectedTask}
@@ -318,7 +299,6 @@ export default function TasksHome() {
                     setSelectedTask(null);
                 }}
             />
-
         </View>
     );
 }
