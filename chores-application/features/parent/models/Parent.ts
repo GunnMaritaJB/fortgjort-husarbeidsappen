@@ -3,4 +3,5 @@ export interface Parent {
     firstName: string;
     householdId: string;
     avatar: string;
+    pinHash?: string;
 }

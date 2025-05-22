@@ -7,13 +7,23 @@ export const fetchParentInfo = async () => {
     const user = getAuth().currentUser;
     if (!user) throw new Error('Ikke logget inn');
 
-    const parentRef = doc(db, 'parents', user.uid);
+    const parentId = user.uid; // 👈 legg til denne
+
+    const parentRef = doc(db, 'parents', parentId);
     const parentSnap = await getDoc(parentRef);
+
+    if (!parentSnap.exists()) {
+        throw new Error('Forelder finnes ikke i Firestore');
+    }
+
     const parentData = parentSnap.data();
 
-    if (!parentData?.householdId) throw new Error('Fant ikke householdId');
+    if (!parentData?.householdId) {
+        throw new Error('Fant ikke householdId i foreldredokumentet');
+    }
 
     return {
+        parentId,
         firstName: parentData.firstName,
         householdId: parentData.householdId,
         avatar: parentData.avatar ?? '👤',

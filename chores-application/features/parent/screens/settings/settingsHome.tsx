@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter,} from 'expo-router';
 
 export default function SettingsHome() {
     const router = useRouter();
@@ -8,10 +8,11 @@ export default function SettingsHome() {
         <View style={styles.container}>
             <TouchableOpacity
                 style={styles.button}
-                //onPress={() => router.push('/(parent)/(tabs)/settings/change-pin')}
+                onPress={() => router.push('/(parent)/(tabs)/settings/parent-pin')}
             >
-                <Text style={styles.buttonText}>Endre min husholdnings-PIN</Text>
+                <Text style={styles.buttonText}>Min foreldreprofil-PIN</Text>
             </TouchableOpacity>
+
 
             <TouchableOpacity
                 style={styles.button}
@@ -29,6 +30,7 @@ export default function SettingsHome() {
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

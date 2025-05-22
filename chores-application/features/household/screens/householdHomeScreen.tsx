@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import {View, Text, ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
-import {useRouter} from "expo-router";
-import { householdHomeStyles as styles} from '../styles/householdHomeStyles';
+import { useRouter } from 'expo-router';
+import { householdHomeStyles as styles } from '../styles/householdHomeStyles';
 import { fetchChildrenByHousehold } from '@/features/child/services/child';
-import {Child} from "@/features/child/models/Child";
+import { Child } from "@/features/child/models/Child";
 import MenuDrawer from '@/features/household/components/MenuDrawer';
-import { menuStyles } from '@/features/household/styles/menubar'
+import { menuStyles } from '@/features/household/styles/menubar';
 import { useChild } from '@/shared/contexts/ChildContext';
-
-
-
+import ParentPinModal from '@/features/parent/components/ParentPinModal';
+import { useAuth } from '@/shared/contexts/AuthContext';
+import { hasParentPin } from '@/features/parent/services/verifyParentService';
 
 export default function HouseholdHomeScreen() {
     const [householdName, setHouseholdName] = useState<string | null>(null);
@@ -21,9 +21,11 @@ export default function HouseholdHomeScreen() {
     const [menuVisible, setMenuVisible] = useState(false);
     const [householdId, setHouseholdId] = useState<string | null>(null);
     const router = useRouter();
-    const [parentName, setParentName] = useState('');
+    const [parentName, setParentName] = useState('Forelder');
     const [avatar, setAvatar] = useState('👤');
     const { setChild } = useChild();
+    const { parentId } = useAuth();
+    const [showPinModal, setShowPinModal] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -35,15 +37,16 @@ export default function HouseholdHomeScreen() {
                 const parentRef = doc(db, 'parents', uid);
                 const parentDoc = await getDoc(parentRef);
                 const parent = parentDoc.data();
-                const emoji = parent?.avatar;
+
                 setParentName(parent?.firstName ?? 'Forelder');
-                setAvatar(typeof emoji === 'string' && emoji.trim().length > 0 ? emoji : '👤');
+                setAvatar(typeof parent?.avatar === 'string' && parent.avatar.trim().length > 0 ? parent.avatar : '👤');
+
                 const householdId = parent?.householdId;
                 if (!householdId) {
-                    console.log('Ingen householdId – sender til opprettelse');
                     router.replace('/(household)');
                     return;
                 }
+
                 setHouseholdId(householdId);
 
                 const householdRef = doc(db, 'households', householdId);
@@ -51,9 +54,7 @@ export default function HouseholdHomeScreen() {
                 const childrenData = await fetchChildrenByHousehold(householdId);
                 setChildren(childrenData);
 
-
                 if (!householdDoc.exists()) {
-                    console.warn('Husstand finnes ikke – rydder og sender til oppretting');
                     await updateDoc(parentRef, { householdId: null });
                     router.replace('/(household)');
                     return;
@@ -71,10 +72,25 @@ export default function HouseholdHomeScreen() {
         fetchData();
     }, []);
 
+    const handleParentPress = async () => {
+        if (!parentId) return;
+
+        try {
+            const requiresPin = await hasParentPin(parentId);
+            if (requiresPin) {
+                setShowPinModal(true);
+            } else {
+                router.push('/(parent)/(tabs)/profile');
+            }
+        } catch (error: any) {
+            Alert.alert('Feil', error.message || 'Kunne ikke hente PIN-status');
+        }
+    };
 
     if (loading) {
         return <ActivityIndicator size="large" style={{ marginTop: 100 }} />;
     }
+
     return (
         <View style={{ flex: 1, position: 'relative' }}>
             <TouchableOpacity
@@ -87,13 +103,11 @@ export default function HouseholdHomeScreen() {
 
             {menuVisible && (
                 <>
-                    <TouchableOpacity
-                        style={menuStyles.overlay}
-                        onPress={() => setMenuVisible(false)}
-                    />
+                    <TouchableOpacity style={menuStyles.overlay} onPress={() => setMenuVisible(false)} />
                     <MenuDrawer onClose={() => setMenuVisible(false)} />
                 </>
             )}
+
             <View style={styles.container}>
                 <Text style={styles.householdName}>{householdName ?? 'Husstand'}</Text>
 
@@ -101,15 +115,23 @@ export default function HouseholdHomeScreen() {
                     <TouchableOpacity
                         testID="parentUser"
                         style={styles.avatarContainer}
-                        onPress={() => router.push('/(parent)/(tabs)/profile')}
+                        onPress={handleParentPress}
                     >
                         <View style={styles.avatarCircle}>
                             <Text testID="parentNameLabel" style={styles.avatarEmoji}>{avatar}</Text>
                         </View>
-                        <Text style={styles.avatarLabel} >
-                            {parentName}
-                        </Text>
+                        <Text style={styles.avatarLabel}>{parentName}</Text>
                     </TouchableOpacity>
+
+                    <ParentPinModal
+                        visible={showPinModal}
+                        parentId={parentId}
+                        onCancel={() => setShowPinModal(false)}
+                        onSuccess={() => {
+                            setShowPinModal(false);
+                            router.push('/(parent)/(tabs)/profile');
+                        }}
+                    />
                 </View>
 
                 <View style={styles.avatarRow}>
