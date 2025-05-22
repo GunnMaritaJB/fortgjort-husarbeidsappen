@@ -127,6 +127,7 @@ export default function EditTaskScreen() {
             <Text style={styles.label}>Navn på oppgave</Text>
             <TextInput
                 value={taskName}
+                testID="taskNameID"
                 onChangeText={setTaskName}
                 style={styles.input}
             />
@@ -138,6 +139,7 @@ export default function EditTaskScreen() {
                     return (
                         <TouchableOpacity
                             key={child.id}
+                            testID="assign_child"
                             onPress={() => {
                                 if (isSelected) {
                                     setSelectedChildIds(selectedChildIds.filter((id) => id !== child.id));
@@ -156,6 +158,7 @@ export default function EditTaskScreen() {
             <Text style={styles.label}>Poengsum</Text>
             <TextInput
                 value={points}
+                testID="pointsID"
                 onChangeText={setPoints}
                 keyboardType="numeric"
                 style={styles.input}

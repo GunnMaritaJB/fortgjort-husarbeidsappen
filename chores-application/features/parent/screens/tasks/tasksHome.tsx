@@ -104,6 +104,7 @@ export default function TasksHome() {
             </View>
             <View style={styles.filterRow}>
                 <TouchableOpacity
+                    testID="filterChildButton"
                     onPress={() => {
                         if (sortByChildName === 'asc') setSortByChildName('desc');
                         else if (sortByChildName === 'desc') setSortByChildName(null);
@@ -115,6 +116,7 @@ export default function TasksHome() {
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                    testID="filterDateButton"
                     onPress={() => {
                         if (sortByDeadline === 'asc') setSortByDeadline('desc');
                         else if (sortByDeadline === 'desc') setSortByDeadline(null);
@@ -129,6 +131,7 @@ export default function TasksHome() {
                 <Text style={styles.filter}>Status</Text>
 
                 <TouchableOpacity
+                    testID="filterVisibilityButton"
                     onPress={() => {
                         if (sortByVisibility === 'asc') setSortByVisibility('desc');
                         else if (sortByVisibility === 'desc') setSortByVisibility(null);
@@ -147,6 +150,7 @@ export default function TasksHome() {
                 ListEmptyComponent={<Text style={styles.noTasks}>Ingen oppgaver enda</Text>}
                 renderItem={({ item }) => (
                     <TouchableOpacity
+                        testID={item.recurring ? 'taskItem-recurring' : 'taskIten-once'}
                         onPress={() => router.push(`/tasks/edit_task?id=${item.id}`)}>
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
