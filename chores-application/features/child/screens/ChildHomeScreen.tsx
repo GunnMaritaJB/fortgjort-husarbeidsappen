@@ -19,6 +19,7 @@ export default function ChildHomeScreen() {
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const [showConfetti, setShowConfetti] = useState(false);
 
+
     const burst = () => {
         Animated.sequence([
             Animated.timing(scaleAnim, { toValue: 1.4, duration: 100, useNativeDriver: true }),
@@ -62,6 +63,7 @@ export default function ChildHomeScreen() {
     const goalCost = goal?.cost || 0;
     const remaining = Math.max(0, goalCost - points);
     const progress = goalCost > 0 ? Math.min(points / goalCost, 1) : 0;
+
 
     return (
         <LinearGradient
@@ -128,25 +130,44 @@ export default function ChildHomeScreen() {
 
 
                 {/* Goal Section */}
-                <View style={styles.goalSection}>
-                    {goalTitle ? (
-                        <>
-                            <Text style={styles.goalTitle}>{goalTitle.toUpperCase()}</Text>
-                            <View style={styles.progressBar}>
-                                <View style={[styles.progressFill, { flex: progress }]} />
-                                <View style={{ flex: 1 - progress }} />
-                            </View>
-                            <Text style={styles.remaining}>DU MANGLER {remaining} ⭐</Text>
-                        </>
-                    ) : (
-                        <TouchableOpacity
-                            style={styles.setGoalButton}
-                            onPress={() => router.push('/(child)/set-goal')}
-                        >
-                            <Text style={styles.setGoalText}>Sett deg et mål</Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
+                {goalTitle ? (
+                    <TouchableOpacity
+                        style={styles.goalSection}
+                        activeOpacity={0.8}
+                        onPress={() =>
+                            router.push({
+                                pathname: '/(child)/set-goal',
+                                params: {
+                                    householdId: householdId as string,
+                                    id: childId as string,
+                                },
+                            })
+                        }
+                    >
+                        <Text style={styles.goalTitle}>{goalTitle.toUpperCase()}</Text>
+                        <View style={styles.progressBar}>
+                            <View style={[styles.progressFill, { flex: progress }]} />
+                            <View style={{ flex: 1 - progress }} />
+                        </View>
+                        <Text style={styles.remaining}>DU MANGLER {remaining} ⭐</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity
+                        style={styles.setGoalButton}
+                        onPress={() =>
+                            router.push({
+                                pathname: '/(child)/set-goal',
+                                params: {
+                                    householdId: householdId as string,
+                                    id: childId as string,
+                                },
+                            })
+                        }
+                    >
+                        <Text style={styles.setGoalText}>Sett deg et mål</Text>
+                    </TouchableOpacity>
+                )}
+
             </View>
         </LinearGradient>
     );

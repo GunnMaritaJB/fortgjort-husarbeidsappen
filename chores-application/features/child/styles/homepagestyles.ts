@@ -81,6 +81,8 @@ export const styles = StyleSheet.create({
         padding: 14,
         borderRadius: 10,
         elevation: 4,
+        marginTop: 40,
+        alignSelf: 'center',
     },
     setGoalText: {
         fontSize: 18,
