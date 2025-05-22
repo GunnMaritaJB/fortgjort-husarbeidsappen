@@ -1,6 +1,8 @@
 import { TextInput, TouchableOpacity, Text, View, Alert } from 'react-native';
 import { loginStyles as styles } from '../styles/loginStyles';
 import { router } from 'expo-router';
+import { handleForgotPassword } from '../services/forgottenPassword';
+
 
 type Props = {
   email: string;
@@ -35,10 +37,10 @@ export default function LoginForm({ email, password, setEmail, setPassword, onLo
 
 
         <View style={styles.linksRow}>
-        <TouchableOpacity onPress={() => Alert.alert('Kommer snart!')}>
-          <Text style={styles.link}>Glemt passord</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
+            <TouchableOpacity onPress={() => handleForgotPassword(email)}>
+                <Text style={styles.link}>Glemt passord</Text>
+            </TouchableOpacity>
+        <TouchableOpacity
         onPress={() => router.push('/register')}
         testID="registerBtn">
           <Text style={styles.link}>Registrer deg</Text>

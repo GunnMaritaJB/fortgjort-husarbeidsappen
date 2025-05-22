@@ -41,7 +41,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <BackButton />
-      <Text style={styles.title}>TITTEL</Text>
+      <Text style={styles.title}>FortGjort</Text>
       <LoginForm
         email={email}
         password={password}

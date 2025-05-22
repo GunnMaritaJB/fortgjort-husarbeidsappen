@@ -22,7 +22,7 @@ export default function SettingsHome() {
 
             <TouchableOpacity
                 style={styles.button}
-                //onPress={() => router.push('/(parent)/(tabs)/settings/change-password')}
+                onPress={() => router.push('/(parent)/(tabs)/settings/change-password')}
             >
                 <Text style={styles.buttonText}>Endre passord</Text>
             </TouchableOpacity>
