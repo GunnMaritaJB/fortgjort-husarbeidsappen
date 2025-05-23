@@ -2,7 +2,7 @@ import {StyleSheet} from "react-native";
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#E8F5E9', // myk grønn bakgrunn
+        backgroundColor: '#e9f6f5', // myk grønn bakgrunn
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,

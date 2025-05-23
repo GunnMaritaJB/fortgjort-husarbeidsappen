@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const rewardListStyles = StyleSheet.create({
   listContainer: {
+    backgroundColor: '#e9f6f5',
     paddingVertical: 8,
   },
   centered: {

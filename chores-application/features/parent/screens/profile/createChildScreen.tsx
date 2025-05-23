@@ -36,7 +36,6 @@ export default function CreateChildScreen() {
 
     return (
         <View style={{ flex: 1, padding: 16 }}>
-            <BackButton />
             <CreateChildForm
                 firstName={firstName}
                 dob={dob}

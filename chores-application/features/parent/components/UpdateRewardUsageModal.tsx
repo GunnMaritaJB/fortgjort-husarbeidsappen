@@ -42,7 +42,7 @@ export default function UpdateRewardUsageModal({
     return (
         <Modal visible={visible} transparent animationType="fade">
             <View style={styles.overlay}>
-                <LinearGradient colors={['#F8BBD0', '#E1BEE7']} style={styles.container}>
+                <LinearGradient colors={['#81c784', '#c8e6c9']} style={styles.container}>
                     <Text style={styles.title}>{rewardName}</Text>
                     <Text style={styles.label}>Skyv til høyre for å merke som brukt</Text>
                     <Switch

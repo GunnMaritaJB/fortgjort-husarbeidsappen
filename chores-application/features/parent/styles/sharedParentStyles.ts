@@ -65,7 +65,7 @@ export const sharedFormStyles = StyleSheet.create({
     name: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 60,
+        marginBottom: 20,
     },
 
 });

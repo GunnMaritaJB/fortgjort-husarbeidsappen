@@ -11,7 +11,7 @@ export const RewardScreenStyles = StyleSheet.create<{
   screen: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: "#f0fdfb",
+    backgroundColor: '#e9f6f5',
   },
   header: {
     fontSize: 22,

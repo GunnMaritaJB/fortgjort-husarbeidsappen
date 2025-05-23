@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
+        backgroundColor: '#e9f6f5',
     },
     header: {
         fontSize: 18,
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
         padding: 16,
-        backgroundColor: '#FFF8E1',
+        backgroundColor: '#c7f1d6',
         borderRadius: 12,
         elevation: 2,
     },

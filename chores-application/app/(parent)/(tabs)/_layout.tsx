@@ -7,6 +7,7 @@ export default function ParentTabsLayout() {
           screenOptions={{
               headerShown: false,
               tabBarActiveTintColor: '#2e7d32',
+
           }}
       >
       <Tabs.Screen

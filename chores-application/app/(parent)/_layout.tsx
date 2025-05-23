@@ -15,9 +15,10 @@ export default function ParentDrawerLayout() {
         <Drawer
             screenOptions={{
                 headerStyle: { backgroundColor: '#e9f6f5' },
-                headerTintColor: '#2e7d32',
-                drawerActiveTintColor: '#2e7d32',
+                headerTintColor: '#black',
+                drawerActiveTintColor: '#black',
                 drawerLabelStyle: { fontSize: 16 },
+                headerShadowVisible: false,
                 drawerStyle: {
                     width: 240,
                 },

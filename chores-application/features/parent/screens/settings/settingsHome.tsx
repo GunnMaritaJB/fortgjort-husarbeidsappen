@@ -7,7 +7,7 @@ export default function SettingsHome() {
 
     return (
         <View style={styles.container}>
-            <Text style={{ fontSize: 24, fontWeight: '700', color: '#1b5e20', marginBottom: 30 }}>
+            <Text style={{ fontSize: 24, fontWeight: '700', color: 'Black', marginBottom: 30 }}>
                 Innstillinger
             </Text>
             <TouchableOpacity

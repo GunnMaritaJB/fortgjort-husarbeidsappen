@@ -3,9 +3,9 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#dbeee8', // lys bakgrunn
+        backgroundColor: '#e9f6f5', // lys bakgrunn
         alignItems: 'center',
-        padding: 20,
+        padding: 10,
     },
     title: {
         fontSize: 24,
@@ -14,9 +14,9 @@ export const styles = StyleSheet.create({
     },
     avatarCircle: {
         backgroundColor: '#d0d0d0',
-        width: 120,
-        height: 120,
-        borderRadius: 60,
+        width: 100,
+        height: 100,
+        borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
@@ -25,14 +25,14 @@ export const styles = StyleSheet.create({
         fontSize: 60,
     },
     emojiGrid: {
-        backgroundColor: 'rgba(0,0,0,0.1)',
+        backgroundColor: 'rgba(0,0,0,0.05)',
         borderRadius: 20,
         padding: 20,
         marginVertical: 20,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        gap: 15,
+        maxWidth: 320,
     },
     emojiButton: {
         backgroundColor: '#cce7e2',
