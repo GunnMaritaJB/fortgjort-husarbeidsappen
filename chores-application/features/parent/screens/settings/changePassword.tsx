@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { auth } from '@/firebaseConfig';
 import { Snackbar } from 'react-native-paper';
 import {router} from "expo-router";
-import {styles} from "@/features/parent/styles/EditPasswordStyle"
+import {styles} from "@/features/parent/styles/settings/EditPasswordStyle"
 import { changeUserPassword } from '@/features/auth/services/changePasswordService';
 
 

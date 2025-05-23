@@ -13,7 +13,7 @@ import { getParentHouseholdId } from '@/features/parent/services/parent';
 import ConfirmApprovalModal from '@/features/parent/components/approveModal';
 import RejectConfirmationModal from '@/features/parent/components/rejectModal';
 import { confirmApproval, rejectTask } from '@/features/task/services/task';
-import{styles as approvestyles} from '@/features/parent/styles/taskForChildrenScreenStyles'
+import{styles as approvestyles} from '@/features/parent/styles/profile/taskForChildrenScreenStyles'
 import { deleteTask } from '@/features/task/services/task';
 import { Alert } from 'react-native';
 

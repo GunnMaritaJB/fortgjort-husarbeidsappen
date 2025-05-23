@@ -4,7 +4,7 @@ export default function TasksLayout() {
     return (
         <Stack
             screenOptions={{
-                headerShown: true,
+                headerShown: false,
                 title: '',
                 headerBackVisible: true,
             }}

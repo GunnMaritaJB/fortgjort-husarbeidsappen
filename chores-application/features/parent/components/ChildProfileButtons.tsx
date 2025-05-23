@@ -1,5 +1,5 @@
 import { TouchableOpacity, Text } from 'react-native';
-import { childProfileStyles as styles } from '@/features/parent/styles/childProfileStyles';
+import { childProfileStyles as styles } from '@/features/parent/styles/profile/childProfileStyles';
 
 type Props = {
     title: string;

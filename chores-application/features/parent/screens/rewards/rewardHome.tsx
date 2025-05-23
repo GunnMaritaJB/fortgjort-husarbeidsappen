@@ -15,7 +15,7 @@ import {
   updateReward,
   deleteReward,
 } from "../../../reward/services/rewardService";
-import { RewardScreenStyles as styles } from "../../styles/rewardScreenStyles";
+import { RewardScreenStyles as styles } from "../../styles/rewards/rewardScreenStyles";
 
 export default function RewardsScreen() {
   const [query, setQuery] = useState<string>("");

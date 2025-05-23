@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Task } from '@/features/task/models/Task';
-import {styles} from '@/features/parent/styles/rejectModalStyles';
+import {styles} from '@/features/parent/styles/tasks/rejectModalStyles';
 type Props = {
     visible: boolean;
     task: Task | null;

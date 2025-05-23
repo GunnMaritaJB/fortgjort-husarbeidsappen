@@ -4,7 +4,7 @@ export default function ProfileStackLayout() {
     return (
         <Stack
             screenOptions={{
-                headerShown: true,
+                headerShown: false,
                 title: '',
                 headerBackVisible: true,
             }}

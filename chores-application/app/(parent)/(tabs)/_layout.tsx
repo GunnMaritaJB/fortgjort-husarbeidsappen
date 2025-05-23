@@ -3,9 +3,12 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function ParentTabsLayout() {
   return (
-    <Tabs
-      screenOptions={{ tabBarActiveTintColor: "#2e7d32", headerShown: false }}
-    >
+      <Tabs
+          screenOptions={{
+              headerShown: false,
+              tabBarActiveTintColor: '#2e7d32',
+          }}
+      >
       <Tabs.Screen
         name="profile"
         options={{

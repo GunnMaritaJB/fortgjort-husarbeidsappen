@@ -1,6 +1,6 @@
 import { TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { parentProfileStyles as p } from '@/features/parent/styles/parentProfileStyles';
+import { parentProfileStyles as p } from '@/features/parent/styles/profile/parentProfileStyles';
 
 type Props = {
     id: string;

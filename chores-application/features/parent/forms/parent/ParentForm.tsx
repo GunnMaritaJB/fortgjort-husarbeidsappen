@@ -1,5 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { styles } from '@/features/parent/styles/parentFormStyles';
+import { styles } from '@/features/parent/styles/settings/parentFormStyles';
 import AvatarPicker from '@/features/parent/components/avatarPickerParent';
 
 export default function ParentForm({

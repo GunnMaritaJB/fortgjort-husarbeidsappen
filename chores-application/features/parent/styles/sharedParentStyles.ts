@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const sharedFormStyles = StyleSheet.create({
     label: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: '500',
         marginBottom: 4,
         color: '#333',
@@ -41,14 +41,14 @@ export const sharedFormStyles = StyleSheet.create({
     buttonText: {
         fontWeight: '600',
         color: '#fff',
-        fontSize: 16,
+        fontSize: 20,
     },
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#e9f6f5',
-        padding: 20,
+        padding: 10,
     },
     avatarCircle: {
         width: 100,
@@ -57,25 +57,15 @@ export const sharedFormStyles = StyleSheet.create({
         backgroundColor: '#d6d6d6',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 10,
     },
     avatar: {
-        fontSize: 48,
+        fontSize: 50,
     },
     name: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 60,
     },
 
-    logoutButton: {
-        backgroundColor: '#bcbcbc',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 20,
-    },
-    logoutText: {
-        fontSize: 16,
-        color: '#000',
-    },
 });

@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
         fontSize: 16,
     },
     button: {
-        backgroundColor: '#007AFF', // Fortsatt primærfargen
+        backgroundColor: '#34C759',
         paddingVertical: 14,
         borderRadius: 12,
         alignItems: 'center',

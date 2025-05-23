@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
-import {
-    Modal,
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    TouchableOpacity,
-    Alert,
-} from 'react-native';
+import {Modal, View, Text, TextInput, TouchableOpacity, Alert,} from 'react-native';
 import { verifyParentPin } from '@/features/parent/services/verifyParentService';
+import {styles} from '@/features/parent/styles/parentPinModalStyles'
 
 interface Props {
     visible: boolean;
@@ -73,54 +66,3 @@ export default function ParentPinModal({ visible, parentId, onSuccess, onCancel 
         </Modal>
     );
 }
-
-const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    modal: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
-        width: '80%',
-        elevation: 5,
-    },
-    title: {
-        fontSize: 18,
-        marginBottom: 15,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    input: {
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 15,
-        textAlign: 'center',
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 10,
-    },
-    button: {
-        flex: 1,
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    cancel: {
-        backgroundColor: '#ccc',
-    },
-    confirm: {
-        backgroundColor: '#4CAF50',
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-});

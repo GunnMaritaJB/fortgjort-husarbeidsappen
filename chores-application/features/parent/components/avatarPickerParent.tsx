@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, Text } from 'react-native';
-import { styles } from '@/features/parent/styles/parentFormStyles';
+import { styles } from '@/features/parent/styles/settings/parentFormStyles';
 
 export default function AvatarPicker({
                                          selected,

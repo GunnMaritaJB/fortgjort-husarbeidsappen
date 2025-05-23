@@ -8,6 +8,7 @@ import {
     serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
+import { fetchChildrenByHousehold } from '@/features/child/services/child';
 
 /**
  * Oppretter en husstand og kobler den til parent-dokumentet, hvis ikke allerede gjort.
@@ -44,3 +45,40 @@ export const createHousehold = async (
 
     return householdId;
 };
+
+export async function fetchHouseholdDashboardData(uid: string) {
+    const parentRef = doc(db, 'parents', uid);
+    const parentDoc = await getDoc(parentRef);
+
+    if (!parentDoc.exists()) {
+        throw new Error('PARENT_NOT_FOUND');
+    }
+
+    const parent = parentDoc.data();
+    const firstName = parent?.firstName ?? 'Forelder';
+    const avatar = typeof parent?.avatar === 'string' && parent.avatar.trim().length > 0 ? parent.avatar : '👤';
+    const householdId = parent?.householdId;
+
+    if (!householdId) {
+        throw new Error('HOUSEHOLD_MISSING');
+    }
+
+    const householdRef = doc(db, 'households', householdId);
+    const householdDoc = await getDoc(householdRef);
+
+    if (!householdDoc.exists()) {
+        await updateDoc(parentRef, { householdId: null });
+        throw new Error('HOUSEHOLD_NOT_FOUND');
+    }
+
+    const householdName = householdDoc.data()?.name ?? 'Husstand';
+    const children = await fetchChildrenByHousehold(householdId);
+
+    return {
+        avatar,
+        firstName,
+        householdId,
+        householdName,
+        children,
+    };
+}

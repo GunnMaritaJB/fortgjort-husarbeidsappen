@@ -1,34 +1,58 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+// src/shared/contexts/AuthContext.tsx
 
-// Typen du vil gjøre tilgjengelig overalt
-interface AuthContextProps {
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+
+type AuthContextType = {
     parentId: string | null;
     householdId: string | null;
-    setAuthData: (parentId: string, householdId: string) => void;
-}
+    loading: boolean;
+    setAuthData: (id: string, householdId: string | null) => void;
+};
 
-// Default verdier (bare for init)
-const AuthContext = createContext<AuthContextProps>({
+const AuthContext = createContext<AuthContextType>({
     parentId: null,
     householdId: null,
+    loading: true,
     setAuthData: () => {},
 });
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [parentId, setParentId] = useState<string | null>(null);
     const [householdId, setHouseholdId] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const setAuthData = (newParentId: string, newHouseholdId: string) => {
-        setParentId(newParentId);
-        setHouseholdId(newHouseholdId);
+    const setAuthData = (id: string, householdId: string | null) => {
+        setParentId(id);
+        setHouseholdId(householdId);
     };
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(getAuth(), (user: User | null) => {
+            if (user) {
+                setParentId(user.uid);
+            } else {
+                setParentId(null);
+                setHouseholdId(null);
+            }
+            setLoading(false);
+        });
+
+        return unsubscribe;
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ parentId, householdId, setAuthData }}>
+        <AuthContext.Provider
+            value={{
+                parentId,
+                householdId,
+                loading,
+                setAuthData,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 };
 
-// Dette hooket bruker du i komponenter:
 export const useAuth = () => useContext(AuthContext);

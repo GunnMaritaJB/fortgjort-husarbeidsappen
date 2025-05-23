@@ -1,126 +1,99 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import * as Crypto from 'expo-crypto';
+import {View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator,} from 'react-native';
 import { useAuth } from '@/shared/contexts/AuthContext';
+import {fetchParentHasPin, setPin, updatePin, removePin,verifyPin} from '@/features/parent/services/parentPinService';
+import { styles } from '@/features/parent/styles/settings/parentPinScrnStyles';
+import { useRouter } from 'expo-router';
+
 
 export default function ParentPinScreen() {
     const [hasPin, setHasPin] = useState<boolean | null>(null);
     const [currentPin, setCurrentPin] = useState('');
     const [newPin, setNewPin] = useState('');
     const [confirmPin, setConfirmPin] = useState('');
-    const [loading, setLoading] = useState(true);
-
-    const { parentId } = useAuth();
+    const [localLoading, setLocalLoading] = useState(true);
+    const { parentId, loading } = useAuth();
+    const router = useRouter();
 
     useEffect(() => {
-        if (!parentId) {
-            console.warn('Mangler parentId fra context');
-            return;
-        }
+        if (!parentId) return;
 
-        const fetchParentData = async () => {
+        const load = async () => {
             try {
-                const parentRef = doc(db, 'parents', parentId);
-                const parentSnap = await getDoc(parentRef);
-
-                if (parentSnap.exists()) {
-                    const data = parentSnap.data();
-                    setHasPin(!!data.pinHash);
-                } else {
-                    console.warn('Forelder finnes ikke i Firestore');
-                }
-            } catch (error) {
-                console.error('Error fetching parent data:', error);
+                const has = await fetchParentHasPin(parentId);
+                setHasPin(has);
+            } catch (err) {
                 Alert.alert('Feil', 'Kunne ikke hente foreldredata.');
             } finally {
-                setLoading(false);
+                setLocalLoading(false);
             }
         };
 
-        fetchParentData();
+        load();
     }, [parentId]);
 
-    const hashPin = async (pin: string): Promise<string> => {
-        return await Crypto.digestStringAsync(
-            Crypto.CryptoDigestAlgorithm.SHA256,
-            pin
-        );
-    };
-
     const handleSetPin = async () => {
-        if (newPin.length < 4) {
-            Alert.alert('Feil', 'PIN-koden må være minst 4 sifre.');
-            return;
-        }
-        if (newPin !== confirmPin) {
-            Alert.alert('Feil', 'PIN-kodene samsvarer ikke.');
-            return;
-        }
+        if (newPin.length < 4) return Alert.alert('Feil', 'Minst 4 sifre.');
+        if (newPin !== confirmPin)
+            return Alert.alert('Feil', 'PIN-kodene samsvarer ikke.');
+
         try {
-            const hash = await hashPin(newPin);
-            // @ts-ignore
-            const parentRef = doc(db, 'parents', parentId);
-            await updateDoc(parentRef, { pinHash: hash });
-            Alert.alert('Suksess', 'PIN-kode er satt.');
+            await setPin(parentId!, newPin);
             setHasPin(true);
             setNewPin('');
             setConfirmPin('');
+            Alert.alert('Suksess', 'PIN-kode er satt.');
+            router.back();
+
         } catch (error) {
-            console.error('Error setting PIN:', error);
             Alert.alert('Feil', 'Kunne ikke sette PIN-kode.');
         }
+        if (!/^\d{4}$/.test(newPin)) {
+            return Alert.alert('Feil', 'PIN-koden må være nøyaktig 4 sifre.');
+        }
+
     };
 
     const handleUpdatePin = async () => {
-        if (newPin.length < 4) {
-            Alert.alert('Feil', 'PIN-koden må være minst 4 sifre.');
-            return;
-        }
+        if (newPin.length < 4) return Alert.alert('Feil', 'Minst 4 sifre.');
+        if (newPin !== confirmPin)
+            return Alert.alert('Feil', 'PIN-kodene samsvarer ikke.');
+
         try {
-            // @ts-ignore
-            const parentRef = doc(db, 'parents', parentId);
-            const parentSnap = await getDoc(parentRef);
-            if (parentSnap.exists()) {
-                const data = parentSnap.data();
-                const currentHash = await hashPin(currentPin);
-                if (currentHash !== data.pinHash) {
-                    Alert.alert('Feil', 'Nåværende PIN-kode er feil.');
-                    return;
-                }
-                if (newPin !== confirmPin) {
-                    Alert.alert('Feil', 'Nye PIN-kodene samsvarer ikke.');
-                    return;
-                }
-                const newHash = await hashPin(newPin);
-                await updateDoc(parentRef, { pinHash: newHash });
-                Alert.alert('Suksess', 'PIN-kode er oppdatert.');
-                setNewPin('');
-                setConfirmPin('');
-                setCurrentPin('');
-            }
-        } catch (error) {
-            console.error('Error updating PIN:', error);
-            Alert.alert('Feil', 'Kunne ikke oppdatere PIN-kode.');
+            await updatePin(parentId!, currentPin, newPin);
+            setCurrentPin('');
+            setNewPin('');
+            setConfirmPin('');
+            Alert.alert('Suksess', 'PIN-kode er oppdatert.');
+            router.back();
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert('Feil', error.message || 'Kunne ikke oppdatere PIN-kode.');
         }
     };
 
     const handleRemovePin = async () => {
         try {
-            // @ts-ignore
-            const parentRef = doc(db, 'parents', parentId);
-            await updateDoc(parentRef, { pinHash: null });
-            Alert.alert('Suksess', 'PIN-kode er fjernet.');
-            setHasPin(false);
+            await verifyPin(parentId!, currentPin); // Sjekk gammel PIN
+            await removePin(parentId!);             // Fjern den
+
             setCurrentPin('');
-        } catch (error) {
-            console.error('Error removing PIN:', error);
-            Alert.alert('Feil', 'Kunne ikke fjerne PIN-kode.');
+            setHasPin(false);
+            Alert.alert('Suksess', 'PIN-kode fjernet.');
+            router.back();
+        } catch (error: any) {
+            if (__DEV__) console.warn('PIN-feil:', error);
+            Alert.alert('Feil', error.message === 'PIN-kode er feil.'
+                ? 'Nåværende PIN-kode er ikke riktig.'
+                : 'Kunne ikke fjerne PIN-kode.');
+
         }
     };
 
-    if (loading || hasPin === null) {
+
+
+
+    if (loading || localLoading || parentId === null || hasPin === null) {
         return (
             <View style={styles.container}>
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -131,103 +104,77 @@ export default function ParentPinScreen() {
 
     return (
         <View style={styles.container}>
-            {hasPin ? (
-                <>
-                    <Text style={styles.title}>Oppdater eller fjern PIN-kode</Text>
+            <View style={styles.card}>
+                <Text style={styles.title}>
+                    {hasPin ? 'Oppdater eller fjern PIN-kode' : 'Sett en ny PIN-kode'}
+                </Text>
+                {!hasPin && (
+                    <Text style={styles.helperText}>
+                        Opprett en 4-sifret PIN for å beskytte foreldremodus.
+                    </Text>
+                )}
+                {hasPin && (
+                    <>
+                    <Text style={styles.helperText}>
+                        Du må bekrefte nåværende PIN før du kan fjerne den.
+                    </Text>
+
                     <TextInput
                         style={styles.input}
                         placeholder="Nåværende PIN"
                         secureTextEntry
                         keyboardType="numeric"
+                        maxLength={4}
                         value={currentPin}
                         onChangeText={setCurrentPin}
                     />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Ny PIN"
-                        secureTextEntry
-                        keyboardType="numeric"
-                        value={newPin}
-                        onChangeText={setNewPin}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Bekreft ny PIN"
-                        secureTextEntry
-                        keyboardType="numeric"
-                        value={confirmPin}
-                        onChangeText={setConfirmPin}
-                    />
-                    <TouchableOpacity style={styles.button} onPress={handleUpdatePin}>
-                        <Text style={styles.buttonText}>Oppdater PIN</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.removeButton} onPress={handleRemovePin}>
-                        <Text style={styles.buttonText}>Fjern PIN</Text>
-                    </TouchableOpacity>
-                </>
-            ) : (
-                <>
-                    <Text style={styles.title}>Sett en ny PIN-kode</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Ny PIN"
-                        secureTextEntry
-                        keyboardType="numeric"
-                        value={newPin}
-                        onChangeText={setNewPin}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Bekreft ny PIN"
-                        secureTextEntry
-                        keyboardType="numeric"
-                        value={confirmPin}
-                        onChangeText={setConfirmPin}
-                    />
+                    </>
+                )}
+
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ny PIN"
+                    keyboardType="numeric"
+                    secureTextEntry
+                    maxLength={4}
+                    value={newPin}
+                    onChangeText={setNewPin}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Bekreft ny PIN"
+                    keyboardType="numeric"
+                    secureTextEntry
+                    maxLength={4}
+                    value={confirmPin}
+                    onChangeText={setConfirmPin}
+                />
+
+                {hasPin ? (
+                    <>
+                        <TouchableOpacity style={styles.button} onPress={handleUpdatePin}>
+                            <Text style={styles.buttonText}>Oppdater PIN</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[
+                                styles.removeButton,
+                                currentPin.length !== 4 && { opacity: 0.5 },
+                            ]}
+                            onPress={handleRemovePin}
+                            disabled={currentPin.length !== 4}
+                        >
+                            <Text style={styles.buttonText}>Fjern PIN</Text>
+                        </TouchableOpacity>
+
+                    </>
+                ) : (
                     <TouchableOpacity style={styles.button} onPress={handleSetPin}>
                         <Text style={styles.buttonText}>Sett PIN</Text>
                     </TouchableOpacity>
-                </>
-            )}
+                )}
+            </View>
         </View>
+
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-    },
-    button: {
-        backgroundColor: '#4CAF50',
-        padding: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    removeButton: {
-        backgroundColor: '#f44336',
-        padding: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-});

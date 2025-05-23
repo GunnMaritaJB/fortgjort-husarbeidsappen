@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { childProfileStyles as styles } from '@/features/parent/styles/childProfileStyles';
+import { childProfileStyles as styles } from '@/features/parent/styles/profile/childProfileStyles';
 import ChildProfileButton from './ChildProfileButtons';
 
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Modal, View, Text, TouchableOpacity, Pressable,} from 'react-native';
 import { Task } from '@/features/task/models/Task';
-import {styles} from  '@/features/parent/styles/approvModalStyles'
+import {styles} from '@/features/parent/styles/tasks/approvModalStyles'
 
 type Props = {
     visible: boolean;

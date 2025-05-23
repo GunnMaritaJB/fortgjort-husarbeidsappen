@@ -7,7 +7,7 @@ export const fetchParentInfo = async () => {
     const user = getAuth().currentUser;
     if (!user) throw new Error('Ikke logget inn');
 
-    const parentId = user.uid; // 👈 legg til denne
+    const parentId = user.uid;
 
     const parentRef = doc(db, 'parents', parentId);
     const parentSnap = await getDoc(parentRef);

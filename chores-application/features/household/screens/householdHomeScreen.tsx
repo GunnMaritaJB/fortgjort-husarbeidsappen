@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
 import { useRouter } from 'expo-router';
 import { householdHomeStyles as styles } from '../styles/householdHomeStyles';
-import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import { Child } from "@/features/child/models/Child";
 import MenuDrawer from '@/features/household/components/MenuDrawer';
 import { menuStyles } from '@/features/household/styles/menubar';
@@ -13,6 +10,7 @@ import { useChild } from '@/shared/contexts/ChildContext';
 import ParentPinModal from '@/features/parent/components/ParentPinModal';
 import { useAuth } from '@/shared/contexts/AuthContext';
 import { hasParentPin } from '@/features/parent/services/verifyParentService';
+import { fetchHouseholdDashboardData } from '@/features/household/services/householdService';
 
 export default function HouseholdHomeScreen() {
     const [householdName, setHouseholdName] = useState<string | null>(null);
@@ -27,6 +25,7 @@ export default function HouseholdHomeScreen() {
     const { parentId } = useAuth();
     const [showPinModal, setShowPinModal] = useState(false);
 
+
     useEffect(() => {
         const fetchData = async () => {
             const user = getAuth().currentUser;
@@ -34,36 +33,25 @@ export default function HouseholdHomeScreen() {
             if (!uid) return;
 
             try {
-                const parentRef = doc(db, 'parents', uid);
-                const parentDoc = await getDoc(parentRef);
-                const parent = parentDoc.data();
+                const {
+                    avatar,
+                    firstName,
+                    householdId,
+                    householdName,
+                    children,
+                } = await fetchHouseholdDashboardData(uid);
 
-                setParentName(parent?.firstName ?? 'Forelder');
-                setAvatar(typeof parent?.avatar === 'string' && parent.avatar.trim().length > 0 ? parent.avatar : '👤');
-
-                const householdId = parent?.householdId;
-                if (!householdId) {
-                    router.replace('/(household)');
-                    return;
-                }
-
+                setAvatar(avatar);
+                setParentName(firstName);
                 setHouseholdId(householdId);
-
-                const householdRef = doc(db, 'households', householdId);
-                const householdDoc = await getDoc(householdRef);
-                const childrenData = await fetchChildrenByHousehold(householdId);
-                setChildren(childrenData);
-
-                if (!householdDoc.exists()) {
-                    await updateDoc(parentRef, { householdId: null });
+                setHouseholdName(householdName);
+                setChildren(children);
+            } catch (error: any) {
+                if (error.message === 'HOUSEHOLD_MISSING' || error.message === 'HOUSEHOLD_NOT_FOUND') {
                     router.replace('/(household)');
-                    return;
+                } else {
+                    console.error('Feil ved lasting:', error);
                 }
-
-                const household = householdDoc.data();
-                setHouseholdName(household?.name ?? 'Husstand');
-            } catch (error) {
-                console.error('Feil ved lasting:', error);
             } finally {
                 setLoading(false);
             }
@@ -73,10 +61,13 @@ export default function HouseholdHomeScreen() {
     }, []);
 
     const handleParentPress = async () => {
-        if (!parentId) return;
+        const authUid = getAuth().currentUser?.uid;
+
+        if (!authUid) return;
 
         try {
-            const requiresPin = await hasParentPin(parentId);
+            const requiresPin = await hasParentPin(authUid);
+
             if (requiresPin) {
                 setShowPinModal(true);
             } else {
@@ -125,7 +116,7 @@ export default function HouseholdHomeScreen() {
 
                     <ParentPinModal
                         visible={showPinModal}
-                        parentId={parentId}
+                        parentId={getAuth().currentUser?.uid ?? parentId}
                         onCancel={() => setShowPinModal(false)}
                         onSuccess={() => {
                             setShowPinModal(false);

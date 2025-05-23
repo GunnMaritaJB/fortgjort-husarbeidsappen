@@ -8,7 +8,7 @@ import ConfirmApprovalModal from '@/features/parent/components/approveModal';
 import { format } from 'date-fns';
 import { fetchChildrenByHousehold } from '@/features/child/services/child';
 import RejectConfirmationModal from '@/features/parent/components/rejectModal';
-import {styles} from '@/features/parent/styles/taskForChildrenScreenStyles'
+import {styles} from '@/features/parent/styles/profile/taskForChildrenScreenStyles'
 import { confirmApproval } from '@/features/task/services/task';
 
 
