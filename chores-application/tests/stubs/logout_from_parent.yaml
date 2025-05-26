@@ -3,7 +3,9 @@ appId: com.anonymous.choresapplication
 - tapOn:
     id: "profileTab"
 - tapOn:
-      id: "profileTab"
+    id: "profileTab"
 - tapOn:
-    text: "Logg ut"
+    point: "6%,6%"
+- tapOn:
+    point: "31%,12%"
 
