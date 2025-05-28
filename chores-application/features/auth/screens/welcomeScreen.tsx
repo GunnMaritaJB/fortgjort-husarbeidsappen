@@ -32,7 +32,7 @@ export default function WelcomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Velkommen til Chores!🧹</Text>
+      <Text style={styles.title}>Velkommen til FortGjort 🧹</Text>
 
       <TouchableOpacity 
       style={styles.grayButton} 

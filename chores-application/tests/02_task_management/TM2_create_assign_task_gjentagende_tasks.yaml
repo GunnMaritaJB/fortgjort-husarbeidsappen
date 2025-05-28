@@ -1,5 +1,5 @@
 appId: com.anonymous.choresapplication
-name: TM2 Add New Reward (Recurring date)
+name: TM2 Create and Assign Task (Recurring date)
 
 clearState: true
 
@@ -47,8 +47,6 @@ onFlowComplete:
     text: "Tildel til barn"
 - tapOn:
     id: "assign_child"
-- assertVisible:
-    id: "assign_child"
 
 - tapOn:
     id: "pointsID"
@@ -78,17 +76,5 @@ onFlowComplete:
 - tapOn:
     text: "Lagre"
 
-
-# Check that the task is added
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
-
-# Check that the task is created and assigned to child 1
-
 - assertVisible:
-    text: "Gjentas:"
-- assertVisible:
-    text: "Neste:"
+    id: "taskItem-recurring"

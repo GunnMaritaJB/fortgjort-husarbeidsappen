@@ -15,7 +15,7 @@ onFlowComplete:
 
 ---
 - tapOn:
-    text: "Child1"
+    text: "Child 1"
 
 - tapOn:
     id: "starMenuButton"
@@ -24,7 +24,7 @@ onFlowComplete:
     text: "Belønninger"
 
 - assertVisible:
-    text: "Godis"
+    text: "Test Reward"
 
 
 

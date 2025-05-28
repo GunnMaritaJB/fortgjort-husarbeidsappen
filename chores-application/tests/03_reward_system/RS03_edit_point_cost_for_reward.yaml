@@ -3,7 +3,7 @@ name: Edit point cost for reward
 
 clearState: true
 env:
-  NAME_OF_REWARD: "Test belønning"
+  NAME_OF_REWARD: "Test Reward"
   ID_OF_CURRENT_POINTS: "Current_points"
 onFlowStart:
   - runFlow:
@@ -11,37 +11,29 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "parentNameLabel"
-
-# Test if we are on the right screen
-- assertVisible: ${PARENT_NAME}
+    id: "parentUser"
 
 # Press the reward option on the menu bar
 - tapOn:
-    id: "rewardMenuButton"
+    text: "Belønninger"
 
+- tapOn: "Test Reward – 50 poeng"
 - tapOn:
-    text: "${NAME_OF_REWARD}"
-- tapOn:
-    id: "${ID_OF_CURRENT_POINTS}"
+    id: "Current_points"
 
 #Delete existing points
 - eraseText
 - inputText: "33"
 - tapOn:
     text: "Lagre"
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${REWARD_NAME}
 
-- assertVisible:
-    text: ${REWARD_NAME}
+- assertVisible: "Test Reward – 33 poeng"
 
-- assertVisible:
-    leftOf:
-      text: ${REWARD_NAME}
-    text: "33"
+- assertNotVisible: "Test Reward – 50 poeng"

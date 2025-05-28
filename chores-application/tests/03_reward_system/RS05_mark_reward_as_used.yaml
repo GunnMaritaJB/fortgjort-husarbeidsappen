@@ -1,28 +1,42 @@
 appId: com.anonymous.choresapplication
-name: Mark reward as completed
+name: Mark reward as used
 
 # Slide btn marking reward as unused as default
 clearState: true
 env:
   NAME_OF_CHILD: "Child 1"
-  NAME_OF_REWARD: "Test belønning"
-  ID_OF_SLIDE_BTN: "rewardUsedSwitch"
+  NAME_OF_REWARD: "Test Reward"
 onFlowStart:
   - runFlow:
       file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "parentNameLabel"
+    id: "parentUser"
 - tapOn:
-    text: "${NAME_OF_CHILD}"
+    id: "childTest"
+    index: 0
+
 - tapOn:
     text: "Vis belønninger"
+- assertVisible: "Belønninger kjøpt av barnet"
+- assertVisible: "${NAME_OF_REWARD}"
+- assertVisible: "Ikke brukt"
+
+- tapOn: "${NAME_OF_REWARD}"
+
 - tapOn:
-    text: "${NAME_OF_REWARD}"
+    point: "50%,51%"
+
 - tapOn:
-    id: "${ID_OF_SLIDE_BTN}"
+    text: "Lukk"
+
 - assertVisible: "Brukt"
+

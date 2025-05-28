@@ -25,7 +25,7 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <BackButton />
-      <Text style={styles.title}>TITTEL</Text>
+      <Text style={styles.title}>FortGjort</Text>
 
       <RegisterForm
         firstName={firstName}

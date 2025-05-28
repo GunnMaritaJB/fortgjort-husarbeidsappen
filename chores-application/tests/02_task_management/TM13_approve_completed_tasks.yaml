@@ -14,64 +14,32 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 # Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    id: "parentNameLabel"
 
-# Find the task to complete
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
-
-# Click on the task
 - tapOn:
-    text: ${TASK_NAME}
-    label: "Click on the task"
-- assertVisible: ${TASK_NAME}
+    text: "Oppgaver"
 
-# Go to oppgave oppsummering
-- tapOn:
-    text: "Oppgave oppsummering"
-    label: "Go to oppgave oppsummering"
 
 # Ensure task is completed
-- assertVisible: "Avgjørelse"
-- assertVisible: "Godkjenn"
-- assertVisible: "Avvent"
-- assertVisible: "Avslå"
+- assertVisible: "✅ Fullført"
+- assertVisible: "🕒 Venter på godkjenning"
 
 # Approve the task
 - tapOn:
-    text: "Godkjenn"
-    label: "Approve the task"
+    text: "Bekreft"
 
-# Save the task
+- assertVisible: "Bekreft oppgave"
+
 - tapOn:
-    text: "Lagre"
-    label: "Save the task"
-
-# Search for the task
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
-
-# Click on the task
-- tapOn:
-    text: ${TASK_NAME}
-    label: "Click on the task"
-- assertVisible: ${TASK_NAME}
-
-# Go to oppgave oppsummering
-- tapOn:
-    text: "Oppgave oppsummering"
-    label: "Go to oppgave oppsummering"
+    text: "Ja, bekreft"
 
 # Check that the task is approved
-- assertVisible: "Bekreftet"
+- assertVisible: "🟢 Godkjent"

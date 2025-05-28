@@ -3,20 +3,26 @@ name: View available rewards
 
 clearState: true
 env:
-  NAME_OF_REWARD: "Test belønning"
+  NAME_OF_REWARD: "Test Reward"
 onFlowStart:
  - runFlow:
      file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "rewardIcon"
-- assertVisible: "Belønninger"
+    id: "parentUser"
+- tapOn:
+    text: "Belønninger"
+
+- assertVisible: "BELØNNINGER"
 - assertVisible: "Søk etter belønning"
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-- assertVisible: "${NAME_OF_REWARD}"
+
+- assertVisible: "Test Reward – 50 poeng"
 

@@ -1,14 +1,7 @@
 appId: com.anonymous.choresapplication
-name: TM14 Sort task by child
-
+name: Edit Child Account
+# description: A simple flow to test the app's launch and welcome screen.
 clearState: true
-
-# Environment variables
-env:
-  TASK_NAME: "[Enter_name_here]"
-  CHILD_NAME_1: "Child"
-  CHILD_NAME_2: "Child 1"
-
 onFlowStart:
   - runFlow:
       file: "../stubs/login_vio_user.yaml"
@@ -22,20 +15,29 @@ onFlowComplete:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "parentUser"
-# Go to index.tsx screen
-- tapOn:
-    text: "Oppgaver"
-
-# Choose to filter by child
-- tapOn:
-    point: "8%,30%"
+    id: "parentNameLabel"
 
 - tapOn:
-    point: "50%,50%"
+    id: "childTest"
 
-- assertVisible: "Tildelt: Child 1"
+- tapOn:
+    text: "Rediger profil"
 
-- assertNotVisible: "Tildelt: Child"
+- tapOn:
+    id: "childNameInput"
+- eraseText
+- inputText:
+    text: "EditedChildName"
+
+- tapOn:
+    text: "🐵"
+
+- tapOn:
+    text: "Fullfør"
+
+- assertVisible: "🐵 EditedChildName"
+
+
+
 
 

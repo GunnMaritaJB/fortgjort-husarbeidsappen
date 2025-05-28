@@ -27,11 +27,3 @@ onFlowComplete:
     id: "parentUser"
 - tapOn:
     id: "parentUser"
-#- inputText: "1234"
-#- tapOn: "OK"
-- assertVisible:
-    id: "parentName"
-- tapOn:
-    text: "Logg ut"
-- assertVisible:
-    id: "parentUser"

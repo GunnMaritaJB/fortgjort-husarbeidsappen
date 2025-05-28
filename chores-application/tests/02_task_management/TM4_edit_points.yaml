@@ -5,8 +5,7 @@ clearState: true
 
 # Environment variables
 env:
-  NEWPOINTS: "0"
-  TASK_NAME: "[Enter_name_here]"
+  NEWPOINTS: "125"
 
 onFlowStart:
   - runFlow:
@@ -26,8 +25,6 @@ onFlowComplete:
 - tapOn:
     text: "Oppgaver"
 
-# Find the task to edit
-
 
 # Click on the task to edit
 - tapOn:
@@ -35,11 +32,15 @@ onFlowComplete:
 
 - tapOn:
     id: "pointsID"
+- eraseText
 - inputText: ${NEWPOINTS}
 
+- tapOn:
+    text: "Vis"
 # Save editted task
 - tapOn:
     text: "Lagre"
+
 
 
 

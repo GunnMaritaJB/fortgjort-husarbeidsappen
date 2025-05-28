@@ -4,20 +4,26 @@ name: View purchased rewards
 clearState: true
 env:
   NAME_OF_CHILD: "Child 1"
-  NAME_OF_REWARD: "Test belønning"
+  NAME_OF_REWARD: "Test Reward"
 onFlowStart:
   - runFlow:
       file: "../stubs/login_vio_user.yaml"
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "parentNameLabel"
+    id: "parentUser"
 - tapOn:
-    text: "${NAME_OF_CHILD}"
+    id: "childTest"
+    index: 0
+    
 - tapOn:
     text: "Vis belønninger"
-- assertVisible: "Opptjente poeng:"
+- assertVisible: "Belønninger kjøpt av barnet"
 - assertVisible: "${NAME_OF_REWARD}"

@@ -1,5 +1,5 @@
 appId: com.anonymous.choresapplication
-name: TM1 View all index.tsx
+name: TM1 View tasks
 
 clearState: true
 onFlowStart:
@@ -24,6 +24,12 @@ onFlowComplete:
 
 # Press the task option on the menu bar
 - assertVisible: "OPPGAVER"
-- assertVisible: "Søk i oppgaver"
+
 - assertVisible:
     id: "addTaskButton"
+- assertVisible:
+    id: "taskItem-recurring"
+
+- assertVisible:
+    id: "taskItem-once"
+

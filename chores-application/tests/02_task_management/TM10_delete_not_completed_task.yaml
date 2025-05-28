@@ -11,46 +11,32 @@ onFlowStart:
   - runFlow:
       file: "../stubs/login_vio_user.yaml"
 
+
 onFlowComplete:
+  - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
   - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
-# Go to index.tsx screen
 - tapOn:
-    id: "taskMenuButton"
-    label: "Go to task screen"
+    id: "parentNameLabel"
 
-# Find the task to edit
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
-- assertVisible: ${TASK_NAME}
-
-# Click on the task to edit
 - tapOn:
-    text: ${TASK_NAME}
-    label: "Click on the task to edit"
-- assertVisible: ${TASK_NAME}
+    text: "Oppgaver"
 
-# Click on oppgave oppsummering
-- tapOn:
-    text: "Oppgave oppsummering"
-    label: "Click on oppgave oppsummering"
 
-# Confirm that task can be deleted
-- assertVisible: "Ikke fullført"
+- assertVisible: "❌ Ikke fullført"
 
 # Click on delete task button
 - tapOn:
     text: "Slett"
-    label: "Click on delete task button"
 
-# Find the task to edit
-- runFlow:
-    file: "../stubs/scroll_to_find_text.yaml"
-    env:
-      TEXT_TO_FIND: ${TASK_NAME}
+- assertVisible: "Er du sikker på at du vil slette denne oppgaven?"
 
-# Check that the task is deleted
-- assertNotVisible: ${TASK_NAME}
+- tapOn:
+    text: "SLETT"
+
+- assertNotVisible:
+    id: "taskItem-once"

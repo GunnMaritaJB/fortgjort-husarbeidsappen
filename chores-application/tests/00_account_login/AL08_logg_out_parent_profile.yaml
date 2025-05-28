@@ -18,15 +18,12 @@ onFlowComplete:
 ---
 #Log out from parentprofile
 - tapOn:
-    id: "parentNameLabel"
-
+    id: "parentUser"
 - tapOn:
-    text: "Logg ut"
-
-#Checks
+    point: "6%,6%"
+- tapOn:
+    point: "31%,12%"
 - assertVisible:
-    id: "hamburgerButton"
-- assertVisible:
-    id: "parentNameLabel"
+    id: "parentUser"
 
 

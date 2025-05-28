@@ -17,26 +17,31 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
-    id: "${ID_OF_SETTINGS_ICON}"
+    id: "parentUser"
+- tapOn:
+    text: "Innstillinger"
 - tapOn:
     text: "Endre profilinformasjon"
-- tapOn:
-    id: "${ID_OF_CURRENT_NAME}"
 
-#Delete existing points
+- tapOn: "Navn"
+
 - eraseText
 - inputText: "Lydia Nalen"
-- tapOn:
-    id: "${ID_OF_MAN_AVATAR}"
+
+- tapOn: "🧙‍♂️"
 - tapOn:
     text: "Lagre"
 - tapOn:
-    id: "${ID_OF_HOME_ICON}"
+    text: "Profil"
 - assertVisible: "Lydia Nalen"
-- assertVisible: "${ID_OF_MAN_AVATAR}"
+- assertVisible: "🧙‍♂️"
 
 
 

@@ -13,17 +13,18 @@ onFlowStart:
 
 onFlowComplete:
   - runFlow:
+      file: "../stubs/logout_from_parent.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+  - runFlow:
       file: "../stubs/stop_app.yaml"
 ---
 - tapOn:
     id: "parentNameLabel"
 
-# Test if we are on the right screen
-- assertVisible: ${PARENT_NAME}
-
 # Press the reward option on the menu bar
 - tapOn:
-    id: "rewardMenuButton"
+    text: "Belønninger"
 
 # Check that we are on the right screen
 - assertVisible: "BELØNNINGER"
@@ -48,5 +49,4 @@ onFlowComplete:
 # Check that the reward is added
 - assertVisible: "BELØNNINGER"
 
-- assertVisible:
-    text: ${REWARD_NAME}
+- assertVisible: "Go to the park – 50 poeng"

@@ -7,23 +7,28 @@ onFlowStart:
       file: "../stubs/login_vio_for_child.yaml"
 
 onFlowComplete:
-  -runFlow:
-    file: "../stubs/stop_app.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_child.yaml"
+  - runFlow:
+      file: "../stubs/logout_from_user.yaml"
+
+
 ---
 - tapOn:
-    id: "dummyChild_1"
+    text: "Child 1"
 
 - tapOn:
-    id: "childMenuBtn"
+    id: "starMenuButton"
 
 - tapOn:
     text: "Belønninger"
 
-- tapOn:
-    id: "backPack"
+- tapOn: "🎒"
 
 - assertVisible:
-    image: "Mine belønninger"
+    text: "Belønninger du har kjøpt"
+
+- assertVisible: "🎁"
 
 
 

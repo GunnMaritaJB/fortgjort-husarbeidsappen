@@ -16,6 +16,7 @@ import { confirmApproval, rejectTask } from '@/features/task/services/task';
 import{styles as approvestyles} from '@/features/parent/styles/profile/taskForChildrenScreenStyles'
 import { deleteTask } from '@/features/task/services/task';
 import { Alert } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 export default function TasksHome() {
     const router = useRouter();
@@ -28,6 +29,9 @@ export default function TasksHome() {
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [showApprovalModal, setShowApprovalModal] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
+    const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
+    const [statusFilter, setStatusFilter] = useState<'all' | 'confirmed' | 'unconfirmed'>('all');
+    const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'visible' | 'hidden'>('all');
 
 
     useEffect(() => {
@@ -57,7 +61,19 @@ export default function TasksHome() {
         };
     }, []);
     const filteredTasks = tasks
-        .filter(task => task.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        .filter(task =>
+            task.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            (selectedChildId === null || task.childId === selectedChildId) &&
+            (statusFilter === 'all' ||
+                (statusFilter === 'confirmed' && task.approved) ||
+                (statusFilter === 'unconfirmed' && !task.approved)) &&
+            (visibilityFilter === 'all' ||
+                (visibilityFilter === 'visible' && task.visibleToChild) ||
+                (visibilityFilter === 'hidden' && !task.visibleToChild))
+        )
+
+
+
         .sort((a, b) => {
             if (sortByChildName) {
                 const nameA = childMap[a.childId] ?? '';
@@ -103,18 +119,32 @@ export default function TasksHome() {
                 </TouchableOpacity>
             </View>
             <View style={styles.filterRow}>
-                <TouchableOpacity
-                    testID="filterChildButton"
-                    onPress={() => {
-                        if (sortByChildName === 'asc') setSortByChildName('desc');
-                        else if (sortByChildName === 'desc') setSortByChildName(null);
-                        else setSortByChildName('asc');
-                    }}
-                >
+                <View style={{ position: 'relative', zIndex: 10 }}>
                     <Text style={styles.filter}>
-                        Barn {sortByChildName === 'asc' ? '▲' : sortByChildName === 'desc' ? '▼' : ''}
+                        Barn
                     </Text>
-                </TouchableOpacity>
+                    <Picker
+                        selectedValue={selectedChildId}
+                        onValueChange={(value) => setSelectedChildId(value)}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: 80,
+                            height: 30,
+                            opacity: 0,
+                        }}
+                        dropdownIconColor="black"
+                    >
+                        <Picker.Item label="Alle" value={null} />
+                        {Object.entries(childMap).map(([id, name]) => (
+                            <Picker.Item key={id} label={name} value={id} />
+                        ))}
+                    </Picker>
+                </View>
+
+
+
                 <TouchableOpacity
                     testID="filterDateButton"
                     onPress={() => {
@@ -128,7 +158,29 @@ export default function TasksHome() {
                     </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.filter}>Status</Text>
+                <View style={{ position: 'relative', zIndex: 10 }}>
+                    <Text style={styles.filter}>
+                        Status
+                    </Text>
+                    <Picker
+                        selectedValue={statusFilter}
+                        onValueChange={(value) => setStatusFilter(value)}
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: 80,
+                            height: 30,
+                            opacity: 0,
+                        }}
+                        dropdownIconColor="black"
+                    >
+                        <Picker.Item label="Alle" value="all" />
+                        <Picker.Item label="Bekreftet" value="confirmed" />
+                        <Picker.Item label="Ikke bekreftet" value="unconfirmed" />
+                    </Picker>
+                </View>
+
 
                 <TouchableOpacity
                     testID="filterVisibilityButton"
@@ -138,9 +190,29 @@ export default function TasksHome() {
                         else setSortByVisibility('asc');
                     }}
                 >
-                    <Text style={styles.filter}>
-                        Synlig {sortByVisibility === 'asc' ? '▲' : sortByVisibility === 'desc' ? '▼' : ''}
-                    </Text>
+                    <View style={{ position: 'relative', zIndex: 10 }}>
+                        <Text style={styles.filter}>
+                            Synlig
+                        </Text>
+                        <Picker
+                            selectedValue={visibilityFilter}
+                            onValueChange={(value) => setVisibilityFilter(value)}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: 80,
+                                height: 30,
+                                opacity: 0,
+                            }}
+                            dropdownIconColor="black"
+                        >
+                            <Picker.Item label="Alle" value="all" />
+                            <Picker.Item label="Synlig" value="visible" />
+                            <Picker.Item label="Skjult" value="hidden" />
+                        </Picker>
+                    </View>
+
                 </TouchableOpacity>
             </View>
 
@@ -150,7 +222,7 @@ export default function TasksHome() {
                 ListEmptyComponent={<Text style={styles.noTasks}>Ingen oppgaver enda</Text>}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        testID={item.recurring ? 'taskItem-recurring' : 'taskIten-once'}
+                        testID={item.recurring ? 'taskItem-recurring' : 'taskItem-once'}
                         onPress={() => router.push(`/tasks/edit_task?id=${item.id}`)}>
                         <View style={styles.taskItem}>
                             <Text style={styles.taskText}>{item.name} – {item.points} poeng</Text>
@@ -184,15 +256,7 @@ export default function TasksHome() {
                                             🟢 Godkjent
                                         </Text>
                                     )}
-                                    {item.visibleToChild ? (
-                                        <Text style={[styles.statusBadge, { backgroundColor: '#E3F2FD', color: '#1565C0' }]}>
-                                            Synlig
-                                        </Text>
-                                    ) : (
-                                        <Text style={[styles.statusBadge, { backgroundColor: '#FBE9E7', color: '#D84315' }]}>
-                                            🚫 Skjult
-                                        </Text>
-                                    )}
+
                                 </View>
                                     {!item.approved && (
                                         <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
@@ -220,6 +284,16 @@ export default function TasksHome() {
                                 </>
                             ) : (
                                 <Text style={{ color: '#8B0000', fontWeight: 'bold' }}>❌ Ikke fullført</Text>
+                            )}
+                            {/* VIS SYNLIGHET ALLTID */}
+                            {item.visibleToChild ? (
+                                <Text style={[styles.statusBadge, { backgroundColor: '#E3F2FD', color: '#1565C0' }]}>
+                                    Synlig
+                                </Text>
+                            ) : (
+                                <Text style={[styles.statusBadge, { backgroundColor: '#FBE9E7', color: '#D84315' }]}>
+                                    🚫 Skjult
+                                </Text>
                             )}
                             {item.recurring && Array.isArray(item.repeatDays) && item.repeatDays.length > 0 && (
                                 <View style={{ marginTop: 4 }}>

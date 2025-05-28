@@ -25,9 +25,22 @@ onFlowComplete:
     text: "Fornavn"
 
 - inputText:
-    text: "Child"
+    text: "Child 2"
 
-- hideKeyboard
+- tapOn:
+    point: "50%,43%"
+
+- tapOn:
+    point: "30%,40%"
+
+- tapOn:
+    point: "49%,40%"
+
+- tapOn:
+    point: "68%,40%"
+
+- tapOn:
+    text: "OK"
 
 - tapOn:
     text: "🦁"
@@ -35,7 +48,7 @@ onFlowComplete:
 - tapOn:
     text: "Fullfør"
 
-- assertVisible: "🦁 Child"
+- assertVisible: "🦁 Child 2"
 
 
 

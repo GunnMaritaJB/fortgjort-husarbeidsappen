@@ -1,0 +1,34 @@
+appId: com.anonymous.choresapplication
+name: CFT1 Child mark task as completed
+
+clearState: true
+
+env:
+  CHILD_NAME: "Child"
+
+onFlowStart:
+  - runFlow:
+      file: "../stubs/login_vio_user.yaml"
+
+onFlowComplete:
+  - runFlow:
+      file: "../stubs/logout_from_child.yaml"
+  - runFlow:
+      file: "../stubs/stop_app.yaml"
+---
+- tapOn:
+    text: "Child"
+- assertVisible: "Hei, ${CHILD_NAME}!"
+
+- tapOn:
+    id: "starMenuButton"
+
+- tapOn: ", Oppgaver"
+
+- assertVisible: "🌟 TEST TASK 2, 100 poeng"
+
+- tapOn: "🌟 TEST TASK 2, 100 poeng"
+
+- tapOn: "🎉, Ja!"
+
+- assertVisible: "🌟 TEST TASK 2, 100 poeng, ✅ Fullført"

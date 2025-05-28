@@ -1,5 +1,5 @@
 appId: com.anonymous.choresapplication
-name: TM2 Add New Reward Alternative
+name: TM2 Create and Assign Task
 
 clearState: true
 
@@ -45,7 +45,7 @@ onFlowComplete:
 # Go to assigning to child
 - assertVisible: "Tildel til barn"
 - tapOn:
-    id: "assign_child"
+    point: "41%,40%"
 - assertVisible:
     id: "assign_child"
 
@@ -56,13 +56,14 @@ onFlowComplete:
 # Go to "Tidspunkt"  (as "En gang" is default)
 
 - assertVisible: "En gang"
-- assertVisible: "Gjentagende"
+- tapOn:
+    text: "En gang"
 
 # Choose one time date
 - assertVisible:
     id: "datePicker"
 - tapOn:
-    id: "datePicker"
+    point: "50%,66%"
 - tapOn:
     text: "28"
 - tapOn:
@@ -78,3 +79,6 @@ onFlowComplete:
 # Save the task
 - tapOn:
     text: "Lagre"
+
+- assertVisible:
+    id: "taskItem-once"
