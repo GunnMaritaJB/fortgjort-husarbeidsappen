@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import {Modal, View, Text, TextInput, TouchableOpacity, Alert,} from 'react-native';
-import { verifyParentPin } from '@/features/parent/services/verifyParentService';
-import {styles} from '@/features/parent/styles/parentPinModalStyles'
+import { Modal, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { styles } from '@/features/parent/styles/parentPinModalStyles';
+import { verifyPin } from '@/features/parent/services/parentPinService';
 
 interface Props {
     visible: boolean;
@@ -10,7 +10,7 @@ interface Props {
     onCancel: () => void;
 }
 
-export default function ParentPinModal({ visible, parentId, onSuccess, onCancel }: Props) {
+const ParentPinModal: React.FC<Props> = ({ visible, parentId, onSuccess, onCancel }) => {
     const [pin, setPin] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -24,20 +24,15 @@ export default function ParentPinModal({ visible, parentId, onSuccess, onCancel 
         }
 
         try {
-            const ok = await verifyParentPin(parentId, pin);
-            if (ok) {
-                setPin('');
-                onSuccess();
-            } else {
-                Alert.alert('Feil', 'PIN-koden er feil');
-            }
+            await verifyPin(parentId, pin);
+            setPin('');
+            onSuccess();
         } catch (error: any) {
             Alert.alert('Feil', error.message || 'Kunne ikke verifisere PIN-kode');
         } finally {
             setLoading(false);
         }
     };
-
 
     return (
         <Modal transparent animationType="fade" visible={visible} onRequestClose={onCancel}>
@@ -65,4 +60,6 @@ export default function ParentPinModal({ visible, parentId, onSuccess, onCancel 
             </View>
         </Modal>
     );
-}
+};
+
+export default ParentPinModal;

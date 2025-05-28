@@ -9,8 +9,8 @@ import { menuStyles } from '@/features/household/styles/menubar';
 import { useChild } from '@/shared/contexts/ChildContext';
 import ParentPinModal from '@/features/parent/components/ParentPinModal';
 import { useAuth } from '@/shared/contexts/AuthContext';
-import { hasParentPin } from '@/features/parent/services/verifyParentService';
 import { fetchHouseholdDashboardData } from '@/features/household/services/householdService';
+import {fetchParentHasPin} from "@/features/parent/services/parentPinService";
 
 export default function HouseholdHomeScreen() {
     const [householdName, setHouseholdName] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export default function HouseholdHomeScreen() {
         if (!authUid) return;
 
         try {
-            const requiresPin = await hasParentPin(authUid);
+            const requiresPin = await fetchParentHasPin(authUid);
 
             if (requiresPin) {
                 setShowPinModal(true);

@@ -157,7 +157,6 @@ export const listenToTasksForChild = (
 };
 
 
-
 export const toggleTaskCompletion = async (
     householdId: string,
     taskId: string,
@@ -180,7 +179,6 @@ export const rejectTask = async (householdId: string, taskId: string) => {
 };
 
 
-
 export const resetIfExpired = async (taskRef: any, task: Task): Promise<void> => {
     const now = new Date();
     const deadlineDate = (task.dateForCompletion as any)?.toDate?.() ?? new Date(8640000000000000);
@@ -189,20 +187,24 @@ export const resetIfExpired = async (taskRef: any, task: Task): Promise<void> =>
     if (!expired) return;
 
     if (task.recurring && Array.isArray(task.repeatDays)) {
+        const now = new Date();
+        const deadlineDate = (task.dateForCompletion as any)?.toDate?.() ?? new Date(8640000000000000);
+        const expired = now > endOfDay(deadlineDate);
+
         if (task.completed && !task.approved) return;
 
-        const upcoming = getRecurringDates(task.repeatDays, now, endOfMonth(now));
-        const next = upcoming.find(d => d > now);
+        if (expired) {
+            const upcoming = getRecurringDates(task.repeatDays, now, endOfMonth(now));
+            const next = upcoming.find(d => d > now);
 
-        await updateDoc(taskRef, {
-            completed: false,
-            approved: false,
-            completedAt: null,
-            dateAssigned: Timestamp.now(),
-            dateForCompletion: next ? Timestamp.fromDate(next) : null,
-        });
-
-        return;
+            await updateDoc(taskRef, {
+                completed: false,
+                approved: false,
+                completedAt: null,
+                dateAssigned: Timestamp.now(),
+                dateForCompletion: next ? Timestamp.fromDate(next) : null,
+            });
+        }
     }
 
     if (!task.recurring && task.completed && task.approved) {

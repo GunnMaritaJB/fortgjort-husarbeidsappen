@@ -40,13 +40,19 @@ export const removePin = async (parentId: string) => {
     await updateDoc(doc(db, 'parents', parentId), { pinHash: null });
 };
 
+
+
 export const verifyPin = async (parentId: string, pin: string) => {
     const ref = doc(db, 'parents', parentId);
     const snap = await getDoc(ref);
     if (!snap.exists()) throw new Error('Forelder finnes ikke');
 
+    const data = snap.data();
+    if (!data?.pinHash) throw new Error('Forelder har ingen PIN satt');
+
     const hash = await hashPin(pin);
-    if (hash !== snap.data()?.pinHash) {
+    if (hash !== data.pinHash) {
         throw new Error('PIN-kode er feil.');
     }
 };
+
