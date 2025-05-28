@@ -148,7 +148,7 @@ export const listenToTasksForChild = (
             setLoading(false);
         },
         (error) => {
-            console.error('🔥 Feil ved snapshot:', error);
+            console.error(' Feil ved snapshot:', error);
             setLoading(false);
         }
     );

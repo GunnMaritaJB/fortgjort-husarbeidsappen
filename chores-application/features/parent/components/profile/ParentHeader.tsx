@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text,} from 'react-native';
 import { sharedFormStyles as s } from '@/features/parent/styles/sharedParentStyles';
 
 

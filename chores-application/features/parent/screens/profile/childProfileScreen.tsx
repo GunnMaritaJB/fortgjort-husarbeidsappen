@@ -2,13 +2,11 @@
 import { useEffect, useState } from 'react';
 import {router, useLocalSearchParams} from 'expo-router';
 import {View, Text} from 'react-native';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
 import { childProfileStyles as styles } from '@/features/parent/styles/profile/childProfileStyles';
 import ChildProfileActions from '@/features/parent/components/ChildProfileActions';
 import {deleteChild} from "@/features/child/services/child";
 import ConfirmDeleteModal from "@/features/modals/ConfirmDeleteModal";
-import { collections } from '@/shared/paths/firebasePaths';
+import { getChildById } from '@/features/child/services/child';
 export default function ChildProfileScreen() {
 
 
@@ -19,25 +17,19 @@ export default function ChildProfileScreen() {
 
 
     useEffect(() => {
-        if (
-            !id ||
-            typeof id !== 'string' ||
-            !householdId ||
-            typeof householdId !== 'string'
-        ) return;
+        if (!id || !householdId || typeof id !== 'string' || typeof householdId !== 'string') return;
 
-        const fetchChildData = async () => {
-            const childRef = doc(db, collections.childDocPath(householdId, id));
-            const childSnap = await getDoc(childRef);
-
-            if (childSnap.exists()) {
-                const data = childSnap.data();
-                setPoints(data.points ?? 0);
-                setDob(new Date(data.dob));
+        const fetch = async () => {
+            try {
+                const child = await getChildById(householdId, id);
+                setPoints(child.points ?? 0);
+                setDob(new Date(child.dob));
+            } catch (error) {
+                console.error('Kunne ikke hente barn:', error);
             }
         };
 
-        fetchChildData();
+        fetch();
     }, [id, householdId]);
 
 

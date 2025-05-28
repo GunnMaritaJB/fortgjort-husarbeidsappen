@@ -1,4 +1,4 @@
-import { View, TextInput, Button, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text } from 'react-native';
 import { registerStyles as styles } from '../styles/registerStyles';
 
 type Props = {

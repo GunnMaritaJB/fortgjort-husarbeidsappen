@@ -8,7 +8,7 @@ export function useEmailVerification(onVerified: () => void) {
   const [cooldown, setCooldown] = useState(true);
   const [secondsLeft, setSecondsLeft] = useState(60);
 
-  // Nedtelling på cooldown
+
   useEffect(() => {
     let countdown: NodeJS.Timeout;
 
@@ -28,7 +28,7 @@ export function useEmailVerification(onVerified: () => void) {
     return () => clearInterval(countdown);
   }, [cooldown]);
 
-  // Sjekker om epost er bekreftet hvert 5. sekund
+
   useEffect(() => {
     const interval = setInterval(async () => {
       const user = auth.currentUser;

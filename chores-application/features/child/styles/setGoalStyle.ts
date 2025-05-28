@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
         color: '#444',
     },
     currentGoalBox: {
-        backgroundColor: '#FFF9C4', // pastel gul
+        backgroundColor: '#FFF9C4',
         borderRadius: 16,
         padding: 16,
         marginBottom: 16,
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
         width: 90,
         height: 90,
         borderRadius: 45,
-        backgroundColor: '#FFF8E1', // lys gul
+        backgroundColor: '#FFF8E1',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,

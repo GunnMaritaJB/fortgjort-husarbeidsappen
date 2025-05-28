@@ -4,7 +4,6 @@ import {auth, db} from '@/firebaseConfig';
 import {Parent} from '@/features/parent/models/Parent';
 
 
-// Registrerer ny bruker og oppretter Parent-dokumentet i Firestore
 export async function registerUser(
   email: string,
   password: string,
@@ -29,7 +28,6 @@ export async function registerUser(
     return uid;
 }
 
-// Henter householdId for en bruker basert på uid
 export async function getHouseholdIdForUser(uid: string): Promise<string | null> {
   const userDocRef = doc(getFirestore(), 'parents', uid);
   const userDoc = await getDoc(userDocRef);

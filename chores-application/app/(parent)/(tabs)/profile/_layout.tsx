@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
 
 export default function ProfileStackLayout() {
-    // @ts-ignore
-    // @ts-ignore
+
     return (
         <Stack
             screenOptions={{
@@ -10,7 +9,7 @@ export default function ProfileStackLayout() {
                 headerStyle: {
                     backgroundColor: '#e9f6f5',
                 },
-                headerTintColor: '#2e7d32',  // ← farge på back-knapp
+                headerTintColor: '#2e7d32',
                 headerTitle: '',
                 headerBackVisible: true,
                 headerShadowVisible: false,

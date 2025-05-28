@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
 import ParentForm from '@/features/parent/forms/parent/ParentForm';
 import { router } from 'expo-router';
+import { fetchParentInfo, updateParent } from '@/features/parent/services/parent';
 
 export default function EditParentScreen() {
     const [name, setName] = useState('');
@@ -11,33 +9,32 @@ export default function EditParentScreen() {
     const [parentId, setParentId] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchParent = async () => {
-            const user = getAuth().currentUser;
-            if (!user) return;
-
-            const ref = doc(db, 'parents', user.uid);
-            const snap = await getDoc(ref);
-            if (snap.exists()) {
-                const data = snap.data();
-                setName(data.firstName || '');
-                setSelectedAvatar(data.avatar || '');
-                setParentId(user.uid);
+        const fetch = async () => {
+            try {
+                const data = await fetchParentInfo();
+                setName(data.firstName);
+                setSelectedAvatar(data.avatar);
+                setParentId(data.parentId);
+            } catch (err) {
+                console.error('Kunne ikke hente forelder-info:', err);
             }
         };
-
-        fetchParent();
+        fetch();
     }, []);
 
     const handleUpdate = async () => {
         if (!parentId) return;
-
-        await updateDoc(doc(db, 'parents', parentId), {
-            firstName: name,
-            avatar: selectedAvatar,
-        });
-
-        router.replace('/(parent)/(tabs)/settings');
+        try {
+            await updateParent(parentId, {
+                firstName: name,
+                avatar: selectedAvatar,
+            });
+            router.replace('/(parent)/(tabs)/settings');
+        } catch (error) {
+            console.error('Kunne ikke oppdatere forelder:', error);
+        }
     };
+
 
     return (
         <ParentForm

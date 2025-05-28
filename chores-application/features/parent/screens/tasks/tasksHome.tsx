@@ -48,7 +48,6 @@ export default function TasksHome() {
                 });
                 setChildMap(map);
             } catch (err) {
-                console.error('Feil ved lasting av barn:', err);
             }
         };
         loadChildren();
@@ -143,8 +142,6 @@ export default function TasksHome() {
                     </Picker>
                 </View>
 
-
-
                 <TouchableOpacity
                     testID="filterDateButton"
                     onPress={() => {
@@ -180,7 +177,6 @@ export default function TasksHome() {
                         <Picker.Item label="Ikke bekreftet" value="unconfirmed" />
                     </Picker>
                 </View>
-
 
                 <TouchableOpacity
                     testID="filterVisibilityButton"

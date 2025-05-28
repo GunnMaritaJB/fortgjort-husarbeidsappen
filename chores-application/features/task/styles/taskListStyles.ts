@@ -77,7 +77,7 @@ export const taskListStyles = StyleSheet.create({
         color: '#856404',
     },
     statusApproved: {
-        backgroundColor: '#E6F4EA', // lys grønn
+        backgroundColor: '#E6F4EA',
         color: '#1E7F3D',
     },
     statusCompleted: {
@@ -85,7 +85,7 @@ export const taskListStyles = StyleSheet.create({
         color: '#B95C00',
     },
     statusVisible: {
-        backgroundColor: '#DDEBF8', // blå
+        backgroundColor: '#DDEBF8',
         color: '#005A9C',
     },
     statusBadge: {

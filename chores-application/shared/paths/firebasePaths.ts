@@ -12,10 +12,6 @@ export const collections = {
       `households/${householdId}/children/${childID}`,
 
   tasksByHousehold: (householdId: string) => `households/${householdId}/tasks`,
-
-  allChildren: () => 'children',
-  childFromGlobalCollection: (childId: string) => `children/${childId}`,
-
   taskDocPath: (householdId: string, taskId: string) => `households/${householdId}/tasks/${taskId}`,
 
 

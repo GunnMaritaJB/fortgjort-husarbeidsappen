@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "@/firebaseConfig";
 import { FlatList, Text, View, ActivityIndicator } from "react-native";
 import { Reward } from "../../models/Reward";
 import RewardTile from "./rewardTile";
 import { rewardListStyles as styles } from "../../styles/rewardListStyles";
-import { collections } from "@/shared/paths/firebasePaths";
+import {listenToRewardsForHousehold} from "@/features/reward/services/rewardService";
 
 type RewardListProps = {
   query: string;
@@ -14,79 +12,67 @@ type RewardListProps = {
 };
 
 const RewardList = ({ query, householdId, onEdit }: RewardListProps) => {
-  // States
+
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const rewardsRef = collection(
-      db,
-      collections.rewardsByHousehold(householdId)
+    useEffect(() => {
+        const unsubscribe = listenToRewardsForHousehold(
+            householdId,
+            (fetched) => {
+                setRewards(fetched);
+                setLoading(false);
+            },
+            (err) => {
+                setError("Kunne ikke hente belønninger.");
+                setLoading(false);
+            }
+        );
+
+        return () => unsubscribe();
+    }, [householdId]);
+
+    const filteredRewards = rewards.filter((reward) =>
+        reward.name.toLowerCase().includes(query.toLowerCase())
     );
 
-    const unsubscribe = onSnapshot(
-      rewardsRef,
-      (snapshot) => {
-        const fetchedRewards: Reward[] = snapshot.docs.map((doc) => ({
-          rewardID: doc.id,
-          ...doc.data(),
-        })) as Reward[];
+    if (loading)
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size="small" color="#333" />
+                <Text style={styles.message}>Laster belønninger...</Text>
+            </View>
+        );
 
-        setRewards(fetchedRewards);
-        setLoading(false);
-      },
-      (err) => {
-        console.error("Failed to fetch rewards:", err);
-        setError("Kunne ikke hente belønninger.");
-        setLoading(false);
-      }
-    );
+    if (error)
+        return (
+            <View style={styles.centered}>
+                <Text style={styles.message}>{error}</Text>
+            </View>
+        );
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
-  }, [householdId]);
+    if (filteredRewards.length === 0)
+        return (
+            <View style={styles.centered}>
+                <Text style={styles.message}>Ingen belønninger funnet.</Text>
+            </View>
+        );
 
-  const filteredRewards = rewards.filter((reward) =>
-    reward.name.toLowerCase().includes(query.toLowerCase())
-  );
-
-  if (loading)
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="small" color="#333" />
-        <Text style={styles.message}>Laster belønninger...</Text>
-      </View>
-    );
-
-  if (error)
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.message}>{error}</Text>
-      </View>
-    );
-
-  if (filteredRewards.length === 0)
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.message}>Ingen belønninger funnet.</Text>
-      </View>
-    );
-
-  return (
-    <FlatList
-      contentContainerStyle={styles.listContainer}
-      data={[...filteredRewards].sort((a, b) => a.name.localeCompare(b.name))}
-      renderItem={({ item }) => (
-        <RewardTile
-          title={item.name}
-          points={item.pointPrice}
-          onPress={() => onEdit(item)}
+        <FlatList
+            contentContainerStyle={styles.listContainer}
+            data={[...filteredRewards].sort((a, b) => a.name.localeCompare(b.name))}
+            renderItem={({ item }) => (
+                <RewardTile
+                    title={item.name}
+                    points={item.pointPrice}
+                    onPress={() => onEdit(item)}
+                />
+            )}
+            keyExtractor={(item) => item.rewardID}
         />
-      )}
-      keyExtractor={(item) => item.rewardID}
-    />
-  );
+    );
 };
 
 export default RewardList;

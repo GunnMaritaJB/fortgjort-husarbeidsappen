@@ -10,7 +10,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/shared/contexts/AuthContext';
 import { ChildProvider } from '@/shared/contexts/ChildContext';
 
-// Forhindre at splash screen forsvinner før appen er klar
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

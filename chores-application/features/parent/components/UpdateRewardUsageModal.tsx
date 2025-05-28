@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { updateRewardUsage } from '@/features/reward/services/rewardService';
+import {styles} from '@/features/parent/styles/profile/updateRewardUsageModal'
 
 type Props = {
     visible: boolean;
@@ -34,7 +35,6 @@ export default function UpdateRewardUsageModal({
             await updateRewardUsage(householdId, childId, rewardId, newValue);
             onChange();
         } catch (error) {
-            console.error('Kunne ikke oppdatere reward:', error);
         }
     };
 
@@ -59,40 +59,3 @@ export default function UpdateRewardUsageModal({
         </Modal>
     );
 }
-
-const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    container: {
-        width: 300,
-        padding: 24,
-        borderRadius: 20,
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 12,
-    },
-    label: {
-        fontSize: 14,
-        marginBottom: 12,
-        color: '#333',
-    },
-    closeBtn: {
-        marginTop: 20,
-        paddingVertical: 8,
-        paddingHorizontal: 20,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-    },
-    closeText: {
-        fontWeight: 'bold',
-        color: '#333',
-    },
-});

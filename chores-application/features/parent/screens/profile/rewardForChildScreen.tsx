@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { useGlobalSearchParams } from 'expo-router';
-import {fetchPurchasedRewards, updateRewardUsage} from '@/features/reward/services/rewardService';
+import {deletePurchasedReward, fetchPurchasedRewards} from '@/features/reward/services/rewardService';
 import { PurchasedReward } from '@/features/reward/models/PurchasedReward';
 import UpdateRewardUsageModal from '@/features/parent/components/UpdateRewardUsageModal';
+import {styles} from '@/features/parent/styles/profile/rewardForChildScreenStyles'
 
 
 export default function RewardForChildScreen() {
@@ -51,7 +52,6 @@ export default function RewardForChildScreen() {
             </View>
         );
     }
-
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Belønninger kjøpt av barnet</Text>
@@ -60,23 +60,52 @@ export default function RewardForChildScreen() {
                 keyExtractor={(item, index) => item.id ?? index.toString()}
                 contentContainerStyle={styles.list}
                 renderItem={({ item }) => (
-                    <TouchableOpacity
-                        style={styles.rewardItem}
-                        onPress={() => {
-                            if (!item.id) return;
-                            setSelectedReward(item);
-                            setModalVisible(true);
-                        }}
+                    <View style={styles.rewardItem}>
+                        <TouchableOpacity
+                            style={styles.rewardInfo}
+                            onPress={() => {
+                                if (!item.id) return;
+                                setSelectedReward(item);
+                                setModalVisible(true);
+                            }}
+                        >
+                            <Text style={styles.emoji}>🎁</Text>
+                            <Text style={styles.text}>{item.name}</Text>
+                            <Text style={[styles.status, { color: item.used ? 'red' : 'green' }]}>
+                                {item.used ? 'Brukt' : 'Ikke brukt'}
+                            </Text>
+                        </TouchableOpacity>
 
-                    >
-                        <Text style={styles.emoji}>🎁</Text>
-                        <Text style={styles.text}>{item.name}</Text>
-                        <Text style={[styles.status, { color: item.used ? 'red' : 'green' }]}>
-                            {item.used ? 'Brukt' : 'Ikke brukt'}
-                        </Text>
-                    </TouchableOpacity>
+                        {item.used && item.id && (
+                            <TouchableOpacity
+                                style={styles.deleteButton}
+                                onPress={() => {
+                                    Alert.alert(
+                                        'Slett belønning',
+                                        'Vil du slette denne brukte belønningen?',
+                                        [
+                                            { text: 'Avbryt', style: 'cancel' },
+                                            {
+                                                text: 'Slett',
+                                                style: 'destructive',
+                                                onPress: async () => {
+                                                    try {
+                                                        await deletePurchasedReward(householdId!, childId!, item.id!);
+                                                        refreshRewards();
+                                                    } catch (e) {
+                                                        Alert.alert('Feil', 'Kunne ikke slette belønningen.');
+                                                    }
+                                                },
+                                            },
+                                        ]
+                                    );
+                                }}
+                            >
+                                <Text style={styles.deleteButtonText}>Slett</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 )}
-
             />
 
             {selectedReward && (
@@ -95,40 +124,3 @@ export default function RewardForChildScreen() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#e9f6f5',
-    },
-    header: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    list: {
-        gap: 12,
-    },
-    rewardItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        padding: 16,
-        backgroundColor: '#c7f1d6',
-        borderRadius: 12,
-        elevation: 2,
-    },
-    emoji: {
-        fontSize: 24,
-    },
-    text: {
-        flex: 1,
-        fontSize: 16,
-    },
-    status: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#666',
-    },
-});

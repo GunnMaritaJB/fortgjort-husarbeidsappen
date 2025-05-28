@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, } from 'react-native';
 import { auth } from '@/firebaseConfig';
 import { Snackbar } from 'react-native-paper';
 import {router} from "expo-router";

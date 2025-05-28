@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Animated, Modal,} from 'react-native';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import {View, Text, TouchableOpacity, Animated,} from 'react-native';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import AvatarModal from '@/features/child/components/AvatarModal';
-import { updateChild } from '@/features/child/services/child';
+import {fetchChildData, updateChild} from '@/features/child/services/child';
 import {styles} from '../styles/homepagestyles';
 
 export default function ChildHomeScreen() {
@@ -31,28 +29,26 @@ export default function ChildHomeScreen() {
     };
 
     useEffect(() => {
-        const fetchChild = async () => {
-            if (!childId || !householdId || typeof childId !== 'string' || typeof householdId !== 'string') {
-                setLoading(false);
-                return;
-            }
+        if (!childId || !householdId || typeof childId !== 'string' || typeof householdId !== 'string') {
+            setLoading(false);
+            return;
+        }
 
+        const load = async () => {
+            setLoading(true);
             try {
-                const childRef = doc(db, `households/${householdId}/children/${childId}`);
-                const snap = await getDoc(childRef);
-                if (snap.exists()) {
-                    const data = snap.data();
-                    setChildData(data);
-                    setAvatarState(data.avatar);
-                }
+                const child = await fetchChildData(householdId, childId); // eller fetchChildData(...)
+                setChildData(child);
+                setAvatarState(child.avatar);
             } catch (error) {
+                console.error('Kunne ikke hente barn:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchChild();
-    }, [childId]);
+        load();
+    }, [childId, householdId]);
 
     if (loading || !childData) {
         return <Text style={{ textAlign: 'center', marginTop: 100 }}>Laster barn...</Text>;
@@ -129,7 +125,6 @@ export default function ChildHomeScreen() {
                 </TouchableOpacity>
 
 
-                {/* Goal Section */}
                 {goalTitle ? (
                     <TouchableOpacity
                         style={styles.goalSection}

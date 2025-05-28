@@ -5,7 +5,6 @@ import {fetchParentHasPin, setPin, updatePin, removePin,verifyPin} from '@/featu
 import { styles } from '@/features/parent/styles/settings/parentPinScrnStyles';
 import { useRouter } from 'expo-router';
 
-
 export default function ParentPinScreen() {
     const [hasPin, setHasPin] = useState<boolean | null>(null);
     const [currentPin, setCurrentPin] = useState('');
@@ -82,16 +81,13 @@ export default function ParentPinScreen() {
             Alert.alert('Suksess', 'PIN-kode fjernet.');
             router.back();
         } catch (error: any) {
-            if (__DEV__) console.warn('PIN-feil:', error);
+            if (__DEV__)
             Alert.alert('Feil', error.message === 'PIN-kode er feil.'
                 ? 'Nåværende PIN-kode er ikke riktig.'
                 : 'Kunne ikke fjerne PIN-kode.');
 
         }
     };
-
-
-
 
     if (loading || localLoading || parentId === null || hasPin === null) {
         return (
@@ -130,7 +126,6 @@ export default function ParentPinScreen() {
                     />
                     </>
                 )}
-
 
                 <TextInput
                     style={styles.input}

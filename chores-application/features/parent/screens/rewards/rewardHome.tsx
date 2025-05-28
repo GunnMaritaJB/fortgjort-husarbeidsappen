@@ -1,20 +1,12 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, ViewStyle, TextStyle, Text } from "react-native";
+import { View, Text } from "react-native";
 import { getAuth } from "firebase/auth";
 import { getHouseholdIdForUser } from "@/features/auth/services/authService";
-import {
-  RewardList,
-  SearchBar,
-  AddButton,
-} from "../../../reward/components/parent";
+import {RewardList, SearchBar, AddButton,} from "../../../reward/components/parent";
 import AddRewardModal from "../../../reward/components/parent/modals/AddRewardModal";
 import EditRewardModal from "../../../reward/components/parent/modals/EditRewardModal";
 import { Reward, RewardInputFromFrom } from "../../../reward/models/Reward";
-import {
-  addReward,
-  updateReward,
-  deleteReward,
-} from "../../../reward/services/rewardService";
+import {addReward, updateReward, deleteReward,} from "../../../reward/services/rewardService";
 import { RewardScreenStyles as styles } from "../../styles/rewards/rewardScreenStyles";
 
 export default function RewardsScreen() {

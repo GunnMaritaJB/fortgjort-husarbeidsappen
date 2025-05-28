@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react
 import { useGlobalSearchParams, router } from 'expo-router';
 import { Reward } from '@/features/reward/models/Reward';
 import {fetchRewardsForHousehold} from '@/features/reward/services/rewardService';
-import { getChildById, updateChild } from '@/features/child/services/child';
+import { getChildById} from '@/features/child/services/child';
 import { Snackbar } from 'react-native-paper';
 import { Child } from '@/features/child/models/Child';
 import {styles} from '@/features/child/styles/setGoalStyle'

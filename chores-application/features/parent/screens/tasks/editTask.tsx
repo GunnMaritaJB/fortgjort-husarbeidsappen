@@ -32,10 +32,6 @@ export default function EditTaskScreen() {
         return new Date();
     };
 
-
-
-
-
     const router = useRouter();
     const { id: taskId } = useLocalSearchParams();
 

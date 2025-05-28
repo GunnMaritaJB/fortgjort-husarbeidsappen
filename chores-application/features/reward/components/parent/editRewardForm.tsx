@@ -63,6 +63,9 @@ const EditRewardForm = ({
         <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
           <Text style={styles.buttonText}>Avbryt</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.deleteButtonRow}>
         <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
           <Text style={styles.buttonText}>Slett</Text>
         </TouchableOpacity>

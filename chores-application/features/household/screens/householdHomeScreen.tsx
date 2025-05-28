@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import { householdHomeStyles as styles } from '../styles/householdHomeStyles';

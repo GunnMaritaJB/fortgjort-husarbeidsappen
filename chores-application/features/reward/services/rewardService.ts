@@ -1,4 +1,13 @@
-import { collection, getDocs, doc, updateDoc, getDoc, deleteDoc, addDoc, query, where } from 'firebase/firestore';
+import {
+    collection,
+    getDocs,
+    doc,
+    updateDoc,
+    getDoc,
+    deleteDoc,
+    addDoc,
+    onSnapshot
+} from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { collections } from '@/shared/paths/firebasePaths';
 import { Reward } from '../models/Reward';
@@ -40,12 +49,10 @@ export const purchaseReward = async (
     const currentPoints = childSnap.data().points ?? 0;
     if (currentPoints < reward.pointPrice) throw new Error('Ikke nok poeng');
 
-    // Trekk fra poeng
     await updateDoc(childRef, {
         points: currentPoints - reward.pointPrice,
     });
 
-    // Lagre reward som kjøpt
     const purchase: PurchasedReward = {
         rewardId: reward.rewardID,
         name: reward.name,
@@ -130,5 +137,39 @@ export async function deleteReward(
     throw error;
   }
 }
+
+export const deletePurchasedReward = async (
+    householdId: string,
+    childId: string,
+    rewardId: string
+) => {
+    const ref = doc(db, `households/${householdId}/children/${childId}/purchasedRewards/${rewardId}`);
+    await deleteDoc(ref);
+};
+
+export const listenToRewardsForHousehold = (
+    householdId: string,
+    onUpdate: (rewards: Reward[]) => void,
+    onError: (error: Error) => void
+) => {
+    const rewardsRef = collection(db, collections.rewardsByHousehold(householdId));
+
+    const unsubscribe = onSnapshot(
+        rewardsRef,
+        (snapshot) => {
+            const data: Reward[] = snapshot.docs.map((doc) => ({
+                rewardID: doc.id,
+                ...doc.data(),
+            })) as Reward[];
+            onUpdate(data);
+        },
+        (error) => {
+            console.error("Error listening to rewards:", error);
+            onError(error);
+        }
+    );
+
+    return unsubscribe;
+};
 
 

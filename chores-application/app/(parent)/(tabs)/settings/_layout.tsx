@@ -8,7 +8,7 @@ export default function SettingsLayout() {
             headerStyle: {
                 backgroundColor: '#e9f6f5',
             },
-            headerTintColor: '#2e7d32',  // ← farge på back-knapp
+            headerTintColor: '#2e7d32',
             headerTitle: '',
             headerBackVisible: true,
             headerShadowVisible: false,

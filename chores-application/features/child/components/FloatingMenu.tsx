@@ -98,7 +98,6 @@ export default function FloatingMenu({}: FloatingMenuProps) {
                                 setMenuVisible(false);
                                 playStarSpin(() => {
                                     if (!childId || !householdId) {
-                                        console.warn('childId/householdId mangler');
                                         return;
                                     }
                                     router.push({
@@ -120,7 +119,6 @@ export default function FloatingMenu({}: FloatingMenuProps) {
                                 setMenuVisible(false);
                                 playStarSpin(() => {
                                     if (!childId) {
-                                        console.warn('childId mangler – kan ikke åpne belønninger');
                                         return;
                                     }
                                     router.push({

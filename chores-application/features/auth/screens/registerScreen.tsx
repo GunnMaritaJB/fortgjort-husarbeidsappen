@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { registerUser } from '@/features/auth/services/authService';
 import { registerStyles as styles } from '../styles/registerStyles';
 import { handleRegisterUser } from '@/features/auth/services/registerService';
 

@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 import { loginStyles as styles } from '../styles/loginStyles';
 import { getHouseholdIdForUser } from '@/features/auth/services/authService';
 import { auth } from '@/firebaseConfig';
-
 import BackButton from '../components/backButton';
 import LoginForm from '../forms/loginForm';
 import { loginUser } from '../services/loginService';
@@ -17,13 +16,12 @@ export default function LoginScreen() {
     try {
       const uid = await loginUser(email, password); 
 
-      await auth.currentUser?.reload(); // Reload user to ensure we have the latest data
+      await auth.currentUser?.reload();
       if(!auth.currentUser?.emailVerified) {
-        router.replace('/(auth)/confirm-email'); // Redirect to email confirmation if not verified
+        router.replace('/(auth)/confirm-email');
         return;
       }
 
-      // Check if the user is part of a household
       const householdId = await getHouseholdIdForUser(uid); 
   
       if (householdId) {

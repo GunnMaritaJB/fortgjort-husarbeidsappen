@@ -1,11 +1,4 @@
-import {
-    ScrollView,
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    Platform,
-} from 'react-native';
+import {ScrollView, View, Text, TextInput, TouchableOpacity, Platform,} from 'react-native';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { format } from 'date-fns';
@@ -39,7 +32,6 @@ export default function CreateTaskScreen() {
                 const data = await fetchChildrenByHousehold(householdId);
                 setChildren(data);
             } catch (err) {
-                console.error('Kunne ikke hente barn:', err);
             }
         };
 

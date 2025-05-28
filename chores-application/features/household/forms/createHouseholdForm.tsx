@@ -1,5 +1,4 @@
-import {View, TextInput, Button, StyleSheet,TouchableOpacity, Text} from "react-native";
-import {sharedHouseholdStyles} from "@/features/household/styles/sharedHouseholdStyles";
+import {View, TextInput, TouchableOpacity, Text} from "react-native";
 import {registerStyles as styles} from "@/features/auth/styles/registerStyles";
 
 type Props = {

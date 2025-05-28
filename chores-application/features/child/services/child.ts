@@ -6,11 +6,8 @@ import {
     addDoc,
     doc,
     getDoc,
-    query,
     getDocs,
-    where,
     updateDoc,
-    arrayRemove,
     deleteDoc
 } from 'firebase/firestore';
 import {Child} from "@/features/child/models/Child";
@@ -71,6 +68,18 @@ export const getChildById = async (householdId: string, childId: string): Promis
         throw new Error('Barn ikke funnet');
     }
 
+    return {
+        id: childId,
+        ...snap.data(),
+    } as Child;
+};
+
+export const fetchChildData = async (householdId: string, childId: string): Promise<Child> => {
+    const ref = doc(db, `households/${householdId}/children/${childId}`);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+        throw new Error('Barn ikke funnet');
+    }
     return {
         id: childId,
         ...snap.data(),

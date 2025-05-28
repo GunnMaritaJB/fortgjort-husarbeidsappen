@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text,} from 'react-native';
 import { router } from 'expo-router';
 import { sharedHouseholdStyles as styles } from '../styles/sharedHouseholdStyles';
 import { handleCreateHousehold } from '../services/createService';
-
-
-import BackButton from '@/features/auth/components/backButton'; // gjenbruk
+import BackButton from '@/features/auth/components/backButton';
 import CreateHouseholdForm from '../forms/createHouseholdForm';
 
 export default function CreateHouseholdScreen() {
@@ -14,7 +12,6 @@ export default function CreateHouseholdScreen() {
     const handleCreate = () =>
         handleCreateHousehold(householdName, () => {
             router.replace('/(household)/home');
-            // Naviger dit du vil etter opprettelse
         });
 
     const handleCancel = () => router.back();

@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 40,
         left: 30,
-        zIndex: 99, // sørger for at den alltid vises over menyen
+        zIndex: 99,
     },
 
 });

@@ -2,9 +2,6 @@ import { Alert } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { createHousehold } from './householdService';
 
-/**
- * Håndterer opprettelse av husstand fra UI.
- */
 export const handleCreateHousehold = async (
     householdName: string,
     onSuccess: () => void
@@ -26,7 +23,6 @@ export const handleCreateHousehold = async (
         await createHousehold(householdName, uid);
         onSuccess();
     } catch (error: any) {
-        console.error('Feil ved opprettelse av husstand:', error);
         Alert.alert('Noe gikk galt', 'Kunne ikke opprette husstanden.');
     }
 };

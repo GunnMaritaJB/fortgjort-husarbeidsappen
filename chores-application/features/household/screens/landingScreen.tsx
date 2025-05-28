@@ -45,7 +45,6 @@ export default function LandingScreen() {
 
       <TouchableOpacity
         style={styles.button}
-        //onPress={() => router.push('/join-household')}
       >
         <Text style={styles.buttonText}>Bli med i husstand</Text>
       </TouchableOpacity>

@@ -37,7 +37,6 @@ export default function ParentForm({
                 autoCapitalize="words"
             />
 
-            {/* Knapper */}
             <View style={styles.buttonRow}>
                 <TouchableOpacity onPress={onSubmit} style={styles.saveButton}>
                     <Text style={styles.buttonText}>Lagre</Text>

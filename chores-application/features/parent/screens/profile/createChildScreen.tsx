@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router';
 import CreateChildForm from '@/features/parent/forms/child/createChildForm';
 import { createChild } from '@/features/child/services/child';
 import {getParentHouseholdId} from "@/features/parent/services/parent";
-import BackButton from "@/features/auth/components/backButton";
 
 export default function CreateChildScreen() {
     const [firstName, setFirstName] = useState('');

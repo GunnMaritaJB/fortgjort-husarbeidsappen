@@ -7,8 +7,7 @@ import { welcomeStyles as styles } from '@/features/auth/styles/welcomeStyles';
 
 export default function WelcomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Redirect to household screen if user is already logged in
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
