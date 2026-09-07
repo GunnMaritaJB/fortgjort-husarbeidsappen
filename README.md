@@ -36,6 +36,27 @@ The application source code can be found in the [`chores-application`](./chores-
 
 The complete project report is available here: [`Report.pdf`](./Report.pdf).
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/child_home.png" width="230" alt="Child home screen"/>
+  <img src="screenshots/child_tasks.png" width="230" alt="Child task overview"/>
+  <img src="screenshots/parent_tasks.png" width="230" alt="Parent task management"/>
+</p>
+
+<p align="center">
+  <i>Child home screen, child task overview and parent task management.</i>
+</p>
+
+<p align="center">
+  <img src="screenshots/reward-backpack_1.png" width="230" alt="Purchased rewards"/>
+  <img src="screenshots/child_menu.png" width="230" alt="Child navigation menu"/>
+</p>
+
+<p align="center">
+  <i>Reward system and child navigation.</i>
+</p>
+
 ## Reflections
 
 This project gave us practical experience developing a mobile application from the initial idea and requirements through design, implementation, testing and delivery.
