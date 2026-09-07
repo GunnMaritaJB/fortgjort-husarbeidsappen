@@ -51,8 +51,11 @@ Overall, the project provided valuable experience in mobile application developm
 ## Who was involved
 
 Nancy Rønqist Erichsen
-Adam Hazel
-Gunn Marita Jomås-Britten
-Nora Lior
 
+Adam Hazel
+
+Gunn Marita Jomås-Britten
+
+Nora Lior
+##
 Developed at the **University of Agder, Campus Grimstad – Spring 2025**.
